@@ -23,7 +23,7 @@ router.param('analytic', function(req, res, next, id) {
   });
 });
 
-/* :parameter param */
+/* :param param */
 router.param('param', function(req, res, next, id) {
   var query = AnalyticParam.findById(id);
 
@@ -110,12 +110,12 @@ router.get('/:analytic/params', function(req, res, next) {
 
 /* TODO: Should we just have this route as /params/:param? */
 /* GET /analytics/:analytic/params/:param */
-router.get('/:analytic/params/:param', function(req, res, next) {
+/*router.get('/:analytic/params/:param', function(req, res, next) {
   if(req.analytic.analyticParams.indexOf(req.analyticParam._id) === -1) { 
     return next(new Error("can't find analyticParam associated with analytic")); 
   }
   res.json(req.analyticParam);
-});
+});*/
 
 
 /* POST /analytics/:analytic/visualizations */
@@ -146,11 +146,11 @@ router.get('/:analytic/visualizations', function(req, res, next) {
 
 /* TODO: Should we just have this route as /visualizations/:visualization? */
 /* GET /analytics/:analytic/visualizations/:visualization */
-router.get('/:analytic/visualizations/:visualization', function(req, res, next) {
+/*router.get('/:analytic/visualizations/:visualization', function(req, res, next) {
   if(req.analytic.visualizations.indexOf(req.visualization._id) === -1) { 
     return next(new Error("can't find visualizations associated with analytic")); 
   }
   res.json(req.visualization);
-});
+});*/
 
 
