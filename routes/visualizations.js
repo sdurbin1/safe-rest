@@ -47,25 +47,25 @@ router.get('/', function(req, res, next) {
 });
 
 /* POST /visualizations */
-/*router.post('/', function(req, res, next) {
-  var visualization = new Parameter(req.body);
+router.post('/', function(req, res, next) {
+  var visualization = new Visualization(req.body);
 
-  parameter.save(function(err, visualization){
+  visualization.save(function(err, visualization){
     if(err){ return next(err); }
 
     res.json(visualization);
   });
-});*/
+});
 
 /* GET /visualizations/:visualization */
 router.get('/:visualization', function(req, res, next) {
-  //res.json(req.visualization);
+  res.json(req.visualization);
  
-   req.visualization.populate('visualizationParams', function(err, visualization) {
+   /*req.visualization.populate('visualizationParams', function(err, visualization) {
     if (err) { return next(err); }
 
     res.json(visualization.visualizationParams);
-  });
+  });*/
 });
 
 /* POST /visualizations/:visualization/params */

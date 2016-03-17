@@ -12,6 +12,7 @@ require('./models/Visualizations');
 require('./models/Analytics');
 require('./models/VisualizationParams');
 require('./models/Sources');
+require('./models/Fields');
 
 mongoose.connect('mongodb://localhost/safe');
 

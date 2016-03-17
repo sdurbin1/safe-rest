@@ -73,8 +73,6 @@ router.post('/', function(req, res, next) {
 
 /* GET /analytics/:analytic */
 router.get('/:analytic', function(req, res, next) {
-  //res.json(req.analytic);
-  
   req.analytic.populate(['visualizations','analyticParams'], function(err, analytic) {
     if (err) { return next(err); }
 
@@ -119,7 +117,7 @@ router.get('/:analytic/params', function(req, res, next) {
 
 
 /* POST /analytics/:analytic/visualizations */
-router.post('/:analytic/visualizations', function(req, res, next) {
+/*router.post('/:analytic/visualizations', function(req, res, next) {
   var visualization = new Visualization(req.body);
   visualization.analytic = req.analytic;
 
@@ -133,12 +131,25 @@ router.post('/:analytic/visualizations', function(req, res, next) {
       res.json(visualization);
     });
   });
-});
+});*/
 
 /* GET /analytics/:analytic/visualizations */
 router.get('/:analytic/visualizations', function(req, res, next) {
   req.analytic.populate('visualizations', function(err, analytic) {
     if (err) { return next(err); }
+
+    res.json(analytic.visualizations);
+  });
+});
+
+/* PUT /analytics/:analytic/visualizations */
+/* Adds an existing visualization to an analytic */
+router.put('/:analytic/visualizations', function(req, res, next) {  
+  //first doing concat as req.body["visualizaitons"] is not an array if only one element passed in
+  var updated_visualizations = [].concat(req.body["visualizations"])
+  req.analytic.visualizations.push.apply(req.analytic.visualizations, updated_visualizations)
+  req.analytic.save(function(err, analytic) {
+    if(err){ return next(err); }
 
     res.json(analytic.visualizations);
   });
