@@ -76,8 +76,9 @@ curl localhost:8080/visualizations/56e8178dabda61a618bfccd9
 ```
 
 ##### POST /visualizations/:visualization/params
+```
 curl localhost:8080/visualizations/56e8178dabda61a618bfccd9/params --data 'name=Title'
-
+```
 ##### GET /visualizations/:visualization/params
 ```
 curl localhost:8080/visualizations/56e8178dabda61a618bfccd9/params
