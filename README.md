@@ -31,38 +31,68 @@ npm start
 # Rest API and example calls
 
 ##### POST /analytics
+Create an analytic
 ```
 curl localhost:8080/analytics --data 'name=Count'
 ```
 
 ##### GET /analytics
+Return all analytics
 ```
 curl localhost:8080/analytics
 ```
 
 ##### GET /analytics/:analytic
+Return an analytic
 ```
 curl localhost:8080/analytics/56e816d8abda61a618bfccd5
 ```
 
+##### PUT /analytics/:analytic
+Update an analytic
+```
+curl -X PUT http://localhost:8080/analytics/56ea93bcec9cc0f3098ae30a --data 'name=Binomial'
+```
+
+##### DELETE /analytics/:analytic
+Delete an analytic
+```
+curl -X DELETE http://localhost:8080/analytics/56ea975aec9cc0f3098ae316
+```
+
 ##### POST /analytics/:analytic/params
+Create an analytic param for an analytic
 ```
 curl localhost:8080/analytics/56e816d2abda61a618bfccd4 --data 'name=Mean' 
 ```
 
 ##### GET /analytics/:analytic/params
+Return a list of analytic params associated with an analytic
 ```
 curl localhost:8080/analytics/56e816d2abda61a618bfccd4/params
 ```
 
+##### DELETE /analytics/:analytic/params/:param
+Delete an analytic param
+```
+curl -X DELETE http://localhost:8080/analytics/56ea975aec9cc0f3098ae316/params/56eaf56002a2ebc41e8e108d
+```
+
 ##### PUT /analytics/:analytic/visualizations
+Add an existing visualization to an analytic
 ```
 curl localhost:8080/analytics/56eac298ee121e4b18d92259/visualizations -X PUT --data 'visualizations=56eaa1eae319c5af0c8dfc4d&visualizations=56eaa1f1e319c5af0c8dfc4f'
 ```
 
 ##### GET /analytics/:analytic/visualizations
+Return a list of visualizations associated with an analytic
 ```
 curl localhost:8080/analytics/56e816d2abda61a618bfccd4/visualizations
+```
+#### DELETE /analytics/:analytic/visualizations/:visualizations
+Remove a visualization from an analytic (does not delete the visualization)
+```
+curl -X DELETE http://localhost:8080/analytics/56eac298ee121e4b18d92259/visualizations/56eaa1eae319c5af0c8dfc4d
 ```
 
 ##### GET /visualizations

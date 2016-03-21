@@ -80,6 +80,28 @@ router.get('/:analytic', function(req, res, next) {
   });
 });
 
+/* PUT /analytics/:analytic */
+router.put('/:analytic', function(req, res, next) {
+  Analytic.findOneAndUpdate({ "_id": req.analytic._id }, req.body, {new: true}, function(err, analytic) {
+    if (err){ return next(err); };
+
+    res.json(analytic);
+  });
+});
+
+/* DELETE /analytics/:analytic */
+router.delete('/:analytic', function(req, res, next) {
+  Analytic.find({ "_id": req.analytic._id }).remove( function(err) {
+    if(err){ return next(err); };
+
+    /* Remove associated analyticParams */
+    AnalyticParam.find({ analytic : req.analytic._id }).remove().exec();
+  
+    res.json({});
+  });
+});
+
+
 /* POST /analytics/:analytic/params */
 router.post('/:analytic/params', function(req, res, next) {
   var analyticParam = new AnalyticParam(req.body);
@@ -106,6 +128,15 @@ router.get('/:analytic/params', function(req, res, next) {
   });
 });
 
+/* DELETE /analytics/:analytic/params/:param */
+router.delete('/:analytic/params/:param', function(req, res, next) {
+  AnalyticParam.find({ "_id": req.analyticParam._id }).remove( function(err) {
+    if(err){ return next(err); };
+  
+    res.json({});
+  });
+});
+
 /* TODO: Should we just have this route as /params/:param? */
 /* GET /analytics/:analytic/params/:param */
 /*router.get('/:analytic/params/:param', function(req, res, next) {
@@ -115,23 +146,6 @@ router.get('/:analytic/params', function(req, res, next) {
   res.json(req.analyticParam);
 });*/
 
-
-/* POST /analytics/:analytic/visualizations */
-/*router.post('/:analytic/visualizations', function(req, res, next) {
-  var visualization = new Visualization(req.body);
-  visualization.analytic = req.analytic;
-
-  visualization.save(function(err, visualization){
-    if(err){ return next(err); }
-
-    req.analytic.visualizations.push(visualization);
-    req.analytic.save(function(err, analytic) {
-      if(err){ return next(err); }
-
-      res.json(visualization);
-    });
-  });
-});*/
 
 /* GET /analytics/:analytic/visualizations */
 router.get('/:analytic/visualizations', function(req, res, next) {
@@ -148,6 +162,17 @@ router.put('/:analytic/visualizations', function(req, res, next) {
   //first doing concat as req.body["visualizaitons"] is not an array if only one element passed in
   var updated_visualizations = [].concat(req.body["visualizations"])
   req.analytic.visualizations.push.apply(req.analytic.visualizations, updated_visualizations)
+  req.analytic.save(function(err, analytic) {
+    if(err){ return next(err); }
+
+    res.json(analytic.visualizations);
+  });
+});
+
+/* DELETE /analytics/:analytic/visualizations/:visualization */
+/* Removes a visualization from an analytic but doesn't delete it */
+router.delete('/:analytic/visualizations/:visualization', function(req, res, next) {  
+  req.analytic.visualizations.remove(req.visualization);
   req.analytic.save(function(err, analytic) {
     if(err){ return next(err); }
 
