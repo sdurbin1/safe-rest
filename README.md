@@ -89,7 +89,7 @@ Return a list of visualizations associated with an analytic
 ```
 curl localhost:8080/analytics/56e816d2abda61a618bfccd4/visualizations
 ```
-#### DELETE /analytics/:analytic/visualizations/:visualizations
+##### DELETE /analytics/:analytic/visualizations/:visualizations
 Remove a visualization from an analytic (does not delete the visualization)
 ```
 curl -X DELETE http://localhost:8080/analytics/56eac298ee121e4b18d92259/visualizations/56eaa1eae319c5af0c8dfc4d
