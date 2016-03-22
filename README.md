@@ -105,6 +105,11 @@ curl localhost:8080/visualizations
 curl localhost:8080/visualizations/56e8178dabda61a618bfccd9
 ```
 
+##### PUT /visualizations/:visualization
+```
+curl -X PUT http://localhost:8080/visualizations/56eaa1eae319c5af0c8dfc4d/ --data 'name=Area'
+```
+
 ##### POST /visualizations/:visualization/params
 ```
 curl localhost:8080/visualizations/56e8178dabda61a618bfccd9/params --data 'name=Title'

@@ -68,10 +68,31 @@ router.get('/:visualization', function(req, res, next) {
   });*/
 });
 
+/* PUT /visualizations/:visualization */
+router.put('/:visualization', function(req, res, next) {
+  Visualization.findOneAndUpdate({ "_id": req.visualization._id }, req.body, {new: true}, function(err, visualization) {
+    if (err){ return next(err); };
+
+    res.json(visualization);
+  });
+});
+
+/* DELETE /visualizations/:visualization */
+router.delete('/:visualization', function(req, res, next) {
+  Visualization.find({ "_id": req.visualization._id }).remove( function(err) {
+    if(err){ return next(err); };
+
+    /* Remove associated visualizationParams */
+    VisualizationParam.find({ visualization : req.visualization._id }).remove().exec();
+  
+    res.json({});
+  });
+});
+
 /* POST /visualizations/:visualization/params */
 router.post('/:visualization/params', function(req, res, next) {
   var visualizationParam = new VisualizationParam(req.body);
-  visualizationParam.analytic = req.analytic;
+  visualizationParam.visualization = req.visualization;
 
   visualizationParam.save(function(err, visualizationParam){
     if(err){ return next(err); }
@@ -94,3 +115,18 @@ router.get('/:visualization/params', function(req, res, next) {
   });
 });
 
+/* DELETE /visualizations/:visualization/params/:param */
+router.delete('/:visualization/params/:param', function(req, res, next) {
+  req.visualization.visualizationParams.remove(req.visuzliationParam);
+  req.visualization.save(function(err, visualization) {
+    if(err){ return next(err); }
+
+    return;
+  });
+  
+  VisualizationParam.find({ "_id": req.visualizationParam._id }).remove( function(err) {
+    if(err){ return next(err); };
+  
+    res.json({});
+  });
+});

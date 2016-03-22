@@ -73,11 +73,12 @@ router.post('/', function(req, res, next) {
 
 /* GET /analytics/:analytic */
 router.get('/:analytic', function(req, res, next) {
-  req.analytic.populate(['visualizations','analyticParams'], function(err, analytic) {
+  res.json(req.analytic);
+  /*req.analytic.populate(['visualizations','analyticParams'], function(err, analytic) {
     if (err) { return next(err); }
 
     res.json(analytic);
-  });
+  });*/
 });
 
 /* PUT /analytics/:analytic */
@@ -130,6 +131,13 @@ router.get('/:analytic/params', function(req, res, next) {
 
 /* DELETE /analytics/:analytic/params/:param */
 router.delete('/:analytic/params/:param', function(req, res, next) {
+  req.analytic.analyticParams.remove(req.analyticParam);
+  req.analytic.save(function(err, analytic) {
+    if(err){ return next(err); }
+
+    return;
+  });
+  
   AnalyticParam.find({ "_id": req.analyticParam._id }).remove( function(err) {
     if(err){ return next(err); };
   
@@ -179,14 +187,5 @@ router.delete('/:analytic/visualizations/:visualization', function(req, res, nex
     res.json(analytic.visualizations);
   });
 });
-
-/* TODO: Should we just have this route as /visualizations/:visualization? */
-/* GET /analytics/:analytic/visualizations/:visualization */
-/*router.get('/:analytic/visualizations/:visualization', function(req, res, next) {
-  if(req.analytic.visualizations.indexOf(req.visualization._id) === -1) { 
-    return next(new Error("can't find visualizations associated with analytic")); 
-  }
-  res.json(req.visualization);
-});*/
 
 
