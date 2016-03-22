@@ -96,42 +96,68 @@ curl -X DELETE http://localhost:8080/analytics/56eac298ee121e4b18d92259/visualiz
 ```
 
 ##### GET /visualizations
+Return all visualizations
 ```
 curl localhost:8080/visualizations
 ```
 
 ##### GET /visualizations/:visualization
+Return a visualization
 ```
 curl localhost:8080/visualizations/56e8178dabda61a618bfccd9
 ```
 
 ##### PUT /visualizations/:visualization
+Update a visualization
 ```
 curl -X PUT http://localhost:8080/visualizations/56eaa1eae319c5af0c8dfc4d/ --data 'name=Area'
 ```
 
 ##### POST /visualizations/:visualization/params
+Create a visualization param for a visualization
 ```
 curl localhost:8080/visualizations/56e8178dabda61a618bfccd9/params --data 'name=Title'
 ```
 ##### GET /visualizations/:visualization/params
+Return all visualization params for a specified visualization
 ```
 curl localhost:8080/visualizations/56e8178dabda61a618bfccd9/params
 ```
 
+##### DELETE /visualizations/:visualization/params/:param
+Delete a visualization param and remove it from visualization
+```
+curl -X DELETE http://localhost:8080/visualizations/56eaa1eae319c5af0c8dfc4d/params/56f13c5d0140724d0da7d1c9
+```
+
 ##### POST /sources
+Create a source
 ```
 curl localhost:8080/sources --data 'name=CSV_20160122'
 ```
 
 ##### GET /sources
+Return all sources
 ```
 curl localhost:8080/sources
 ```
 
 ##### GET /sources/:source
+Return a source
 ```
 curl localhost:8080/sources/56e85075cbe2b94312e95daf
+```
+
+##### PUT /sources/:source
+Update a source
+```
+curl -X PUT http://localhost:8080/sources/56eaec7a2308db1b1c6f795f/ --data 'name=TEST'
+```
+
+##### DELETE /sources/:source
+Delete a source
+```
+curl -X DELETE http://localhost:8080/sources/56eaec7a2308db1b1c6f795f/
 ```
 
 ##### PUT /sources/:source/analytics

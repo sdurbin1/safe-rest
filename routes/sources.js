@@ -67,8 +67,30 @@ router.post('/', function(req, res, next) {
   });
 });
 
+/* PUT /sources/:source */
+router.put('/:source', function(req, res, next) {
+  Source.findOneAndUpdate({ "_id": req.source._id }, req.body, {new: true}, function(err, source) {
+    if (err){ return next(err); };
+
+    res.json(source);
+  });
+});
+
+/* DELETE /sources/:source */
+/* Delete source and delete all associated fields */
+router.delete('/:source', function(req, res, next) {
+  Source.find({ "_id": req.source._id }).remove( function(err) {
+    if(err){ return next(err); };
+
+    /* Remove associated fields */
+    Field.find({ source : req.source._id }).remove().exec();
+  
+    res.json({});
+  });
+});
+
 /* PUT /sources/:source/analytics */
-/* Adds an existing visualization to an analytic */
+/* Adds an existing analytic to a source */
 router.put('/:source/analytics', function(req, res, next) {  
   //first doing concat as req.body["analytics"] is not an array if only one element passed in
   var updated_analytics = [].concat(req.body["analytics"])

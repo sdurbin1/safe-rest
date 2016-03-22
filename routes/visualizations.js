@@ -116,6 +116,7 @@ router.get('/:visualization/params', function(req, res, next) {
 });
 
 /* DELETE /visualizations/:visualization/params/:param */
+/* Delete a visualizaiton param and remove from visualizations.visualizationParams */
 router.delete('/:visualization/params/:param', function(req, res, next) {
   req.visualization.visualizationParams.remove(req.visuzliationParam);
   req.visualization.save(function(err, visualization) {
