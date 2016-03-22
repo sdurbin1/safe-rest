@@ -6,6 +6,7 @@ module.exports = router;
 var mongoose = require('mongoose');
 var Source = mongoose.model('Source');
 var Field = mongoose.model('Field');
+var Analytic = mongoose.model('Analytic');
 
 /******** PRELOADING OBJECTS *************/
 
@@ -31,6 +32,19 @@ router.param('field', function(req, res, next, id) {
     if (!field) { return next(new Error('can\'t find field')); }
 
     req.field = field;
+    return next();
+  });
+});
+
+/* :analytic param */
+router.param('analytic', function(req, res, next, id) {
+  var query = Analytic.findById(id);
+
+  query.exec(function (err, analytic){
+    if (err) { return next(err); }
+    if (!analytic) { return next(new Error('can\'t find analytic')); }
+
+    req.analytic = analytic;
     return next();
   });
 });
@@ -103,9 +117,20 @@ router.put('/:source/analytics', function(req, res, next) {
 });
 
 /* GET /sources/:source/analytics */
-router.get('/:source/analytics', function(req, res, next) {
+router.get('/:source/analytics', function(req, res, next) {  
   req.source.populate('analytics', function(err, source) {
     if (err) { return next(err); }
+
+    res.json(source.analytics);
+  });
+});
+
+/* DELETE /sources/:source/analytics/:analytic */
+/* Removes an analytic from a source but does not delete the analytic */
+router.delete('/:source/analytics/:analytic', function(req, res, next) {
+  req.source.analytics.remove(req.analytic);
+  req.source.save(function(err, source) {
+    if(err){ return next(err); }
 
     res.json(source.analytics);
   });
@@ -136,6 +161,22 @@ router.get('/:source/fields', function(req, res, next) {
     if (err) { return next(err); }
 
     res.json(source.fields);
+  });
+});
+
+/* DELETE /sources/:source/fields/:field */
+router.delete('/:source/fields/:field', function(req, res, next) { 
+  req.source.fields.remove(req.field);
+  req.source.save(function(err, source) {
+    if(err){ return next(err); }
+
+    return;
+  });
+  
+  Field.find({ "_id": req.field._id }).remove( function(err) {
+    if(err){ return next(err); };
+  
+    res.json({});
   });
 });
 

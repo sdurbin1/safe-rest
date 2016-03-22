@@ -166,8 +166,15 @@ curl localhost:8080/sources/56eaec7a2308db1b1c6f795f/analytics -X PUT --data 'an
 ```
 
 ##### GET /sources/:source/analytics
+Return all analytics associated with a source
 ```
 curl localhost:8080/sources/56e865818c792b4f18f64f24/analytics
+```
+
+##### DELETE /sources/:source/analytics
+Remove an analytic from a source (does not delete the analytic)
+```
+curl -X DELETE http://localhost:8080/sources/56eaec7a2308db1b1c6f795f/analytics/56eaa9fc51ed186110af1a80
 ```
 
 ##### GET /sources/:source/fields
@@ -178,4 +185,9 @@ curl localhost:8080/sources/56e865818c792b4f18f64f24/fields
 ##### POST /sources/:source/fields
 ```
 curl localhost:8080/sources/56e865818c792b4f18f64f24/fields --data 'name=Age'
+```
+
+##### DELETE /sources/:source/fields/:field
+```
+curl -X DELETE http://localhost:8080/sources/56eaec7a2308db1b1c6f795f/fields/56f14ffccc36acc513000286
 ```
