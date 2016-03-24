@@ -178,16 +178,25 @@ curl -X DELETE http://localhost:8080/sources/56eaec7a2308db1b1c6f795f/analytics/
 ```
 
 ##### GET /sources/:source/fields
+Return fields associated with a source
 ```
 curl localhost:8080/sources/56e865818c792b4f18f64f24/fields 
 ```
 
 ##### POST /sources/:source/fields
+Create a field
 ```
 curl localhost:8080/sources/56e865818c792b4f18f64f24/fields --data 'name=Age'
 ```
 
 ##### DELETE /sources/:source/fields/:field
+Remove a field from a source and delete field
 ```
 curl -X DELETE http://localhost:8080/sources/56eaec7a2308db1b1c6f795f/fields/56f14ffccc36acc513000286
+```
+
+##### POST /documents
+Upload a csv document. Creates a new collection with "name", and inserts document, "document"
+```
+curl http://localhost:8080/documents -H "Content-Type: application/json" -X POST --data '{"document":[{"Age":21,"County":"Anne Arundel","Height":61,"Latitude":31.33,"Longitude":33.00,"Street Address":"123 Main St.","Weight":133},{"Age":33,"County":"Howard","Height":67,"Latitude":31.33,"Longitude":33.00,"Street Address":"456 Main St.","Weight":188},{"Age":29,"County":"Anne Arundel","Height":63,"Latitude":31.33,"Longitude":33.00,"Street Address":"789 Main St.","Weight":142}], "name":"CSV_20160122"}'
 ```
