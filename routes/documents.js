@@ -55,7 +55,7 @@ var query = {
 function queryDrill(callback) {
 
     return http.get({
-        host: 'localhost:80801',
+        host: 'localhost:8081',
         path: '/query.json',
         method: 'POST',
         headers: {
@@ -114,6 +114,7 @@ var httpPost = function() {
 /* GET /documents/test */
 /* Test route for using drill REST API to query data */
 router.get('/test', function(req, res, next) {
-    queryDrill(res.json());
+    //queryDrill(res.json());
+    httpPost();
 });
 
