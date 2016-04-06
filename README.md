@@ -101,6 +101,12 @@ Return all visualizations
 curl localhost:8080/visualizations
 ```
 
+##### POST /visualizations 
+Create a visualization
+```
+curl http://localhost:8080/visualizations -H "Content-Type: application/json" -X POST --data '{"visualizationParams":{"title": {"text": "Monthly Average Temperature"},"subtitle": {"text": "Source: WorldClimate.com"}}, "name":"Area"}'
+```
+
 ##### GET /visualizations/:visualization
 Return a visualization
 ```
@@ -113,21 +119,10 @@ Update a visualization
 curl -X PUT http://localhost:8080/visualizations/56eaa1eae319c5af0c8dfc4d/ --data 'name=Area'
 ```
 
-##### POST /visualizations/:visualization/params
-Create a visualization param for a visualization
+##### DELETE /visualizations/:visualization
+Delete a visualization
 ```
-curl localhost:8080/visualizations/56e8178dabda61a618bfccd9/params --data 'name=Title'
-```
-##### GET /visualizations/:visualization/params
-Return all visualization params for a specified visualization
-```
-curl localhost:8080/visualizations/56e8178dabda61a618bfccd9/params
-```
-
-##### DELETE /visualizations/:visualization/params/:param
-Delete a visualization param and remove it from visualization
-```
-curl -X DELETE http://localhost:8080/visualizations/56eaa1eae319c5af0c8dfc4d/params/56f13c5d0140724d0da7d1c9
+curl -X DELETE http://localhost:8080/visualizations/56eaa1eae319c5af0c8dfc4d/
 ```
 
 ##### POST /sources
