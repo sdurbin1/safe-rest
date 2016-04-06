@@ -1,5 +1,6 @@
 var express = require('express');
 var http = require('http');
+var Promise = require('bluebird')
 var router = express.Router();
 
 module.exports = router;
@@ -45,41 +46,35 @@ router.post('/', function(req, res, next) {
     res.json({"name":name, "Document":doc});
 });
 
-var query = {
-    "queryType": "SQL",
-    "query": "select * from mongo.safe.CSV_20160122"
+
+function queryDrill(options, query) {
+    return new Promise(function (fullfill, reject) {
+        var ret = ''
+        
+        var req = http.request(options, function (response) {
+            response.setEncoding('utf8')
+            response.on('data', function(chunk) {
+                ret += chunk 
+            })
+            response.on('end', function() {
+                fullfill(JSON.parse(ret))
+            })
+        })
+        req.write(JSON.stringify(query))
+        
+        req.on('error', function(error) {
+            reject(error)
+        })
+        
+        req.end()
+    })
 }
 
-/* Perfect example of what I need to do! */
-/* Or could look into: https://www.npmjs.com/package/request */
-function queryDrill(callback) {
 
-    return http.get({
-        host: 'localhost:8081',
-        path: '/query.json',
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }, function(response) {
-        // Continuously update stream with data
-        var body = '';
-        response.on('data', function(d) {
-            body += d;
-        });
-        response.on('end', function() {
-
-            // Data reception is done, do whatever with it!
-            var parsed = JSON.parse(body);
-            callback({
-                parsed
-            });
-        });
-    });
-
-}
-
-var httpPost = function() {
+/* GET /documents/test */
+/* Test route for using drill REST API to query data */
+router.get('/test', function(req, res, next) {
+    
     var options = {
         host: "localhost",
         port: 8081,
@@ -89,32 +84,16 @@ var httpPost = function() {
             'Content-Type': 'application/json'
         }
     };
-
-    var req = http.request(options, function(res) {
-        console.log('STATUS: ' + res.statusCode);
-        console.log('HEADERS: ' + JSON.stringify(res.headers));
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            console.log('BODY: ' + chunk);
-            return JSON.stringify({"Success": chunk});
-        });
-    });
-    req.write(JSON.stringify(query));
     
-    req.on('error', (e) => {
-        return JSON.stringify({"Error: " : e.message});
-    });
+    var query = {
+        "queryType": "SQL",
+        "query": "select * from mongo.safe.CSV_20160122"
+    }
     
-    req.end();
-    
-}
-
-
-
-/* GET /documents/test */
-/* Test route for using drill REST API to query data */
-router.get('/test', function(req, res, next) {
-    //queryDrill(res.json());
-    httpPost();
+    queryDrill(options, query)
+        .then((out) => res.json(out))
+        .catch(error => {
+            res.status(503).send(error)
+        })
 });
 
