@@ -5,7 +5,6 @@ module.exports = router;
 
 var mongoose = require('mongoose');
 var Visualization = mongoose.model('Visualization');
-var VisualizationParam = mongoose.model('VisualizationParam');
 
 /******** PRELOADING OBJECTS *************/
 

@@ -10,7 +10,6 @@ var mongoose = require('mongoose');
 require('./models/AnalyticParams');
 require('./models/Visualizations');
 require('./models/Analytics');
-require('./models/VisualizationParams');
 require('./models/Sources');
 require('./models/Fields');
 
