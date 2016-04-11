@@ -18,6 +18,12 @@ cd /path/to/safe-rest
 npm install
 ```
 
+### Ensure mongo is running 
+Run in separate terminal, or in background
+```
+mongod
+```
+
 ### Populate database with test data
 ```
 npm run-script db-fill
