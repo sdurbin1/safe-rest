@@ -225,3 +225,50 @@ Delete a chart
 ```
 curl -X DELETE http://localhost:8080/charts/570b93b007b51d710c748fb1
 ```
+
+##### POST /dashboards
+Create a dashboard
+```
+ curl http://localhost:8080/dashboards -X POST --data 'name=Dashboard&charts=570b968507b51d710c748fb2&charts=570b9e54ddef419e0fda43a9'
+```
+
+##### GET /dashboards
+Return all dashboards
+```
+curl http://localhost:8080/dashboards
+```
+
+##### GET /dashboards/:dashboard
+```
+curl http://localhost:8080/dashboards/570b9f8a877d26ac10c3b4f1
+```
+
+##### PUT /dashboards/:dashboard
+Update a dashboard
+```
+curl http://localhost:8080/dashboards/570b9f8a877d26ac10c3b4f1 -X PUT --data 'name=Dashboard1'
+```
+
+##### DELETE /dashboards/:dashboard
+Delete a dashboard
+```
+curl http://localhost:8080/dashboards/570b9f8a877d26ac10c3b4f1 -X DELETE
+```
+
+##### GET /dashboards/:dashboard/charts
+Return a list of charts associated with a dashboard
+```
+curl localhost:8080/dashboards/570ba706a4cc946212bdaa42/charts
+```
+
+##### PUT /dashboards/:dashboard/charts
+Add an existing chart to a dashboard
+```
+curl localhost:8080/dashboards/570ba706a4cc946212bdaa42/charts -X PUT --data 'charts=570b9e54ddef419e0fda43a9'
+```
+
+##### DELETE /dashboards/:dashboard/charts/:chart
+Remove a chart from a dashboard (does not delete the chart)
+```
+curl -X DELETE localhost:8080/dashboards/570ba706a4cc946212bdaa42/charts/570b968507b51d710c748fb2
+```
