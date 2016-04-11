@@ -195,3 +195,33 @@ Upload a csv document. Creates a new collection with "name", and inserts documen
 ```
 curl http://localhost:8080/documents -H "Content-Type: application/json" -X POST --data '{"document":[{"Age":21,"County":"Anne Arundel","Height":61,"Latitude":31.33,"Longitude":33.00,"Street Address":"123 Main St.","Weight":133},{"Age":33,"County":"Howard","Height":67,"Latitude":31.33,"Longitude":33.00,"Street Address":"456 Main St.","Weight":188},{"Age":29,"County":"Anne Arundel","Height":63,"Latitude":31.33,"Longitude":33.00,"Street Address":"789 Main St.","Weight":142}], "name":"CSV_20160122"}'
 ```
+
+##### POST /charts
+Create a new chart
+```
+curl http://localhost:8080/charts -H "Content-Type: application/json" -X POST --data '{"source":"56eaec7a2308db1b1c6f795f", "visualization":"57055c4c43176c9118cffc95", "analytic":"56eac298ee121e4b18d92259", "chartParams":{"title": {"text": "Monthly Average Temperature"},"subtitle": {"text": "Source: WorldClimate.com"}}, "filters":[{ "id": 1,"field": "Age","operator": ">","value": 35},{"id": 2,"field": "County","operator": "=","value": "Howard"}], "analyticParams":[{"groupBy":"Age"}]}'
+```
+
+##### GET /charts
+Return all charts
+```
+curl http://localhost:8080/charts
+```
+
+##### GET /charts/:chart
+Return a chart
+```
+curl localhost:8080/charts/570b93b007b51d710c748fb1
+```
+
+##### PUT /charts/:chart
+Update a chart
+```
+curl http://localhost:8080/charts/570b93b007b51d710c748fb1 -H "Content-Type: application/json" -X PUT --data '{"analyticParams":[{"groupBy":"AGE"}]}'
+```
+
+##### DELETE /charts/:chart
+Delete a chart
+```
+curl -X DELETE http://localhost:8080/charts/570b93b007b51d710c748fb1
+```

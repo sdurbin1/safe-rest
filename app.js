@@ -12,6 +12,7 @@ require('./models/Visualizations');
 require('./models/Analytics');
 require('./models/Sources');
 require('./models/Fields');
+require('./models/Charts');
 
 mongoose.connect('mongodb://localhost/safe');
 
@@ -21,6 +22,7 @@ var analytics = require('./routes/analytics');
 var visualizations = require('./routes/visualizations');
 var sources = require('./routes/sources');
 var documents = require('./routes/documents');
+var charts = require('./routes/charts');
 
 var app = express();
 
@@ -48,6 +50,7 @@ app.use('/analytics', analytics);
 app.use('/visualizations', visualizations);
 app.use('/sources', sources);
 app.use('/documents', documents);
+app.use('/charts', charts);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

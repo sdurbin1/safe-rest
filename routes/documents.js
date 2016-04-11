@@ -47,8 +47,12 @@ router.post('/', function(req, res, next) {
 });
 
 
-function queryDrill(options, query) {
+function queryDrill(options, queryString) {
     return new Promise(function (fullfill, reject) {
+        var query = {
+            "queryType": "SQL",
+            "query": queryString
+        }
         var ret = ''
         
         var req = http.request(options, function (response) {
@@ -85,12 +89,11 @@ router.get('/test', function(req, res, next) {
         }
     };
     
-    var query = {
-        "queryType": "SQL",
-        "query": "select * from mongo.safe.CSV_20160122"
-    }
+    var filterString = "Age > 25"
+    var filters = "where " + filterString
+    var queryString = "select * from mongo.safe.CSV_20160122 " + filters
     
-    queryDrill(options, query)
+    queryDrill(options, queryString)
         .then((out) => res.json(out))
         .catch(error => {
             res.status(503).send(error)
