@@ -5,6 +5,7 @@ module.exports = router;
 
 var mongoose = require('mongoose');
 var Chart = mongoose.model('Chart');
+var Visualization = mongoose.model('Visualization');
 
 /************** PRELOAD OBJECTS ******************/
 
@@ -17,6 +18,19 @@ router.param('chart', function(req, res, next, id) {
     if (!chart) { return next(new Error('can\'t find chart')); }
 
     req.chart = chart;
+    return next();
+  });
+});
+
+/* :visualization param */
+router.param('visualization', function(req, res, next, id) {
+  var query = Visualization.findById(id);
+
+  query.exec(function (err, visualization){
+    if (err) { return next(err); }
+    if (!visualization) { return next(new Error('can\'t find visualization')); }
+
+    req.visualization = visualization;
     return next();
   });
 });
@@ -45,7 +59,12 @@ router.post('/', function(req, res, next) {
 
 /* GET /charts/:chart */
 router.get('/:chart', function(req, res, next) {
-  res.json(req.chart);
+  req.chart.populate('visualization', function(err, chart) {
+    if (err) { return next(err); }
+
+    res.json(chart);
+  });
+  //res.json(req.chart);
 });
 
 /* PUT /charts/:chart */
