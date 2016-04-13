@@ -1,7 +1,8 @@
 var mongoose = require('mongoose');
 
 var DashboardSchema = new mongoose.Schema({
-  name: String,
+  title: String,
+  subtitle: String,
   charts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chart' }]
 });
 
