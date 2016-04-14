@@ -55,7 +55,7 @@ app.use('/sources', sources);
 app.use('/documents', documents);
 app.use('/charts', charts);
 app.use('/dashboards', dashboards);
-app.use('/authentication', authentication);
+app.use('/authenticate', authentication);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

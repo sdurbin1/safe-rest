@@ -279,7 +279,7 @@ Remove a chart from a dashboard (does not delete the chart)
 curl -X DELETE localhost:8080/dashboards/570ba706a4cc946212bdaa42/charts/570b968507b51d710c748fb2
 ```
 
-##### GET /authentication/authenticate
+##### GET /authenticate
 Authenticate user
 ```
 curl localhost:8080/authentication/authenticate
