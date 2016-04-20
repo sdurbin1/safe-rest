@@ -211,7 +211,7 @@ curl localhost:8080/sources/56eaec7a2308db1b1c6f795f/query -H "Content-Type: app
 ##### POST /charts
 Create a new chart
 ```
-curl http://localhost:8080/charts -H "Content-Type: application/json" -X POST --data '{"source":"56eaec7a2308db1b1c6f795f", "visualization":"57055c4c43176c9118cffc95", "analytic":"56eac298ee121e4b18d92259", "chartParams":{"title": {"text": "Monthly Average Temperature"},"subtitle": {"text": "Source: WorldClimate.com"}}, "filters":[{ "id": 1,"field": "Age","operator": ">","value": 35},{"id": 2,"field": "County","operator": "=","value": "Howard"}], "analyticParams":[{"groupBy":"Age"}]}'
+curl http://localhost:8080/charts -H "Content-Type: application/json" -X POST --data '{"name":"Chart1", "source":"56eaec7a2308db1b1c6f795f", "visualization":"57055c4c43176c9118cffc95", "analytic":"56eac298ee121e4b18d92259", "chartParams":{"title": {"text": "Monthly Average Temperature"},"subtitle": {"text": "Source: WorldClimate.com"}}, "filters":[{ "id": 1,"field": "Age","operator": ">","value": 35},{"id": 2,"field": "County","operator": "=","value": "Howard"}], "analyticParams":[{"groupBy":"Age"}]}'
 ```
 
 ##### GET /charts

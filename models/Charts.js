@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 
 var ChartSchema = new mongoose.Schema({
+  name: String,
   source: { type: mongoose.Schema.Types.ObjectId, ref: 'Source' },
   visualization: { type: mongoose.Schema.Types.ObjectId, ref: 'Visualization' },
   analytic: { type: mongoose.Schema.Types.ObjectId, ref: 'Analytic' },
