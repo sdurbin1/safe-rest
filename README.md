@@ -21,7 +21,7 @@ npm install
 ### Ensure mongo is running 
 Run in separate terminal, or in background
 ```
-mongod
+mongod --smallfiles
 ```
 
 ### Populate database with test data
@@ -196,10 +196,16 @@ Remove a field from a source and delete field
 curl -X DELETE http://localhost:8080/sources/56eaec7a2308db1b1c6f795f/fields/56f14ffccc36acc513000286
 ```
 
-##### POST /documents
-Upload a csv document. Creates a new collection with "name", and inserts document, "document"
+##### POST /sources/:source/upload
+Upload a csv document. Creates a new collection with "name"(TBD), and inserts document, "document"
 ```
-curl http://localhost:8080/documents -H "Content-Type: application/json" -X POST --data '{"document":[{"Age":21,"County":"Anne Arundel","Height":61,"Latitude":31.33,"Longitude":33.00,"Street Address":"123 Main St.","Weight":133},{"Age":33,"County":"Howard","Height":67,"Latitude":31.33,"Longitude":33.00,"Street Address":"456 Main St.","Weight":188},{"Age":29,"County":"Anne Arundel","Height":63,"Latitude":31.33,"Longitude":33.00,"Street Address":"789 Main St.","Weight":142}], "name":"CSV_20160122"}'
+curl localhost:8080/sources/56eaec7a2308db1b1c6f795f/upload -H "Content-Type: application/json" --data '{"document":[{"Age":21,"County":"Anne Arundel","Height":61,"Latitude":31.33,"Longitude":33.00,"Street Address":"123 Main St.","Weight":133},{"Age":33,"County":"Howard","Height":67,"Latitude":31.33,"Longitude":33.00,"Street Address":"456 Main St.","Weight":188},{"Age":29,"County":"Anne Arundel","Height":63,"Latitude":31.33,"Longitude":33.00,"Street Address":"789 Main St.","Weight":142}]}'
+```
+
+##### GET /sources/:source/query
+Queries a data source based on a set of filters
+```
+curl localhost:8080/sources/56eaec7a2308db1b1c6f795f/query -H "Content-Type: application/json" --data '{"filters": [{"id": "1","field": "Age","operator": ">","value": 25},{"id": "2","field": "County","operator": "=","value": "Howard"}]}'
 ```
 
 ##### POST /charts
