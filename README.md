@@ -203,7 +203,7 @@ curl localhost:8080/sources/56eaec7a2308db1b1c6f795f/upload -H "Content-Type: ap
 ```
 
 ##### GET /sources/:source/query
-Queries a data source based on a set of filters
+Queries a data source based on a set of filters.  Note: "id" field in filters data is not needed.
 ```
 curl localhost:8080/sources/56eaec7a2308db1b1c6f795f/query -H "Content-Type: application/json" --data '{"filters": [{"id": "1","field": "Age","operator": ">","value": 25},{"id": "2","field": "County","operator": "=","value": "Howard"}]}'
 ```
