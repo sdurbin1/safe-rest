@@ -5,8 +5,9 @@ module.exports = router;
 
 var mongoose = require('mongoose');
 var Visualization = mongoose.model('Visualization');
+var VisualizationType = mongoose.model('VisualizationType');
 
-/******** PRELOADING OBJECTS *************/
+/************** PRELOAD OBJECTS ******************/
 
 /* :visualization param */
 router.param('visualization', function(req, res, next, id) {
@@ -21,7 +22,20 @@ router.param('visualization', function(req, res, next, id) {
   });
 });
 
-/******** END PRELOADING OBJECTS *********/
+/* :visualization-type param */
+router.param('visualization-type', function(req, res, next, id) {
+  var query = VisualizationType.findById(id);
+
+  query.exec(function (err, visualizationType){
+    if (err) { return next(err); }
+    if (!visualizationType) { return next(new Error('can\'t find visualization-type')); }
+
+    req.visualizationType = visualizationType;
+    return next();
+  });
+});
+
+/********** END PRELOADING OBJECTS ***********/
 
 /* GET /visualizations */
 router.get('/', function(req, res, next) {
@@ -45,13 +59,12 @@ router.post('/', function(req, res, next) {
 
 /* GET /visualizations/:visualization */
 router.get('/:visualization', function(req, res, next) {
-  res.json(req.visualization);
- 
-   /*req.visualization.populate('visualizationParams', function(err, visualization) {
+  req.visualization.populate('visualization-type', function(err, visualization) {
     if (err) { return next(err); }
 
-    res.json(visualization.visualizationParams);
-  });*/
+    res.json(visualization);
+  });
+  //res.json(req.visualization);
 });
 
 /* PUT /visualizations/:visualization */

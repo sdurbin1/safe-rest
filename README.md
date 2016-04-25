@@ -84,51 +84,51 @@ Delete an analytic param
 curl -X DELETE http://localhost:8080/analytics/56ea975aec9cc0f3098ae316/params/56eaf56002a2ebc41e8e108d
 ```
 
-##### PUT /analytics/:analytic/visualizations
-Add an existing visualization to an analytic
+##### PUT /analytics/:analytic/visualization-types
+Add an existing visualization-type to an analytic
 ```
-curl localhost:8080/analytics/56eac298ee121e4b18d92259/visualizations -X PUT --data 'visualizations=56eaa1eae319c5af0c8dfc4d&visualizations=56eaa1f1e319c5af0c8dfc4f'
-```
-
-##### GET /analytics/:analytic/visualizations
-Return a list of visualizations associated with an analytic
-```
-curl localhost:8080/analytics/56e816d2abda61a618bfccd4/visualizations
-```
-##### DELETE /analytics/:analytic/visualizations/:visualization
-Remove a visualization from an analytic (does not delete the visualization)
-```
-curl -X DELETE http://localhost:8080/analytics/56eac298ee121e4b18d92259/visualizations/56eaa1eae319c5af0c8dfc4d
+curl localhost:8080/analytics/56eac298ee121e4b18d92259/visualization-types -X PUT --data 'visualization-types=56eaa1eae319c5af0c8dfc4d&visualization-types=56eaa1f1e319c5af0c8dfc4f'
 ```
 
-##### GET /visualizations
-Return all visualizations
+##### GET /analytics/:analytic/visualization-types
+Return a list of visualizationTypes associated with an analytic
 ```
-curl localhost:8080/visualizations
+curl localhost:8080/analytics/56e816d2abda61a618bfccd4/visualization-types
 ```
-
-##### POST /visualizations 
-Create a visualization
+##### DELETE /analytics/:analytic/visualization-types/:visualization-type
+Remove a visualizationType from an analytic (does not delete the visualizationType)
 ```
-curl http://localhost:8080/visualizations -H "Content-Type: application/json" -X POST --data '{"visualizationParams":{"title": {"text": "Monthly Average Temperature"},"subtitle": {"text": "Source: WorldClimate.com"}}, "name":"Area"}'
-```
-
-##### GET /visualizations/:visualization
-Return a visualization
-```
-curl localhost:8080/visualizations/56e8178dabda61a618bfccd9
+curl -X DELETE http://localhost:8080/analytics/56eac298ee121e4b18d92259/visualization-types/56eaa1eae319c5af0c8dfc4d
 ```
 
-##### PUT /visualizations/:visualization
-Update a visualization
+##### GET /visualization-types
+Return all visualizationTypes
 ```
-curl -X PUT http://localhost:8080/visualizations/56eaa1eae319c5af0c8dfc4d/ --data 'name=Area'
+curl localhost:8080/visualization-types
 ```
 
-##### DELETE /visualizations/:visualization
-Delete a visualization
+##### POST /visualization-types 
+Create a visualizationType
 ```
-curl -X DELETE http://localhost:8080/visualizations/56eaa1eae319c5af0c8dfc4d/
+curl http://localhost:8080/visualization-types -H "Content-Type: application/json" -X POST --data '{"visualizationParams":{"title": {"text": "Monthly Average Temperature"},"subtitle": {"text": "Source: WorldClimate.com"}}, "name":"Area"}'
+```
+
+##### GET /visualization-types/:visualization-type
+Return a visualizationType
+```
+curl localhost:8080/visualization-types/56e8178dabda61a618bfccd9
+```
+
+##### PUT /visualization-types/:visualization-type
+Update a visualizationType
+```
+curl -X PUT http://localhost:8080/visualization-types/56eaa1eae319c5af0c8dfc4d/ --data 'name=Area'
+```
+
+##### DELETE /visualization-types/:visualization-type
+Delete a visualizationType
+```
+curl -X DELETE http://localhost:8080/visualization-types/56eaa1eae319c5af0c8dfc4d/
 ```
 
 ##### POST /sources
@@ -208,40 +208,40 @@ Queries a data source based on a set of filters.  Note: "id" field in filters da
 curl localhost:8080/sources/56eaec7a2308db1b1c6f795f/query -H "Content-Type: application/json" --data '{"filters": [{"id": "1","field": "Age","operator": ">","value": 25},{"id": "2","field": "County","operator": "=","value": "Howard"}]}'
 ```
 
-##### POST /charts
-Create a new chart
+##### POST /visualizations
+Create a new visualization
 ```
-curl http://localhost:8080/charts -H "Content-Type: application/json" -X POST --data '{"name":"Chart1", "source":"56eaec7a2308db1b1c6f795f", "visualization":"57055c4c43176c9118cffc95", "analytic":"56eac298ee121e4b18d92259", "chartParams":{"title": {"text": "Monthly Average Temperature"},"subtitle": {"text": "Source: WorldClimate.com"}}, "filters":[{ "id": 1,"field": "Age","operator": ">","value": 35},{"id": 2,"field": "County","operator": "=","value": "Howard"}], "analyticParams":[{"groupBy":"Age"}]}'
-```
-
-##### GET /charts
-Return all charts
-```
-curl http://localhost:8080/charts
+curl http://localhost:8080/visualizations -H "Content-Type: application/json" -X POST --data '{"name":"Visualization1", "source":"56eaec7a2308db1b1c6f795f", "visualizationType":"57055c4c43176c9118cffc95", "analytic":"56eac298ee121e4b18d92259", "visualizationParams":{"title": {"text": "Monthly Average Temperature"},"subtitle": {"text": "Source: WorldClimate.com"}}, "filters":[{ "id": 1,"field": "Age","operator": ">","value": 35},{"id": 2,"field": "County","operator": "=","value": "Howard"}], "analyticParams":[{"groupBy":"Age"}]}'
 ```
 
-##### GET /charts/:chart
-Return a chart
+##### GET /visualizations
+Return all visualizations
 ```
-curl localhost:8080/charts/570b93b007b51d710c748fb1
-```
-
-##### PUT /charts/:chart
-Update a chart
-```
-curl http://localhost:8080/charts/570b93b007b51d710c748fb1 -H "Content-Type: application/json" -X PUT --data '{"analyticParams":[{"groupBy":"AGE"}]}'
+curl http://localhost:8080/visualizations
 ```
 
-##### DELETE /charts/:chart
-Delete a chart
+##### GET /visualizations/:visualization
+Return a visualization
 ```
-curl -X DELETE http://localhost:8080/charts/570b93b007b51d710c748fb1
+curl localhost:8080/visualizations/570b93b007b51d710c748fb1
+```
+
+##### PUT /visualizations/:visualization
+Update a visualization
+```
+curl http://localhost:8080/visualizations/570b93b007b51d710c748fb1 -H "Content-Type: application/json" -X PUT --data '{"analyticParams":[{"groupBy":"AGE"}]}'
+```
+
+##### DELETE /visualizations/:visualization
+Delete a visualization
+```
+curl -X DELETE http://localhost:8080/visualizations/570b93b007b51d710c748fb1
 ```
 
 ##### POST /dashboards
 Create a dashboard
 ```
- curl http://localhost:8080/dashboards -X POST --data 'name=Dashboard&charts=570b968507b51d710c748fb2&charts=570b9e54ddef419e0fda43a9'
+ curl http://localhost:8080/dashboards -X POST --data 'name=Dashboard&visualizations=570b968507b51d710c748fb2&visualizations=570b9e54ddef419e0fda43a9'
 ```
 
 ##### GET /dashboards
@@ -267,22 +267,22 @@ Delete a dashboard
 curl http://localhost:8080/dashboards/570b9f8a877d26ac10c3b4f1 -X DELETE
 ```
 
-##### GET /dashboards/:dashboard/charts
-Return a list of charts associated with a dashboard
+##### GET /dashboards/:dashboard/visualizations
+Return a list of visualizations associated with a dashboard
 ```
-curl localhost:8080/dashboards/570ba706a4cc946212bdaa42/charts
-```
-
-##### PUT /dashboards/:dashboard/charts
-Add an existing chart to a dashboard
-```
-curl localhost:8080/dashboards/570ba706a4cc946212bdaa42/charts -X PUT --data 'charts=570b9e54ddef419e0fda43a9'
+curl localhost:8080/dashboards/570ba706a4cc946212bdaa42/visualizations
 ```
 
-##### DELETE /dashboards/:dashboard/charts/:chart
-Remove a chart from a dashboard (does not delete the chart)
+##### PUT /dashboards/:dashboard/visualizations
+Add an existing visualization to a dashboard
 ```
-curl -X DELETE localhost:8080/dashboards/570ba706a4cc946212bdaa42/charts/570b968507b51d710c748fb2
+curl localhost:8080/dashboards/570ba706a4cc946212bdaa42/visualizations -X PUT --data 'visualizations=570b9e54ddef419e0fda43a9'
+```
+
+##### DELETE /dashboards/:dashboard/visualizations/:visualization
+Remove a visualization from a dashboard (does not delete the visualization)
+```
+curl -X DELETE localhost:8080/dashboards/570ba706a4cc946212bdaa42/visualizations/570b968507b51d710c748fb2
 ```
 
 ##### GET /authenticate

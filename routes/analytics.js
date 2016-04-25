@@ -6,7 +6,7 @@ module.exports = router;
 var mongoose = require('mongoose');
 var Analytic = mongoose.model('Analytic');
 var AnalyticParam = mongoose.model('AnalyticParam');
-var Visualization = mongoose.model('Visualization');
+var VisualizationType = mongoose.model('VisualizationType');
 
 /************** PRELOAD OBJECTS ******************/
 
@@ -36,15 +36,15 @@ router.param('param', function(req, res, next, id) {
   });
 });
 
-/* :visualization param */
-router.param('visualization', function(req, res, next, id) {
-  var query = Visualization.findById(id);
+/* :visualizationType param */
+router.param('visualizationType', function(req, res, next, id) {
+  var query = VisualizationType.findById(id);
 
-  query.exec(function (err, visualization){
+  query.exec(function (err, visualizationType){
     if (err) { return next(err); }
-    if (!visualization) { return next(new Error('can\'t find visualization')); }
+    if (!visualizationType) { return next(new Error('can\'t find visualization_type')); }
 
-    req.visualization = visualization;
+    req.visualizationType = visualizationType;
     return next();
   });
 });
@@ -145,46 +145,37 @@ router.delete('/:analytic/params/:param', function(req, res, next) {
   });
 });
 
-/* TODO: Should we just have this route as /params/:param? */
-/* GET /analytics/:analytic/params/:param */
-/*router.get('/:analytic/params/:param', function(req, res, next) {
-  if(req.analytic.analyticParams.indexOf(req.analyticParam._id) === -1) { 
-    return next(new Error("can't find analyticParam associated with analytic")); 
-  }
-  res.json(req.analyticParam);
-});*/
 
-
-/* GET /analytics/:analytic/visualizations */
-router.get('/:analytic/visualizations', function(req, res, next) {
-  req.analytic.populate('visualizations', function(err, analytic) {
+/* GET /analytics/:analytic/visualization_types */
+router.get('/:analytic/visualization-types', function(req, res, next) {
+  req.analytic.populate('visualization-types', function(err, analytic) {
     if (err) { return next(err); }
 
-    res.json(analytic.visualizations);
+    res.json(analytic.visualizationTypes);
   });
 });
 
-/* PUT /analytics/:analytic/visualizations */
-/* Adds an existing visualization to an analytic */
-router.put('/:analytic/visualizations', function(req, res, next) {  
-  //first doing concat as req.body["visualizaitons"] is not an array if only one element passed in
-  var updated_visualizations = [].concat(req.body["visualizations"])
-  req.analytic.visualizations.push.apply(req.analytic.visualizations, updated_visualizations)
+/* PUT /analytics/:analytic/visualization_types */
+/* Adds an existing visualizationType to an analytic */
+router.put('/:analytic/visualization-types', function(req, res, next) {  
+  //first doing concat as req.body["visualizaitonTypes"] is not an array if only one element passed in
+  var updatedVisualizationTypes = [].concat(req.body['visualization-types'])
+  req.analytic.visualizationTypes.push.apply(req.analytic.visualizationTypes, updatedVisualizationTypes)
   req.analytic.save(function(err, analytic) {
     if(err){ return next(err); }
 
-    res.json(analytic.visualizations);
+    res.json(analytic.visualizationTypes);
   });
 });
 
-/* DELETE /analytics/:analytic/visualizations/:visualization */
+/* DELETE /analytics/:analytic/visualization-types/:visualizationType */
 /* Removes a visualization from an analytic but doesn't delete it */
-router.delete('/:analytic/visualizations/:visualization', function(req, res, next) {  
-  req.analytic.visualizations.remove(req.visualization);
+router.delete('/:analytic/visualization-types/:visualizationType', function(req, res, next) {  
+  req.analytic.visualizationTypes.remove(req.visualizationType);
   req.analytic.save(function(err, analytic) {
     if(err){ return next(err); }
 
-    res.json(analytic.visualizations);
+    res.json(analytic.visualizationTypes);
   });
 });
 

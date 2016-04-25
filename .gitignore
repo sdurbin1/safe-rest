@@ -1,0 +1,4 @@
+npm-debug.log
+data/latest/safe/dashboards.*
+data/latest/safe/charts.*
+data/latest/safe/system.indexes.bson

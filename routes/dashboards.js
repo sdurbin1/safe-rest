@@ -5,7 +5,7 @@ module.exports = router;
 
 var mongoose = require('mongoose');
 var Dashboard = mongoose.model('Dashboard');
-var Chart = mongoose.model('Chart');
+var Visualization = mongoose.model('Visualization');
 
 /************** PRELOAD OBJECTS ******************/
 
@@ -22,15 +22,15 @@ router.param('dashboard', function(req, res, next, id) {
   });
 });
 
-/* :chart param */
-router.param('chart', function(req, res, next, id) {
-  var query = Chart.findById(id);
+/* :visualization param */
+router.param('visualization', function(req, res, next, id) {
+  var query = Visualization.findById(id);
 
-  query.exec(function (err, chart){
+  query.exec(function (err, visualization){
     if (err) { return next(err); }
-    if (!chart) { return next(new Error('can\'t find chart')); }
+    if (!visualization) { return next(new Error('can\'t find visualization')); }
 
-    req.chart = chart;
+    req.visualization = visualization;
     return next();
   });
 });
@@ -80,35 +80,35 @@ router.delete('/:dashboard', function(req, res, next) {
   });
 });
 
-/* GET /dashboards/:dashboard/charts */
-router.get('/:dashboard/charts', function(req, res, next) {
-  req.dashboard.populate('charts', function(err, dashboard) {
+/* GET /dashboards/:dashboard/visualizations */
+router.get('/:dashboard/visualizations', function(req, res, next) {
+  req.dashboard.populate('visualizations', function(err, dashboard) {
     if (err) { return next(err); }
 
-    res.json(dashboard.charts);
+    res.json(dashboard.visualizations);
   });
 });
 
-/* PUT /dashboards/:dashboard/charts */
-/* Add an existing chart to a dashboard */
-router.put('/:dashboard/charts', function(req, res, next) {  
-  //first doing concat as req.body["charts"] is not an array if only one element passed in
-  var updated_charts = [].concat(req.body["charts"])
-  req.dashboard.charts.push.apply(req.dashboard.charts, updated_charts)
+/* PUT /dashboards/:dashboard/visualizations */
+/* Add an existing visualization to a dashboard */
+router.put('/:dashboard/visualizations', function(req, res, next) {  
+  //first doing concat as req.body["visualizations"] is not an array if only one element passed in
+  var updatedVisualizations = [].concat(req.body['visualizations'])
+  req.dashboard.visualizations.push.apply(req.dashboard.visualizations, updatedVisualizations)
   req.dashboard.save(function(err, dashboard) {
     if(err){ return next(err); }
 
-    res.json(dashboard.charts);
+    res.json(dashboard.visualizations);
   });
 });
 
-/* DELETE /dashboards/:dashboard/charts/:chart */
-/* Removes a chart from a dashboard but doesn't delete it */
-router.delete('/:dashboard/charts/:chart', function(req, res, next) {  
-  req.dashboard.charts.remove(req.chart);
+/* DELETE /dashboards/:dashboard/visualizations/:visualization */
+/* Removes a visualization from a dashboard but doesn't delete it */
+router.delete('/:dashboard/visualizations/:visualization', function(req, res, next) {  
+  req.dashboard.visualizations.remove(req.visualization);
   req.dashboard.save(function(err, dashboard) {
     if(err){ return next(err); }
 
-    res.json(dashboard.charts);
+    res.json(dashboard.visualizations);
   });
 });
