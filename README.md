@@ -87,7 +87,7 @@ curl -X DELETE http://localhost:8080/analytics/56ea975aec9cc0f3098ae316/params/5
 ##### PUT /analytics/:analytic/visualization-types
 Add an existing visualization-type to an analytic
 ```
-curl localhost:8080/analytics/56eac298ee121e4b18d92259/visualization-types -X PUT --data 'visualization-types=56eaa1eae319c5af0c8dfc4d&visualization-types=56eaa1f1e319c5af0c8dfc4f'
+curl localhost:8080/analytics/56eac298ee121e4b18d92259/visualization-types -X PUT --data 'visualizationTypes=56eaa1eae319c5af0c8dfc4d&visualizationTypes=56eaa1f1e319c5af0c8dfc4f'
 ```
 
 ##### GET /analytics/:analytic/visualization-types

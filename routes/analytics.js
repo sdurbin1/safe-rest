@@ -42,7 +42,7 @@ router.param('visualizationType', function(req, res, next, id) {
 
   query.exec(function (err, visualizationType){
     if (err) { return next(err); }
-    if (!visualizationType) { return next(new Error('can\'t find visualization_type')); }
+    if (!visualizationType) { return next(new Error('can\'t find visualization-type')); }
 
     req.visualizationType = visualizationType;
     return next();
@@ -159,7 +159,7 @@ router.get('/:analytic/visualization-types', function(req, res, next) {
 /* Adds an existing visualizationType to an analytic */
 router.put('/:analytic/visualization-types', function(req, res, next) {  
   //first doing concat as req.body["visualizaitonTypes"] is not an array if only one element passed in
-  var updatedVisualizationTypes = [].concat(req.body['visualization-types'])
+  var updatedVisualizationTypes = [].concat(req.body['visualizationTypes'])
   req.analytic.visualizationTypes.push.apply(req.analytic.visualizationTypes, updatedVisualizationTypes)
   req.analytic.save(function(err, analytic) {
     if(err){ return next(err); }
