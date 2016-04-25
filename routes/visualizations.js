@@ -23,7 +23,7 @@ router.param('visualization', function(req, res, next, id) {
 });
 
 /* :visualization-type param */
-router.param('visualization-type', function(req, res, next, id) {
+router.param('visualizationType', function(req, res, next, id) {
   var query = VisualizationType.findById(id);
 
   query.exec(function (err, visualizationType){
