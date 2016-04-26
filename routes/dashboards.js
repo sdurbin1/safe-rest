@@ -39,7 +39,14 @@ router.param('visualization', function(req, res, next, id) {
 
 /* GET /dashboards */
 router.get('/', function(req, res, next) {
-  Dashboard.find(function(err, dashboards){
+  Dashboard.find().populate({ 
+    path: 'visualizations', 
+    populate: [
+      { path: 'analytic' }, 
+      { path: 'source'}, 
+      { path: 'visualizationType'}
+    ] 
+  }).exec( function(err, dashboards){
     if(err){ return next(err); }
 
     res.json(dashboards);
@@ -52,14 +59,36 @@ router.post('/', function(req, res, next) {
 
   dashboard.save(function(err, dashboard){
     if(err){ return next(err); }
-
-    res.json(dashboard);
+    
+    dashboard.populate({ 
+      path: 'visualizations', 
+      populate: [
+        { path: 'analytic' }, 
+        { path: 'source'}, 
+        { path: 'visualizationType'}
+      ] 
+    }, function(err, dashboard) {
+      if(err) { return next(err) }
+      
+      res.json(dashboard);
+    });
   });
 });
 
 /* GET /dashboards/:dashboard */
 router.get('/:dashboard', function(req, res, next) {
-  res.json(req.dashboard);
+  req.dashboard.populate({ 
+    path: 'visualizations', 
+    populate: [
+      { path: 'analytic' }, 
+      { path: 'source'}, 
+      { path: 'visualizationType'}
+    ] 
+  }, function(err, dashboard){
+    if(err) { return next(err); }
+    
+    res.json(dashboard);
+  });
 });
 
 /* PUT /dashboards/:dashboard */
@@ -67,7 +96,18 @@ router.put('/:dashboard', function(req, res, next) {
   Dashboard.findOneAndUpdate({ "_id": req.dashboard._id }, req.body, {new: true}, function(err, dashboard) {
     if (err){ return next(err); };
 
-    res.json(dashboard);
+    dashboard.populate({ 
+      path: 'visualizations', 
+      populate: [
+        { path: 'analytic' }, 
+        { path: 'source'}, 
+        { path: 'visualizationType'}
+      ] 
+    }, function(err, dashboard) {
+      if(err) { return next(err) }
+      
+      res.json(dashboard);
+    });
   });
 });
 
@@ -82,7 +122,14 @@ router.delete('/:dashboard', function(req, res, next) {
 
 /* GET /dashboards/:dashboard/visualizations */
 router.get('/:dashboard/visualizations', function(req, res, next) {
-  req.dashboard.populate('visualizations', function(err, dashboard) {
+  req.dashboard.populate({ 
+    path: 'visualizations', 
+    populate: [
+      { path: 'analytic' }, 
+      { path: 'source'}, 
+      { path: 'visualizationType'}
+    ] 
+  }, function(err, dashboard) {
     if (err) { return next(err); }
 
     res.json(dashboard.visualizations);
@@ -97,8 +144,20 @@ router.put('/:dashboard/visualizations', function(req, res, next) {
   req.dashboard.visualizations.push.apply(req.dashboard.visualizations, updatedVisualizations)
   req.dashboard.save(function(err, dashboard) {
     if(err){ return next(err); }
+    
+    dashboard.populate({ 
+      path: 'visualizations', 
+      populate: [
+        { path: 'analytic' }, 
+        { path: 'source'}, 
+        { path: 'visualizationType'}
+      ] 
+    }, function(err, dashboard) {
+      if (err) { return next(err); }
 
-    res.json(dashboard.visualizations);
+      res.json(dashboard.visualizations);
+    });
+
   });
 });
 
@@ -109,6 +168,17 @@ router.delete('/:dashboard/visualizations/:visualization', function(req, res, ne
   req.dashboard.save(function(err, dashboard) {
     if(err){ return next(err); }
 
-    res.json(dashboard.visualizations);
+    dashboard.populate({ 
+      path: 'visualizations', 
+      populate: [
+        { path: 'analytic' }, 
+        { path: 'source'}, 
+        { path: 'visualizationType'}
+      ] 
+    }, function(err, dashboard) {
+      if (err) { return next(err); }
+
+      res.json(dashboard.visualizations);
+    });
   });
 });

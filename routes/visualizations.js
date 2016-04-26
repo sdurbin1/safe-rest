@@ -39,7 +39,7 @@ router.param('visualizationType', function(req, res, next, id) {
 
 /* GET /visualizations */
 router.get('/', function(req, res, next) {
-  Visualization.find(function(err, visualizations){
+  Visualization.find().populate(['visualizationType', 'analytic', 'source']).exec( function(err, visualizations){
     if(err){ return next(err); }
 
     res.json(visualizations);
@@ -53,18 +53,21 @@ router.post('/', function(req, res, next) {
   visualization.save(function(err, visualization){
     if(err){ return next(err); }
 
-    res.json(visualization);
+    visualization.populate(['visualizationType', 'analytic', 'source'], function(err, visualization) {
+      if(err){ return next(err); } 
+      
+      res.json(visualization);
+    });
   });
 });
 
 /* GET /visualizations/:visualization */
 router.get('/:visualization', function(req, res, next) {
-  req.visualization.populate('visualization-type', function(err, visualization) {
+  req.visualization.populate(['visualizationType', 'analytic', 'source'], function(err, visualization) {
     if (err) { return next(err); }
 
     res.json(visualization);
   });
-  //res.json(req.visualization);
 });
 
 /* PUT /visualizations/:visualization */
@@ -72,7 +75,11 @@ router.put('/:visualization', function(req, res, next) {
   Visualization.findOneAndUpdate({ "_id": req.visualization._id }, req.body, {new: true}, function(err, visualization) {
     if (err){ return next(err); };
 
-    res.json(visualization);
+    visualization.populate(['visualizationType', 'analytic', 'source'], function(err, visualization) {
+      if(err){ return next(err); } 
+      
+      res.json(visualization);
+    });
   });
 });
 

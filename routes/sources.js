@@ -54,7 +54,7 @@ router.param('analytic', function(req, res, next, id) {
 
 /* GET /sources */
 router.get('/', function(req, res, next) {
-  Source.find(function(err, sources){
+  Source.find().populate('analytics').exec( function(err, sources){
     if(err){ return next(err); }
 
     res.json(sources);
@@ -63,12 +63,11 @@ router.get('/', function(req, res, next) {
 
 /* GET /sources/:source */
 router.get('/:source', function(req, res, next) {
-  res.json(req.source);
-  /*req.source.populate('analytics', function(err, source) {
+  req.source.populate('analytics', function(err, source) {
     if (err) { return next(err); }
 
     res.json(source);
-  });*/
+  });
 });
 
 /* POST /sources */
@@ -78,7 +77,11 @@ router.post('/', function(req, res, next) {
   source.save(function(err, source){
     if(err){ return next(err); }
 
-    res.json(source);
+    source.populate('analytics', function(err, source) {
+      if(err){ return next(err); } 
+      
+      res.json(source);
+    });
   });
 });
 
@@ -87,7 +90,11 @@ router.put('/:source', function(req, res, next) {
   Source.findOneAndUpdate({ "_id": req.source._id }, req.body, {new: true}, function(err, source) {
     if (err){ return next(err); };
 
-    res.json(source);
+    source.populate('analytics', function(err, source) {
+      if(err){ return next(err); } 
+      
+      res.json(source);
+    });
   });
 });
 
@@ -113,7 +120,11 @@ router.put('/:source/analytics', function(req, res, next) {
   req.source.save(function(err, source) {
     if(err){ return next(err); }
 
-    res.json(source.analytics);
+    source.populate('analytics', function(err, source) {
+      if(err){ return next(err); } 
+      
+      res.json(source);
+    });
   });
 });
 
@@ -133,7 +144,11 @@ router.delete('/:source/analytics/:analytic', function(req, res, next) {
   req.source.save(function(err, source) {
     if(err){ return next(err); }
 
-    res.json(source.analytics);
+    source.populate('analytics', function(err, source) {
+      if(err){ return next(err); } 
+      
+      res.json(source);
+    });
   });
 });
 

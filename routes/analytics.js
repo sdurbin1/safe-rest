@@ -53,9 +53,9 @@ router.param('visualizationType', function(req, res, next, id) {
 
 /* GET /analytics */
 router.get('/', function(req, res, next) {
-  Analytic.find(function(err, analytics){
+  Analytic.find().populate(['visualizationTypes','analyticParams']).exec(function(err, analytics) {
     if(err){ return next(err); }
-
+    
     res.json(analytics);
   });
 });
@@ -66,24 +66,27 @@ router.post('/', function(req, res, next) {
 
   analytic.save(function(err, analytic){
     if(err){ return next(err); }
-
-    res.json(analytic);
+    
+    analytic.populate('visualizationTypes', function(err, analytic) {
+      if(err){ return next(err); } 
+      
+      res.json(analytic);
+    });
   });
 });
 
 /* GET /analytics/:analytic */
 router.get('/:analytic', function(req, res, next) {
-  res.json(req.analytic);
-  /*req.analytic.populate(['visualizations','analyticParams'], function(err, analytic) {
+  req.analytic.populate(['visualizationTypes','analyticParams'], function(err, analytic) {
     if (err) { return next(err); }
 
     res.json(analytic);
-  });*/
+  });
 });
 
 /* PUT /analytics/:analytic */
 router.put('/:analytic', function(req, res, next) {
-  Analytic.findOneAndUpdate({ "_id": req.analytic._id }, req.body, {new: true}, function(err, analytic) {
+  Analytic.findOneAndUpdate({ "_id": req.analytic._id }, req.body, {new: true}).populate('visualizationTypes').exec(function(err, analytic) {
     if (err){ return next(err); };
 
     res.json(analytic);
@@ -148,7 +151,7 @@ router.delete('/:analytic/params/:param', function(req, res, next) {
 
 /* GET /analytics/:analytic/visualization_types */
 router.get('/:analytic/visualization-types', function(req, res, next) {
-  req.analytic.populate('visualization-types', function(err, analytic) {
+  req.analytic.populate('visualizationTypes', function(err, analytic) {
     if (err) { return next(err); }
 
     res.json(analytic.visualizationTypes);
@@ -163,8 +166,12 @@ router.put('/:analytic/visualization-types', function(req, res, next) {
   req.analytic.visualizationTypes.push.apply(req.analytic.visualizationTypes, updatedVisualizationTypes)
   req.analytic.save(function(err, analytic) {
     if(err){ return next(err); }
-
-    res.json(analytic.visualizationTypes);
+    
+    analytic.populate('visualizationTypes', function(err, analytic) {
+      if(err){ return next(err); }
+      
+      res.json(analytic.visualizationTypes);
+    });
   });
 });
 
@@ -175,7 +182,11 @@ router.delete('/:analytic/visualization-types/:visualizationType', function(req,
   req.analytic.save(function(err, analytic) {
     if(err){ return next(err); }
 
-    res.json(analytic.visualizationTypes);
+    analytic.populate('visualizationTypes', function(err, analytic) {
+      if(err){ return next(err); }
+      
+      res.json(analytic.visualizationTypes);
+    });
   });
 });
 

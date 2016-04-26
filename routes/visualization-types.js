@@ -46,12 +46,7 @@ router.post('/', function(req, res, next) {
 /* GET /visualization-types/:visualizationType */
 router.get('/:visualizationType', function(req, res, next) {
   res.json(req.visualizationType);
- 
-   /*req.visualization.populate('visualizationParams', function(err, visualization) {
-    if (err) { return next(err); }
-
-    res.json(visualization.visualizationParams);
-  });*/
+  
 });
 
 /* PUT /visualization-types/:visualizationType */
