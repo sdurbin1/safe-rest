@@ -116,7 +116,7 @@ curl -X DELETE http://localhost:8080/visualization-types/56eaa1eae319c5af0c8dfc4
 ##### POST /sources
 Create a source
 ```
-curl localhost:8080/sources --data 'name=CSV_20160122'
+curl localhost:8080/sources -H "Content-Type: application/json" -X POST --data '{"name": "CSV_01222016", "fields": [{"name":"Age","dataType":"Number"},{"name":"County","dataType":"String"},{"name":"Height","dataType":"Number"},{"name":"Latitude","dataType":"Number"},{"name":"Longitude","dataType":"Number"},{"name":"Street Address","dataType":"String"},{"name":"Weight","dataType":"Number"}]}'
 ```
 
 ##### GET /sources
@@ -134,7 +134,7 @@ curl localhost:8080/sources/56e85075cbe2b94312e95daf
 ##### PUT /sources/:source
 Update a source
 ```
-curl -X PUT http://localhost:8080/sources/56eaec7a2308db1b1c6f795f/ --data 'name=TEST'
+curl localhost:8080/sources/56eaec7a2308db1b1c6f795f -H "Content-Type: application/json" -X PUT --data '{"fields": [{"name":"Age","dataType":"Number"},{"name":"County","dataType":"String"},{"name":"Height","dataType":"Number"},{"name":"Latitude","dataType":"Number"},{"name":"Longitude","dataType":"Number"},{"name":"Street Address","dataType":"String"},{"name":"Weight","dataType":"Number"}]}'
 ```
 
 ##### DELETE /sources/:source
@@ -158,24 +158,6 @@ curl localhost:8080/sources/56e865818c792b4f18f64f24/analytics
 Remove an analytic from a source (does not delete the analytic)
 ```
 curl -X DELETE http://localhost:8080/sources/56eaec7a2308db1b1c6f795f/analytics/56eaa9fc51ed186110af1a80
-```
-
-##### GET /sources/:source/fields
-Return fields associated with a source
-```
-curl localhost:8080/sources/56e865818c792b4f18f64f24/fields 
-```
-
-##### POST /sources/:source/fields
-Create a field
-```
-curl localhost:8080/sources/56e865818c792b4f18f64f24/fields --data 'name=Age'
-```
-
-##### DELETE /sources/:source/fields/:field
-Remove a field from a source and delete field
-```
-curl -X DELETE http://localhost:8080/sources/56eaec7a2308db1b1c6f795f/fields/56f14ffccc36acc513000286
 ```
 
 ##### POST /sources/:source/upload

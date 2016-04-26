@@ -5,7 +5,6 @@ module.exports = router;
 
 var mongoose = require('mongoose');
 var Source = mongoose.model('Source');
-var Field = mongoose.model('Field');
 var Analytic = mongoose.model('Analytic');
 
 
@@ -20,19 +19,6 @@ router.param('source', function(req, res, next, id) {
     if (!source) { return next(new Error('can\'t find source')); }
 
     req.source = source;
-    return next();
-  });
-});
-
-/* :field param */
-router.param('field', function(req, res, next, id) {
-  var query = Field.findById(id);
-
-  query.exec(function (err, field){
-    if (err) { return next(err); }
-    if (!field) { return next(new Error('can\'t find field')); }
-
-    req.field = field;
     return next();
   });
 });
@@ -103,9 +89,6 @@ router.put('/:source', function(req, res, next) {
 router.delete('/:source', function(req, res, next) {
   Source.find({ "_id": req.source._id }).remove( function(err) {
     if(err){ return next(err); };
-
-    /* Remove associated fields */
-    Field.find({ source : req.source._id }).remove().exec();
   
     res.json({});
   });
@@ -152,49 +135,6 @@ router.delete('/:source/analytics/:analytic', function(req, res, next) {
   });
 });
 
-/* POST /sources/:source/fields */
-router.post('/:source/fields', function(req, res, next) {
-  var field = new Field(req.body);
-  field.source = req.source;
-
-  field.save(function(err, field){
-    if(err){ return next(err); }
-
-    req.source.fields.push(field);
-    req.source.save(function(err, source) {
-      if(err){ return next(err); }
-
-      res.json(field);
-    });
-  });
-});
-
-/* GET /sources/:source/fields */
-router.get('/:source/fields', function(req, res, next) {
-  //res.json(req.source.fields);
-  
-  req.source.populate('fields', function(err, source) {
-    if (err) { return next(err); }
-
-    res.json(source.fields);
-  });
-});
-
-/* DELETE /sources/:source/fields/:field */
-router.delete('/:source/fields/:field', function(req, res, next) { 
-  req.source.fields.remove(req.field);
-  req.source.save(function(err, source) {
-    if(err){ return next(err); }
-
-    return;
-  });
-  
-  Field.find({ "_id": req.field._id }).remove( function(err) {
-    if(err){ return next(err); };
-  
-    res.json({});
-  });
-});
 
 
 

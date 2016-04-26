@@ -12,7 +12,6 @@ var mongoose = require('mongoose');
 require('./models/VisualizationTypes');
 require('./models/Analytics');
 require('./models/Sources');
-require('./models/Fields');
 require('./models/Visualizations');
 require('./models/Dashboards');
 
