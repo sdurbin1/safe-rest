@@ -9,7 +9,6 @@ var config = require('./config');
 
 // mongoose
 var mongoose = require('mongoose');
-require('./models/AnalyticParams');
 require('./models/VisualizationTypes');
 require('./models/Analytics');
 require('./models/Sources');

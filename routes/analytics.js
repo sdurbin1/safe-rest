@@ -5,7 +5,6 @@ module.exports = router;
 
 var mongoose = require('mongoose');
 var Analytic = mongoose.model('Analytic');
-var AnalyticParam = mongoose.model('AnalyticParam');
 var VisualizationType = mongoose.model('VisualizationType');
 
 /************** PRELOAD OBJECTS ******************/
@@ -19,19 +18,6 @@ router.param('analytic', function(req, res, next, id) {
     if (!analytic) { return next(new Error('can\'t find analytic')); }
 
     req.analytic = analytic;
-    return next();
-  });
-});
-
-/* :param param */
-router.param('param', function(req, res, next, id) {
-  var query = AnalyticParam.findById(id);
-
-  query.exec(function (err, analyticParam){
-    if (err) { return next(err); }
-    if (!analyticParam) { return next(new Error('can\'t find analytic param')); }
-
-    req.analyticParam = analyticParam;
     return next();
   });
 });
@@ -104,50 +90,6 @@ router.delete('/:analytic', function(req, res, next) {
     res.json({});
   });
 });
-
-
-/* POST /analytics/:analytic/params */
-router.post('/:analytic/params', function(req, res, next) {
-  var analyticParam = new AnalyticParam(req.body);
-  analyticParam.analytic = req.analytic;
-
-  analyticParam.save(function(err, analyticParam){
-    if(err){ return next(err); }
-
-    req.analytic.analyticParams.push(analyticParam);
-    req.analytic.save(function(err, analytic) {
-      if(err){ return next(err); }
-
-      res.json(analyticParam);
-    });
-  });
-});
-
-/* GET /analytics/:analytic/params */
-router.get('/:analytic/params', function(req, res, next) {
-  req.analytic.populate('analyticParams', function(err, analytic) {
-    if (err) { return next(err); }
-
-    res.json(analytic.analyticParams);
-  });
-});
-
-/* DELETE /analytics/:analytic/params/:param */
-router.delete('/:analytic/params/:param', function(req, res, next) {
-  req.analytic.analyticParams.remove(req.analyticParam);
-  req.analytic.save(function(err, analytic) {
-    if(err){ return next(err); }
-
-    return;
-  });
-  
-  AnalyticParam.find({ "_id": req.analyticParam._id }).remove( function(err) {
-    if(err){ return next(err); };
-  
-    res.json({});
-  });
-});
-
 
 /* GET /analytics/:analytic/visualization_types */
 router.get('/:analytic/visualization-types', function(req, res, next) {

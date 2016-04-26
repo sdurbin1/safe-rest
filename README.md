@@ -39,7 +39,7 @@ npm start
 ##### POST /analytics
 Create an analytic
 ```
-curl localhost:8080/analytics --data 'name=Count'
+curl localhost:8080/analytics/ -H "Content-Type: application/json" --data '{"name": "Normal Distribution", "analyticParams": [{"name":"X"},{"name":"Mean"},{"name":"Standard Deviation"},{"name":"Cumulative"}]}'
 ```
 
 ##### GET /analytics
@@ -57,31 +57,13 @@ curl localhost:8080/analytics/56e816d8abda61a618bfccd5
 ##### PUT /analytics/:analytic
 Update an analytic
 ```
-curl -X PUT http://localhost:8080/analytics/56ea93bcec9cc0f3098ae30a --data 'name=Binomial'
+curl localhost:8080/analytics/56ea975aec9cc0f3098ae316 -H "Content-Type: application/json" -X PUT --data '{"analyticParams": [{"name":"X"},{"name":"Mean"},{"name":"Standard Deviation"},{"name":"Cumulative"}]}'
 ```
 
 ##### DELETE /analytics/:analytic
 Delete an analytic
 ```
 curl -X DELETE http://localhost:8080/analytics/56ea975aec9cc0f3098ae316
-```
-
-##### POST /analytics/:analytic/params
-Create an analytic param for an analytic
-```
-curl localhost:8080/analytics/56e816d2abda61a618bfccd4 --data 'name=Mean' 
-```
-
-##### GET /analytics/:analytic/params
-Return a list of analytic params associated with an analytic
-```
-curl localhost:8080/analytics/56e816d2abda61a618bfccd4/params
-```
-
-##### DELETE /analytics/:analytic/params/:param
-Delete an analytic param
-```
-curl -X DELETE http://localhost:8080/analytics/56ea975aec9cc0f3098ae316/params/56eaf56002a2ebc41e8e108d
 ```
 
 ##### PUT /analytics/:analytic/visualization-types
