@@ -161,9 +161,19 @@ curl -X DELETE http://localhost:8080/sources/56eaec7a2308db1b1c6f795f/analytics/
 ```
 
 ##### POST /sources/:source/upload
-Upload a csv document. Creates a new collection with "name"(TBD), and inserts document, "document"
+Upload a csv document. Creates a new collection with name "sourceId", and inserts document, "document"
 ```
 curl localhost:8080/sources/56eaec7a2308db1b1c6f795f/upload -H "Content-Type: application/json" --data '{"document":[{"Age":21,"County":"Anne Arundel","Height":61,"Latitude":31.33,"Longitude":33.00,"Street Address":"123 Main St.","Weight":133},{"Age":33,"County":"Howard","Height":67,"Latitude":31.33,"Longitude":33.00,"Street Address":"456 Main St.","Weight":188},{"Age":29,"County":"Anne Arundel","Height":63,"Latitude":31.33,"Longitude":33.00,"Street Address":"789 Main St.","Weight":142}]}'
+```
+Optionally include a list of fields
+```
+curl localhost:8080/sources/56eaec892308db1b1c6f7960/upload -H "Content-Type: application/json" --data '{"fields": [{"name":"Age","dataType":"Number"},{"name":"County","dataType":"String"},{"name":"Height","dataType":"Number"},{"name":"Latitude","dataType":"Number"},{"name":"Longitude","dataType":"Number"},{"name":"Street Address","dataType":"String"},{"name":"Weight","dataType":"Number"}],"document":[{"Age":21,"County":"Anne Arundel","Height":61,"Latitude":31.33,"Longitude":33.00,"Street Address":"123 Main St.","Weight":133},{"Age":33,"County":"Howard","Height":67,"Latitude":31.33,"Longitude":33.00,"Street Address":"456 Main St.","Weight":188},{"Age":29,"County":"Anne Arundel","Height":63,"Latitude":31.33,"Longitude":33.00,"Street Address":"789 Main St.","Weight":142}]}'
+```
+
+##### POST /sources/upload
+Upload a csv document and create source.
+```
+curl localhost:8080/sources/upload -H "Content-Type: application/json" --data '{"source": {"name":"TEST","fields": [{"name":"Age","dataType":"Number"},{"name":"County","dataType":"String"},{"name":"Height","dataType":"Number"},{"name":"Latitude","dataType":"Number"},{"name":"Longitude","dataType":"Number"},{"name":"Street Address","dataType":"String"},{"name":"Weight","dataType":"Number"}]},"document":[{"Age":21,"County":"Anne Arundel","Height":61,"Latitude":31.33,"Longitude":33.00,"Street Address":"123 Main St.","Weight":133},{"Age":33,"County":"Howard","Height":67,"Latitude":31.33,"Longitude":33.00,"Street Address":"456 Main St.","Weight":188},{"Age":29,"County":"Anne Arundel","Height":63,"Latitude":31.33,"Longitude":33.00,"Street Address":"789 Main St.","Weight":142}]}'
 ```
 
 ##### GET /sources/:source/query

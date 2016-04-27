@@ -27,14 +27,52 @@ router.param('source', function(req, res, next, id) {
 
 
 /* POST /sources/:source/upload */
+/* Upload document to existing source.  Also update field list if specified */
 router.post('/:source/upload', function(req, res, next) {
-    var sourceId = req.source._id.toString();
     var doc = req.body.document;
+    var fields = req.body.fields;
     
-    mongoUtil.insertDocument(req.app.get('db'), sourceId, doc)
-        .then((out) => res.json(out))
+    if(fields) {
+        Source.findOneAndUpdate({ "_id": req.source._id }, {"fields": fields}, {new: true}, function(err, source) {
+            if (err){ return next(err) }
+            
+            source.populate('analytics', function(err, source) {
+                if(err){ return next(err); } 
+              
+                insertDocument(req.app.get('db'), source, doc, res)
+            })
+        })
+    } else {
+        insertDocument(req.app.get('db'), req.source, doc, res)
+    }
+
+});
+
+/* POST /sources/upload */
+/* Create source and upload document */
+router.post('/upload', function(req, res, next) {
+    var source = req.body.source
+    var doc = req.body.document
+
+    var source = new Source(source)
+    
+    source.save(function(err, source){
+        if(err){ return next(err) }
+    
+        source.populate('analytics', function(err, source) {
+            if(err){ return next(err) } 
+          
+            insertDocument(req.app.get('db'), source, doc, res)
+        })
+    })
+      
+})
+
+
+function insertDocument(db, source, doc, res) {
+    mongoUtil.insertDocument(db, source._id.toString(), doc)
+        .then((out) => res.json({"source": source, "upload": out}))
         .catch(error => {
             res.status(503).send(error)
         })
-
-});
+}
