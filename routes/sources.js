@@ -135,9 +135,7 @@ router.delete('/:source/analytics/:analytic', function(req, res, next) {
   });
 });
 
-
-
-
-
-
-
+/* GET /sources/:source/fields */
+router.get('/:source/fields', function(req, res, next) {  
+    res.json(req.source.fields);
+});

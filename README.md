@@ -160,6 +160,12 @@ Remove an analytic from a source (does not delete the analytic)
 curl -X DELETE http://localhost:8080/sources/56eaec7a2308db1b1c6f795f/analytics/56eaa9fc51ed186110af1a80
 ```
 
+##### GET /sources/:source/fields
+Return all fields associated with a source
+```
+curl localhost:8080/sources/56eaec7a2308db1b1c6f795f/fields
+```
+
 ##### POST /sources/:source/data
 Upload a csv document. Creates a new collection with name "sourceId", and inserts document, "document"
 ```

@@ -83,9 +83,6 @@ router.put('/:analytic', function(req, res, next) {
 router.delete('/:analytic', function(req, res, next) {
   Analytic.find({ "_id": req.analytic._id }).remove( function(err) {
     if(err){ return next(err); };
-
-    /* Remove associated analyticParams */
-    AnalyticParam.find({ analytic : req.analytic._id }).remove().exec();
   
     res.json({});
   });
