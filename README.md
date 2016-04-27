@@ -160,20 +160,26 @@ Remove an analytic from a source (does not delete the analytic)
 curl -X DELETE http://localhost:8080/sources/56eaec7a2308db1b1c6f795f/analytics/56eaa9fc51ed186110af1a80
 ```
 
-##### POST /sources/:source/upload
+##### POST /sources/:source/data
 Upload a csv document. Creates a new collection with name "sourceId", and inserts document, "document"
 ```
-curl localhost:8080/sources/56eaec7a2308db1b1c6f795f/upload -H "Content-Type: application/json" --data '{"document":[{"Age":21,"County":"Anne Arundel","Height":61,"Latitude":31.33,"Longitude":33.00,"Street Address":"123 Main St.","Weight":133},{"Age":33,"County":"Howard","Height":67,"Latitude":31.33,"Longitude":33.00,"Street Address":"456 Main St.","Weight":188},{"Age":29,"County":"Anne Arundel","Height":63,"Latitude":31.33,"Longitude":33.00,"Street Address":"789 Main St.","Weight":142}]}'
+curl localhost:8080/sources/56eaec7a2308db1b1c6f795f/data -H "Content-Type: application/json" --data '{"document":[{"Age":21,"County":"Anne Arundel","Height":61,"Latitude":31.33,"Longitude":33.00,"Street Address":"123 Main St.","Weight":133},{"Age":33,"County":"Howard","Height":67,"Latitude":31.33,"Longitude":33.00,"Street Address":"456 Main St.","Weight":188},{"Age":29,"County":"Anne Arundel","Height":63,"Latitude":31.33,"Longitude":33.00,"Street Address":"789 Main St.","Weight":142}]}'
 ```
 Optionally include a list of fields
 ```
-curl localhost:8080/sources/56eaec892308db1b1c6f7960/upload -H "Content-Type: application/json" --data '{"fields": [{"name":"Age","dataType":"Number"},{"name":"County","dataType":"String"},{"name":"Height","dataType":"Number"},{"name":"Latitude","dataType":"Number"},{"name":"Longitude","dataType":"Number"},{"name":"Street Address","dataType":"String"},{"name":"Weight","dataType":"Number"}],"document":[{"Age":21,"County":"Anne Arundel","Height":61,"Latitude":31.33,"Longitude":33.00,"Street Address":"123 Main St.","Weight":133},{"Age":33,"County":"Howard","Height":67,"Latitude":31.33,"Longitude":33.00,"Street Address":"456 Main St.","Weight":188},{"Age":29,"County":"Anne Arundel","Height":63,"Latitude":31.33,"Longitude":33.00,"Street Address":"789 Main St.","Weight":142}]}'
+curl localhost:8080/sources/56eaec892308db1b1c6f7960/data -H "Content-Type: application/json" --data '{"fields": [{"name":"Age","dataType":"Number"},{"name":"County","dataType":"String"},{"name":"Height","dataType":"Number"},{"name":"Latitude","dataType":"Number"},{"name":"Longitude","dataType":"Number"},{"name":"Street Address","dataType":"String"},{"name":"Weight","dataType":"Number"}],"document":[{"Age":21,"County":"Anne Arundel","Height":61,"Latitude":31.33,"Longitude":33.00,"Street Address":"123 Main St.","Weight":133},{"Age":33,"County":"Howard","Height":67,"Latitude":31.33,"Longitude":33.00,"Street Address":"456 Main St.","Weight":188},{"Age":29,"County":"Anne Arundel","Height":63,"Latitude":31.33,"Longitude":33.00,"Street Address":"789 Main St.","Weight":142}]}'
 ```
 
-##### POST /sources/upload
+##### POST /sources/data
 Upload a csv document and create source.
 ```
-curl localhost:8080/sources/upload -H "Content-Type: application/json" --data '{"source": {"name":"TEST","fields": [{"name":"Age","dataType":"Number"},{"name":"County","dataType":"String"},{"name":"Height","dataType":"Number"},{"name":"Latitude","dataType":"Number"},{"name":"Longitude","dataType":"Number"},{"name":"Street Address","dataType":"String"},{"name":"Weight","dataType":"Number"}]},"document":[{"Age":21,"County":"Anne Arundel","Height":61,"Latitude":31.33,"Longitude":33.00,"Street Address":"123 Main St.","Weight":133},{"Age":33,"County":"Howard","Height":67,"Latitude":31.33,"Longitude":33.00,"Street Address":"456 Main St.","Weight":188},{"Age":29,"County":"Anne Arundel","Height":63,"Latitude":31.33,"Longitude":33.00,"Street Address":"789 Main St.","Weight":142}]}'
+curl localhost:8080/sources/data -H "Content-Type: application/json" --data '{"source": {"name":"TEST","fields": [{"name":"Age","dataType":"Number"},{"name":"County","dataType":"String"},{"name":"Height","dataType":"Number"},{"name":"Latitude","dataType":"Number"},{"name":"Longitude","dataType":"Number"},{"name":"Street Address","dataType":"String"},{"name":"Weight","dataType":"Number"}]},"document":[{"Age":21,"County":"Anne Arundel","Height":61,"Latitude":31.33,"Longitude":33.00,"Street Address":"123 Main St.","Weight":133},{"Age":33,"County":"Howard","Height":67,"Latitude":31.33,"Longitude":33.00,"Street Address":"456 Main St.","Weight":188},{"Age":29,"County":"Anne Arundel","Height":63,"Latitude":31.33,"Longitude":33.00,"Street Address":"789 Main St.","Weight":142}]}'
+```
+
+##### DELETE /sources/:source/data
+Delete csv document associated with source
+```
+curl localhost:8080/sources/5720ade7587a45660a46cdcb/data -X DELETE
 ```
 
 ##### GET /sources/:source/query

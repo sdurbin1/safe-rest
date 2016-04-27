@@ -4,6 +4,7 @@ var Promise = require('bluebird');
 exports.queryMongo = queryMongo;
 exports.insertDocument = insertDocument;
 exports.buildQueryJson = buildQueryJson;
+exports.deleteDocument = deleteDocument;
 
 var url = 'mongodb://localhost:27017/safe';
 
@@ -55,5 +56,15 @@ function insertDocument(db, name, doc) {
             
             fullfill({"Success":true})
         });    
+    });
+}
+
+function deleteDocument(db, name) {
+    return new Promise(function (fullfill, reject) {
+        db.collection(name).drop(function(err,numberRemoved){
+            if(err != null) { reject(err) }
+            
+            fullfill({"Success":true})
+        });
     });
 }

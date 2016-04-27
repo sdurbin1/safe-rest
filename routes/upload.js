@@ -26,9 +26,9 @@ router.param('source', function(req, res, next, id) {
 /******** END PRELOADING OBJECTS *********/
 
 
-/* POST /sources/:source/upload */
+/* POST /sources/:source/data */
 /* Upload document to existing source.  Also update field list if specified */
-router.post('/:source/upload', function(req, res, next) {
+router.post('/:source/data', function(req, res, next) {
     var doc = req.body.document;
     var fields = req.body.fields;
     
@@ -48,9 +48,9 @@ router.post('/:source/upload', function(req, res, next) {
 
 });
 
-/* POST /sources/upload */
+/* POST /sources/data */
 /* Create source and upload document */
-router.post('/upload', function(req, res, next) {
+router.post('/data', function(req, res, next) {
     var source = req.body.source
     var doc = req.body.document
 
@@ -65,7 +65,18 @@ router.post('/upload', function(req, res, next) {
             insertDocument(req.app.get('db'), source, doc, res)
         })
     })
-      
+})
+
+/* DELETE /sources/:source/data */
+/* Delete data associated with source */
+router.delete('/:source/data', function(req, res, next) {
+    var sourceId = req.source._id.toString()
+ 
+    mongoUtil.deleteDocument(req.app.get('db'), sourceId)
+        .then((out) => res.json(out))
+        .catch(error => {
+            res.status(503).send(error)
+        })        
 })
 
 
