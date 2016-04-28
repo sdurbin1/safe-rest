@@ -90,7 +90,7 @@ curl localhost:8080/visualization-types
 ##### POST /visualization-types 
 Create a visualizationType
 ```
-curl http://localhost:8080/visualization-types -H "Content-Type: application/json" -X POST --data '{"visualizationParams":{"title": {"text": "Monthly Average Temperature"},"subtitle": {"text": "Source: WorldClimate.com"}}, "name":"Area"}'
+curl http://localhost:8080/visualization-types -H "Content-Type: application/json" -X POST --data '{"name":"Area"}'
 ```
 
 ##### GET /visualization-types/:visualization-type
