@@ -7,8 +7,6 @@ exports.buildQueryJson = buildQueryJson;
 exports.deleteDocument = deleteDocument;
 exports.documentExists = documentExists;
 
-var url = 'mongodb://localhost:27017/safe';
-
 var operatorMap = {
     '=': '$eq',
     '<': '$lt',
