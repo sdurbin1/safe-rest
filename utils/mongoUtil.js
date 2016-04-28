@@ -5,6 +5,7 @@ exports.queryMongo = queryMongo;
 exports.insertDocument = insertDocument;
 exports.buildQueryJson = buildQueryJson;
 exports.deleteDocument = deleteDocument;
+exports.documentExists = documentExists;
 
 var url = 'mongodb://localhost:27017/safe';
 
@@ -66,5 +67,20 @@ function deleteDocument(db, name) {
             
             fullfill({"Success":true})
         });
+    });
+}
+
+function documentExists(db, collectionName) {
+    return new Promise(function (fullfill, reject) {
+        db.collectionNames(function(err,collections){
+            if(err != null) { reject(err) }
+            
+            if( collections.indexOf(collectionName) > -1) {
+                fullfill({"hasData":true})
+            } else {
+                fullfill({"hasData":false})   
+            }
+        });
+        
     });
 }

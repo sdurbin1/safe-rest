@@ -45,7 +45,6 @@ router.post('/:source/data', function(req, res, next) {
     } else {
         insertDocument(req.app.get('db'), req.source, doc, res)
     }
-
 });
 
 /* POST /sources/data */
@@ -66,6 +65,18 @@ router.post('/data', function(req, res, next) {
         })
     })
 })
+
+/* GET /sources/:source/hasData */
+router.get('/:source/hasData', function(req, res, next) {
+    var sourceId = req.source._id.toString()
+    
+    mongoUtil.documentExists(req.app.get('db'), sourceId)
+        .then((out) => res.json(out))
+        .catch(error => {
+            res.status(503).send(error)
+        })    
+})
+
 
 /* DELETE /sources/:source/data */
 /* Delete data associated with source */
