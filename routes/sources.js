@@ -40,7 +40,7 @@ router.param('analytic', function(req, res, next, id) {
 
 /* GET /sources */
 router.get('/', function(req, res, next) {
-  Source.find().populate('analytics').exec( function(err, sources){
+  Source.find({}, 'name _id', function(err, sources){
     if(err){ return next(err); }
 
     res.json(sources);

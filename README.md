@@ -39,7 +39,7 @@ npm start
 ##### POST /analytics
 Create an analytic
 ```
-curl localhost:8080/analytics/ -H "Content-Type: application/json" --data '{"name": "Normal Distribution", "analyticParams": [{"name":"X"},{"name":"Mean"},{"name":"Standard Deviation"},{"name":"Cumulative"}]}'
+curl localhost:8080/analytics/ -H "Content-Type: application/json" --data '{"name": "Normal Distribution"}'
 ```
 
 ##### GET /analytics
@@ -57,9 +57,7 @@ curl localhost:8080/analytics/56e816d8abda61a618bfccd5
 ##### PUT /analytics/:analytic
 Update an analytic
 ```
-curl localhost:8080/analytics/56ea975aec9cc0f3098ae316 -H "Content-Type: application/json" -X PUT --data '{"analyticParams": [{"name":"X"},{"name":"Mean"},{"name":"Standard Deviation"},{"name":"Cumulative"}]}'
-```
-
+curl localhost:8080/analytics/56ea975aec9cc0f3098ae316 -H "Content-Type: application/json" -X PUT --data '{"name":"New Name"}' 
 ##### DELETE /analytics/:analytic
 Delete an analytic
 ```
@@ -92,7 +90,7 @@ curl localhost:8080/visualization-types
 ##### POST /visualization-types 
 Create a visualizationType
 ```
-curl http://localhost:8080/visualization-types -H "Content-Type: application/json" -X POST --data '{"visualizationParams":{"title": {"text": "Monthly Average Temperature"},"subtitle": {"text": "Source: WorldClimate.com"}}, "name":"Area"}'
+curl http://localhost:8080/visualization-types -H "Content-Type: application/json" -X POST --data '{"name":"Area"}'
 ```
 
 ##### GET /visualization-types/:visualization-type
@@ -197,7 +195,7 @@ curl localhost:8080/sources/56eaec7a2308db1b1c6f795f/query -H "Content-Type: app
 ##### POST /visualizations
 Create a new visualization
 ```
-curl http://localhost:8080/visualizations -H "Content-Type: application/json" -X POST --data '{"name":"Visualization1", "source":"56eaec7a2308db1b1c6f795f", "visualizationType":"57055c4c43176c9118cffc95", "analytic":"56eac298ee121e4b18d92259", "visualizationParams":{"title": {"text": "Monthly Average Temperature"},"subtitle": {"text": "Source: WorldClimate.com"}}, "filters":[{ "id": 1,"field": "Age","operator": ">","value": 35},{"id": 2,"field": "County","operator": "=","value": "Howard"}], "analyticParams":[{"groupBy":"Age"}]}'
+curl http://localhost:8080/visualizations -H "Content-Type: application/json" -X POST --data '{"name":"Visualization1", "source":"56eaec7a2308db1b1c6f795f", "visualizationType":"57055c4c43176c9118cffc95", "analytic":"56eac298ee121e4b18d92259", "visualizationParams":{"title": {"text": "Monthly Average Temperature"},"subtitle": {"text": "Source: WorldClimate.com"}}, "analyticParams": [{"groupBy": ["Age"]}], "filters":[{ "id": 1,"field": "Age","operator": ">","value": 35},{"id": 2,"field": "County","operator": "=","value": "Howard"}], "analyticParams":[{"groupBy":"Age"}]}'
 ```
 
 ##### GET /visualizations

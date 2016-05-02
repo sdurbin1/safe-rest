@@ -39,7 +39,7 @@ router.param('visualizationType', function(req, res, next, id) {
 
 /* GET /analytics */
 router.get('/', function(req, res, next) {
-  Analytic.find().populate(['visualizationTypes','analyticParams']).exec(function(err, analytics) {
+  Analytic.find().populate('visualizationTypes').exec(function(err, analytics) {
     if(err){ return next(err); }
     
     res.json(analytics);
@@ -63,7 +63,7 @@ router.post('/', function(req, res, next) {
 
 /* GET /analytics/:analytic */
 router.get('/:analytic', function(req, res, next) {
-  req.analytic.populate(['visualizationTypes','analyticParams'], function(err, analytic) {
+  req.analytic.populate('visualizationTypes', function(err, analytic) {
     if (err) { return next(err); }
 
     res.json(analytic);

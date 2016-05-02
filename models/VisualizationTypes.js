@@ -1,8 +1,7 @@
 var mongoose = require('mongoose');
 
 var VisualizationTypeSchema = new mongoose.Schema({
-  name: String,
-  visualizationParams: mongoose.Schema.Types.Mixed
+  name: String
 });
 
 mongoose.model('VisualizationType', VisualizationTypeSchema);
