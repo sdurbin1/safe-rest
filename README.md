@@ -1,10 +1,10 @@
 # safe-rest
 
 ### Install node and update to latest version
-As of March 16, 2016, the latest version is 5.8.0.
+As of May 4, 2016, the latest version is 6.0.0.
 ```
-nvm install v5.8.0
-nvm alias default v5.8.0
+nvm install v6.0.0
+nvm alias default v6.0.0
 ```
 
 ### Clone repo
