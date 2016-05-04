@@ -23,6 +23,7 @@ var analytics = require('./routes/analytics');
 var visualizationTypes = require('./routes/visualization-types');
 var sources = require('./routes/sources');
 var visualizations = require('./routes/visualizations');
+var execute = require('./routes/execute');
 var dashboards = require('./routes/dashboards');
 var authentication = require('./routes/authentication');
 var query = require('./routes/query');
@@ -59,6 +60,7 @@ app.use('/dashboards', dashboards);
 app.use('/authenticate', authentication);
 app.use('/sources', query);
 app.use('/sources', upload);
+app.use('/execute', execute);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
