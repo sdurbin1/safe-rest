@@ -275,3 +275,9 @@ Authenticate user
 ```
 curl localhost:8080/authentication/authenticate
 ```
+
+##### GET /execute/:visualization_id
+Run analytic based on parameters of the provided visualization id and return json results.
+```
+curl localhost:8080/execute/572a1c11fbdcac91218b9a1f
+```
