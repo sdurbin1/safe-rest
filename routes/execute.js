@@ -44,6 +44,8 @@ router.get('/:visualization', function(req, res, next) {
       count(req.visualization, res);
     } else if (req.visualization.analytic.name=='Average'){
       average(req.visualization, res);
+    } else if (req.visualization.analytic.name=='Detailed Count'){
+      detailedCount(req.visualization, res);
     }
   });
 });
@@ -73,14 +75,16 @@ function count(visualization, res){
 function detailedCount(visualization, res){
   
       var src = visualization.source._id;
-      var params = visualization.analyticParams;
+      var groupBy = visualization.analyticParams.groupBy
+      var topLevel = visualization.analyticParams.topLevel;
+      var lowerLevel = visualization.analyticParams.lowerLevel;
     
       MongoClient.connect(url, function(err, db) {
       assert.equal(null, err);
       
       var collection = db.collection(''+src);
 
-    collection.aggregate([{$group: { _id:params, count: { $sum : 1 } } }], function(err, result){
+   collection.aggregate([{ $group : { _id : {  groupBy }, "subTotals": { $sum : 1  }}},{ $group : { _id : topLevel, "count" : { $sum : "$subTotals" },  "Details" : {   "$push" : { "Race" : lowerLevel, "subtotal" : "$subTotals"  } }}}], function(err, result){  
       if (err) {
         console.log(err);
       } else if (result.length) {
