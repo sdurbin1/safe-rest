@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-var VisualizationTypeSchema = new mongoose.Schema({
+const VisualizationTypeSchema = new mongoose.Schema({
   name: String
-});
+})
 
-mongoose.model('VisualizationType', VisualizationTypeSchema);
+mongoose.model('VisualizationType', VisualizationTypeSchema)

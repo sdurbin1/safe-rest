@@ -1,9 +1,9 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-var SourceSchema = new mongoose.Schema({
+const SourceSchema = new mongoose.Schema({
   name: String,
-  analytics:  [{ type: mongoose.Schema.Types.ObjectId, ref: 'Analytic' }],
+  analytics: [{type: mongoose.Schema.Types.ObjectId, ref: 'Analytic'}],
   fields: mongoose.Schema.Types.Mixed
-});
+})
 
-mongoose.model('Source', SourceSchema);
+mongoose.model('Source', SourceSchema)

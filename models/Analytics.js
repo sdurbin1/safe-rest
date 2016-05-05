@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-var AnalyticSchema = new mongoose.Schema({
+const AnalyticSchema = new mongoose.Schema({
   name: String,
-  visualizationTypes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'VisualizationType' }]
-});
+  visualizationTypes: [{type: mongoose.Schema.Types.ObjectId, ref: 'VisualizationType'}]
+})
 
-mongoose.model('Analytic', AnalyticSchema);
+mongoose.model('Analytic', AnalyticSchema)

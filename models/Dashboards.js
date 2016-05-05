@@ -1,9 +1,9 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-var DashboardSchema = new mongoose.Schema({
+const DashboardSchema = new mongoose.Schema({
   title: String,
   subtitle: String,
-  visualizations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Visualization' }]
-});
+  visualizations: [{type: mongoose.Schema.Types.ObjectId, ref: 'Visualization'}]
+})
 
-mongoose.model('Dashboard', DashboardSchema);
+mongoose.model('Dashboard', DashboardSchema)
