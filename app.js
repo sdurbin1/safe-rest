@@ -1,13 +1,16 @@
 const express = require('express')
+const session = require('express-session')
 const path = require('path')
 const logger = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
+const fs = require('fs')
+const http = require('http')
+const https = require('https')
+const connectMongo = require('connect-mongo')
+const mongoose = require('mongoose')
 
 const config = require('./config')
-
-// mongoose
-const mongoose = require('mongoose')
 
 require('./models/VisualizationTypes')
 require('./models/Analytics')
@@ -34,6 +37,7 @@ const app = express()
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
+app.set('port', process.env.PORT || config.portNumber)
 
 // uncomment after placing your favicon in /public
 // app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
@@ -42,6 +46,22 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
+
+const MongoStore = connectMongo(session)
+const mongoOptions = {
+  url: config.mongourl,
+  pool: true
+}
+
+app.use(session({
+  cookie: {
+    maxAge: 60 * 60 * 12 * 1000
+  },
+  resave: false,
+  saveUninitialized: true,
+  secret: config.sessionsecret,
+  store: new MongoStore(mongoOptions)
+}))
 
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*')
@@ -125,4 +145,21 @@ process.on('SIGINT', exitHandler.bind(null, {exit: true}))
 process.on('uncaughtException', exitHandler.bind(null, {exit: true}))
 
 module.exports = app
-  
+
+const serveroptions = {
+  key: fs.readFileSync(config.serverkey),
+  cert: fs.readFileSync(config.servercertificate),
+  ca: fs.readFileSync(config.servercertificateauthority),
+  requestCert: true,
+  rejectUnauthorized: true
+}
+
+if (config.environment === 'production') {
+  https.createServer(serveroptions, app).listen(app.get('port'), function () {
+    console.log('Express server listening on port ' + app.get('port'))
+  })
+} else {
+  http.createServer(app).listen(app.get('port'), function () {
+    console.log('Express http server listening on port ' + app.get('port'))
+  })
+}

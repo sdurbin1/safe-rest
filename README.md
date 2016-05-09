@@ -31,7 +31,7 @@ npm run-script db-fill
 
 ### Run application
 ```
-npm start
+node app.js
 ```
 
 # Rest API and example calls
