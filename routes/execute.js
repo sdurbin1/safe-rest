@@ -76,13 +76,14 @@ function detailedCount (visualization, res) {
   const groupBy = visualization.analyticParams.groupBy
   const topLevel = visualization.analyticParams.topLevel
   const lowerLevel = visualization.analyticParams.lowerLevel
+  
     
   MongoClient.connect(url, function (err, db) {
     assert.equal(null, err)
       
     const collection = db.collection('' + src)
 
-    collection.aggregate([{$group: {_id: {groupBy}, 'subTotals': {$sum: 1}}}, {$group: {_id: topLevel, 'count': {$sum: '$subTotals'}, 'Details': {'$push': {'Race': lowerLevel, 'subtotal': '$subTotals'}}}}], function (err, result) {
+    collection.aggregate([{$group: {_id: {groupBy}, 'subTotals': {$sum: 1}}}, {$group: {_id: topLevel, 'Count': {$sum: '$subTotals'}, 'Details': {'$push': {'Value': lowerLevel, 'Count': '$subTotals'}}}}], function (err, result) {
       if (err) {
         console.log(err)
       } else if (result.length) {
@@ -95,8 +96,7 @@ function detailedCount (visualization, res) {
 }
 
 function average (visualization, res) {
-  console.log('Visualization: ' + visualization)
-  const src = visualization.source._id
+    const src = visualization.source._id
   const params = visualization.analyticParams.groupBy
   const averageOn = visualization.analyticParams.averageOn
     
