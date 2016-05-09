@@ -31,7 +31,7 @@ npm run-script db-fill
 
 ### Run application
 ```
-npm start
+node app.js
 ```
 
 # Rest API and example calls
@@ -226,7 +226,7 @@ curl -X DELETE http://localhost:8080/visualizations/570b93b007b51d710c748fb1
 ##### POST /dashboards
 Create a dashboard
 ```
- curl http://localhost:8080/dashboards -X POST --data 'name=Dashboard&visualizations=570b968507b51d710c748fb2&visualizations=570b9e54ddef419e0fda43a9'
+ curl http://localhost:8080/dashboards -X POST --data 'title=Dashboard&visualizations=570b968507b51d710c748fb2&visualizations=570b9e54ddef419e0fda43a9'
 ```
 
 ##### GET /dashboards
@@ -243,7 +243,7 @@ curl http://localhost:8080/dashboards/570b9f8a877d26ac10c3b4f1
 ##### PUT /dashboards/:dashboard
 Update a dashboard
 ```
-curl http://localhost:8080/dashboards/570b9f8a877d26ac10c3b4f1 -X PUT --data 'name=Dashboard1'
+curl http://localhost:8080/dashboards/570b9f8a877d26ac10c3b4f1 -X PUT --data 'title=Dashboard1'
 ```
 
 ##### DELETE /dashboards/:dashboard
