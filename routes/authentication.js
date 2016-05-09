@@ -1,11 +1,11 @@
-var express = require('express')
-var router = express.Router()
+const express = require('express')
+const router = express.Router()
 
 module.exports = router
 
 /* GET /authenticate */
-router.get('/', function(req, res, next) {
-    var result = { username: "user", authenticated: true }
+router.get('/', function (req, res, next) {
+  const result = {username: 'user', authenticated: true}
     
-    res.json(result)
+  res.json(result)
 })
