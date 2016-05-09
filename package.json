@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node ./bin/www",
-    "db-fill": "mongorestore ./data/latest/safe/",
+    "db-fill": "mongorestore ./data/latest/safe/ --db safe",
     "lint": "eslint --ext .js routes/ models/ utils/ ./*.js"
   },
   "devDependencies": {
