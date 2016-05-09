@@ -1,41 +1,41 @@
-var express = require('express')
-var router = express.Router()
+const express = require('express')
+const router = express.Router()
 
-var mongoUtil = require('../utils/mongoUtil')
+const mongoUtil = require('../utils/mongoUtil')
 
-var mongoose = require('mongoose')
-var Source = mongoose.model('Source')
+const mongoose = require('mongoose')
+const Source = mongoose.model('Source')
 
 module.exports = router
 
-/******** PRELOADING OBJECTS *************/
+/* PRELOADING OBJECTS */
 
 /* :source param */
-router.param('source', function(req, res, next, id) {
-  var query = Source.findById(id);
+router.param('source', function (req, res, next, id) {
+  const query = Source.findById(id)
 
-  query.exec(function (err, source){
-    if (err) { return next(err); }
-    if (!source) { return next(new Error('can\'t find source')); }
+  query.exec(function (err, source) {
+    if (err) { return next(err) }
+    if (!source) { return next(new Error('can\'t find source')) }
 
-    req.source = source;
-    return next();
-  });
-});
+    req.source = source
+    
+    return next()
+  })
+})
 
-/******** END PRELOADING OBJECTS *********/
+/* END PRELOADING OBJECTS */
 
 /* GET /sources/:source/query */
-router.post('/:source/query', function(req, res, next) { 
-    var sourceId = req.source._id.toString()
-    var filters = req.body.filters
+router.post('/:source/query', function (req, res, next) {
+  const sourceId = req.source._id.toString()
+  const filters = req.body.filters
     
-    var queryJson = mongoUtil.buildQueryJson(filters)
+  const queryJson = mongoUtil.buildQueryJson(filters)
 
-    mongoUtil.queryMongo(req.app.get('db'), sourceId, queryJson)
-        .then((out) => res.json(out))
-        .catch(error => {
-            res.status(503).send(error)
-        })
-        
+  mongoUtil.queryMongo(req.app.get('db'), sourceId, queryJson)
+    .then((out) => res.json(out))
+    .catch(error => {
+      res.status(503).send(error)
+    })
 })

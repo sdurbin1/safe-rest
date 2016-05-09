@@ -1,84 +1,84 @@
-var MongoClient = require('mongodb').MongoClient;
-var Promise = require('bluebird');
+const Promise = require('bluebird')
 
-exports.queryMongo = queryMongo;
-exports.insertDocument = insertDocument;
-exports.buildQueryJson = buildQueryJson;
-exports.deleteDocument = deleteDocument;
-exports.documentExists = documentExists;
+exports.queryMongo = queryMongo
+exports.insertDocument = insertDocument
+exports.buildQueryJson = buildQueryJson
+exports.deleteDocument = deleteDocument
+exports.documentExists = documentExists
 
-var operatorMap = {
-    '=': '$eq',
-    '<': '$lt',
-    '>': '$gt',
-    '<=': '$lte',
-    '>=': '$gte',
-    '!=': '$ne'
+const operatorMap = {
+  '=': '$eq',
+  '<': '$lt',
+  '>': '$gt',
+  '<=': '$lte',
+  '>=': '$gte',
+  '!=': '$ne'
 }
 
-function queryMongo(db, collection, query) {
-    return new Promise(function (fullfill, reject) {
-        
-        var cursor = db.collection(collection).find(query)
-        var results = []
-        cursor.each(function(err, doc) {
-            if(err != null) { reject(err) }
+function queryMongo (db, collection, query) {
+  return new Promise(function (resolve, reject) {
+    const cursor = db.collection(collection).find(query)
+    const results = []
+    
+    cursor.each(function (err, doc) {
+      if (err != null) { reject(err) }
             
-            if (doc != null) {
-                results.push(doc)
-            } else {
-                fullfill(results)
-            }
-        });
-
-    });
-};
-
-function buildQueryJson(filters) {
-    var queryJson = {}
-    filters.forEach(function(value) {
-        var field = value.field
-        var operator = value.operator
-        var value = value.value
-        var mongoOperator = operatorMap[operator]
-        var comparison = {}
-        comparison[mongoOperator] = value
-        queryJson[field] = comparison
+      if (doc != null) {
+        results.push(doc)
+      } else {
+        resolve(results)
+      }
     })
-    return queryJson
+  })
 }
 
-function insertDocument(db, name, doc) {
-    return new Promise(function (fullfill, reject) {
-        db.collection(name).insert(doc, function(err, result) {
-            if(err != null) { reject(err) }
-            
-            fullfill({"Success":true})
-        });    
-    });
+function buildQueryJson (filters) {
+  const queryJson = {}
+  
+  filters.forEach(function (value) {
+    const field = value.field
+    const operator = value.operator
+    const val = value.value
+    const mongoOperator = operatorMap[operator]
+    const comparison = {}
+    
+    comparison[mongoOperator] = val
+    queryJson[field] = comparison
+  })
+  
+  return queryJson
 }
 
-function deleteDocument(db, name) {
-    return new Promise(function (fullfill, reject) {
-        db.collection(name).drop(function(err,numberRemoved){
-            if(err != null) { reject(err) }
-            
-            fullfill({"Success":true})
-        });
-    });
+function insertDocument (db, name, doc) {
+  return new Promise(function (resolve, reject) {
+    db.collection(name).insert(doc, function (err, result) {
+      if (err != null) { reject(err) }
+    
+      resolve({'Succes': true})
+    })
+  })
 }
 
-function documentExists(db, collectionName) {
-    return new Promise(function (fullfill, reject) {
-        db.collectionNames(function(err,collections){
-            if(err != null) { reject(err) }
+function deleteDocument (db, name) {
+  return new Promise(function (resolve, reject) {
+    db.collection(name).drop(function (err, numberRemoved) {
+      if (err != null) { reject(err) }
             
-            if( collections.indexOf(collectionName) > -1) {
-                fullfill({"hasData":true})
-            } else {
-                fullfill({"hasData":false})   
-            }
-        });
-        
-    });
+      resolve({'Success': true})
+    })
+  })
+}
+
+function documentExists (db, collectionName) {
+  return new Promise(function (resolve, reject) {
+    db.collectionNames(function (err, collections) {
+      if (err != null) { reject(err) }
+            
+      if (collections.indexOf(collectionName) > -1) {
+        resolve({'hasData': true})
+      } else {
+        resolve({'hasData': false})
+      }
+    })
+  })
 }
