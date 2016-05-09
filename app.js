@@ -18,7 +18,7 @@ require('./models/Sources')
 require('./models/Visualizations')
 require('./models/Dashboards')
 
-mongoose.connect('mongodb://localhost/safe')
+mongoose.connect(config.mongourl)
 
 const routes = require('./routes/index')
 const users = require('./routes/users')
