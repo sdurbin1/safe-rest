@@ -31,6 +31,7 @@ const dashboards = require('./routes/dashboards')
 const authentication = require('./routes/authentication')
 const query = require('./routes/query')
 const upload = require('./routes/upload')
+const cloud = require('./routes/cloud')
 
 const app = express()
 
@@ -81,6 +82,7 @@ app.use('/authenticate', authentication)
 app.use('/sources', query)
 app.use('/sources', upload)
 app.use('/execute', execute)
+app.use('/cloud', cloud)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
