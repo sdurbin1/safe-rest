@@ -58,8 +58,9 @@ curl localhost:8080/analytics/56e816d8abda61a618bfccd5
 Update an analytic
 ```
 curl localhost:8080/analytics/56ea975aec9cc0f3098ae316 -H "Content-Type: application/json" -X PUT --data '{"name":"New Name"}' 
-##### DELETE /analytics/:analytic
 ```
+
+##### DELETE /analytics/:analytic
 Delete an analytic
 ```
 curl -X DELETE http://localhost:8080/analytics/56ea975aec9cc0f3098ae316
