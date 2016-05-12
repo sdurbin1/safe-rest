@@ -66,7 +66,8 @@ function count (visualization, res, queryJson) {
       if (err) {
         console.log(err)
       } else if (result.length) {
-        res.json(result)
+       var out = transformBasic(result)
+        res.json(out)
       } else {
         console.log('No document(s) found with defined "find" criteria!')
       }
@@ -89,7 +90,8 @@ function detailedCount (visualization, res, queryJson) {
       if (err) {
         console.log(err)
       } else if (result.length) {
-        res.json(result)
+       var out = transformDetailed(result)
+        res.json(out)
       } else {
         console.log('No document(s) found with defined "find" criteria!')
       }
@@ -111,10 +113,40 @@ function average (visualization, res, queryJson) {
       if (err) {
         console.log(err)
       } else if (result.length) {
-        res.json(result)
+       var out = transformBasic(result)
+        res.json(out)
       } else {
         console.log('No document(s) found with defined "find" criteria!')
       }
     })
   })
+}
+
+
+function transformBasic (raw) {
+  const output = []
+  
+  for (var i=0; i < raw.length; i=i+1){
+    var record = {}
+    record["Value"] = raw[i]._id
+    record["Count"] = raw[i].Count
+    output.push(record)
+  }
+  
+  return output
+}
+
+
+function transformDetailed (raw) {
+  const output = []
+  
+  for (var i=0; i < raw.length; i=i+1){
+    var record = {}
+    record["Value"] = raw[i]._id
+    record["Details"] = raw[i].Details
+    record["Count"] = raw[i].Count
+    output.push(record)
+  }
+  
+  return output
 }
