@@ -3,6 +3,7 @@ const router = express.Router()
 const MongoClient = require('mongodb').MongoClient
 const assert = require('assert')
 const url = 'mongodb://localhost:27017/safe'
+const mongoUtil = require('../utils/mongoUtil')
 
 module.exports = router
 
@@ -37,20 +38,21 @@ router.get('/', function (req, res, next) {
 })
 
 /* GET /visualizations/:visualization */
-router.get('/:visualization', function (req, res, next) {
+router.post('/:visualization', function (req, res, next) {
+  const queryJson = mongoUtil.buildQueryJson(req.body.filters)
   req.visualization.populate(['visualizationType', 'analytic', 'source'], function (err, visualization) {
     if (err) { return next(err) }
     if (req.visualization.analytic.name === 'Count') {
-      count(req.visualization, res)
+      count(req.visualization, res, queryJson)
     } else if (req.visualization.analytic.name === 'Average') {
-      average(req.visualization, res)
+      average(req.visualization, res, queryJson)
     } else if (req.visualization.analytic.name === 'Detailed Count') {
-      detailedCount(req.visualization, res)
+      detailedCount(req.visualization, res, queryJson)
     }
   })
 })
 
-function count (visualization, res) {
+function count (visualization, res, queryJson) {
   const src = visualization.source._id
   const params = visualization.analyticParams
     
@@ -59,7 +61,7 @@ function count (visualization, res) {
         
     const collection = db.collection('' + src)
   
-    collection.aggregate([{$group: {_id: params, count: {$sum: 1}}}], function (err, result) {
+    collection.aggregate([{$match: queryJson}, {$group: {_id: params, count: {$sum: 1}}}], function (err, result) {
       if (err) {
         console.log(err)
       } else if (result.length) {
@@ -71,7 +73,7 @@ function count (visualization, res) {
   })
 }
 
-function detailedCount (visualization, res) {
+function detailedCount (visualization, res, queryJson) {
   const src = visualization.source._id
   const groupBy = visualization.analyticParams.groupBy
   const topLevel = visualization.analyticParams.topLevel
@@ -83,7 +85,7 @@ function detailedCount (visualization, res) {
       
     const collection = db.collection('' + src)
 
-    collection.aggregate([{$group: {_id: {groupBy}, 'subTotals': {$sum: 1}}}, {$group: {_id: topLevel, 'Count': {$sum: '$subTotals'}, 'Details': {'$push': {'Value': lowerLevel, 'Count': '$subTotals'}}}}], function (err, result) {
+    collection.aggregate([{$match: queryJson}, {$group: {_id: {groupBy}, 'subTotals': {$sum: 1}}}, {$group: {_id: topLevel, 'Count': {$sum: '$subTotals'}, 'Details': {'$push': {'Value': lowerLevel, 'Count': '$subTotals'}}}}], function (err, result) {
       if (err) {
         console.log(err)
       } else if (result.length) {
@@ -95,7 +97,7 @@ function detailedCount (visualization, res) {
   })
 }
 
-function average (visualization, res) {
+function average (visualization, res, queryJson) {
     const src = visualization.source._id
   const params = visualization.analyticParams.groupBy
   const averageOn = visualization.analyticParams.averageOn
@@ -105,7 +107,7 @@ function average (visualization, res) {
       
     const collection = db.collection('' + src)
 
-    collection.aggregate([{$group: {_id: params, count: {$avg: averageOn}}}], function (err, result) {
+    collection.aggregate([{$match: queryJson}, {$group: {_id: params, count: {$avg: averageOn}}}], function (err, result) {
       if (err) {
         console.log(err)
       } else if (result.length) {

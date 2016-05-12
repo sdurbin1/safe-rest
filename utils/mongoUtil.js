@@ -33,6 +33,8 @@ function queryMongo (db, collection, query) {
 }
 
 function buildQueryJson (filters) {
+  if(!filters) { return {} }
+  
   const queryJson = {}
   
   filters.forEach(function (value) {
