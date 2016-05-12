@@ -282,3 +282,7 @@ Run analytic based on parameters of the provided visualization id and return jso
 ```
 curl localhost:8080/execute/572a1c11fbdcac91218b9a1f
 ```
+Accept an optional list of filters
+```
+curl localhost:8080/execute/572a1c11fbdcac91218b9a1f -H 'Content-Type: application/json' --data '{"filters": [{"field": "Gender","operator": "=","value": "M"}]}'
+```
