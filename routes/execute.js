@@ -40,6 +40,7 @@ router.get('/', function (req, res, next) {
 /* GET /visualizations/:visualization */
 router.post('/:visualization', function (req, res, next) {
   const queryJson = mongoUtil.buildQueryJson(req.body.filters)
+  
   req.visualization.populate(['visualizationType', 'analytic', 'source'], function (err, visualization) {
     if (err) { return next(err) }
     if (req.visualization.analytic.name === 'Count') {
@@ -78,7 +79,6 @@ function detailedCount (visualization, res, queryJson) {
   const groupBy = visualization.analyticParams.groupBy
   const topLevel = visualization.analyticParams.topLevel
   const lowerLevel = visualization.analyticParams.lowerLevel
-  
     
   MongoClient.connect(url, function (err, db) {
     assert.equal(null, err)
@@ -98,7 +98,7 @@ function detailedCount (visualization, res, queryJson) {
 }
 
 function average (visualization, res, queryJson) {
-    const src = visualization.source._id
+  const src = visualization.source._id
   const params = visualization.analyticParams.groupBy
   const averageOn = visualization.analyticParams.averageOn
     
