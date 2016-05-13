@@ -128,8 +128,12 @@ function transformBasic (raw) {
   
   for (var i=0; i < raw.length; i=i+1){
     var record = {}
-    record["Value"] = raw[i]._id
-    record["Count"] = raw[i].Count
+    for (var k in raw[i]['_id']){
+      console.log(k)
+      record["Value"] = raw[i]['_id'][k]
+    }
+        
+    record["Count"] = raw[i].count
     output.push(record)
   }
   
