@@ -49,6 +49,8 @@ router.post('/:visualization', function (req, res, next) {
       average(req.visualization, res, queryJson)
     } else if (req.visualization.analytic.name === 'Detailed Count') {
       detailedCount(req.visualization, res, queryJson)
+    } else {
+      search(req, res, queryJson)
     }
   })
 })
@@ -66,13 +68,24 @@ function count (visualization, res, queryJson) {
       if (err) {
         console.log(err)
       } else if (result.length) {
-       var out = transformBasic(result)
+       var out = transformBasicCount(result)
         res.json(out)
       } else {
         console.log('No document(s) found with defined "find" criteria!')
       }
     })
   })
+}
+
+function search (req, res, queryJson) {
+  const src = req.visualization.source._id.toString()
+
+    mongoUtil.queryMongo(req.app.get('db'), src, queryJson)
+    .then((out) => res.json(out))
+    .catch(error => {
+      res.status(503).send(error)
+    })
+    
 }
 
 function detailedCount (visualization, res, queryJson) {
@@ -109,11 +122,11 @@ function average (visualization, res, queryJson) {
       
     const collection = db.collection('' + src)
 
-    collection.aggregate([{$match: queryJson}, {$group: {_id: params, count: {$avg: averageOn}}}], function (err, result) {
+    collection.aggregate([{$match: queryJson}, {$group: {_id: params, average: {$avg: averageOn}}}], function (err, result) {
       if (err) {
         console.log(err)
       } else if (result.length) {
-       var out = transformBasic(result)
+       var out = transformBasicAverage(result)
         res.json(out)
       } else {
         console.log('No document(s) found with defined "find" criteria!')
@@ -123,7 +136,7 @@ function average (visualization, res, queryJson) {
 }
 
 
-function transformBasic (raw) {
+function transformBasicCount (raw) {
   const output = []
   
   for (var i=0; i < raw.length; i=i+1){
@@ -139,6 +152,41 @@ function transformBasic (raw) {
   
   return output
 }
+
+function transformBasicAverage (raw) {
+  const output = []
+  
+  for (var i=0; i < raw.length; i=i+1){
+    var record = {}
+    for (var k in raw[i]['_id']){
+      console.log(k)
+      record["Value"] = raw[i]['_id'][k]
+    }
+        
+    record["Average"] = raw[i].average
+    output.push(record)
+  }
+  
+  return output
+}
+
+
+function transformBasic (raw) {
+  const output = []
+  
+  for (var i=0; i < raw.length; i=i+1){
+    var record = {}
+    for (var k in raw[i]){
+      console.log(k)
+      record[k] = raw[i][k]
+    }
+        
+    output.push(record)
+  }
+  
+  return output
+}
+
 
 
 function transformDetailed (raw) {
