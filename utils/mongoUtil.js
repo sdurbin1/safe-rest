@@ -19,7 +19,7 @@ function queryMongo (db, collection, query) {
   return new Promise(function (resolve, reject) {
     const cursor = db.collection(collection).find(query)
     const results = []
-    
+
     cursor.each(function (err, doc) {
       if (err != null) { reject(err) }
             
@@ -34,7 +34,6 @@ function queryMongo (db, collection, query) {
 
 function buildQueryJson (filters) {
   if (!filters) { return {} }
-  
   const queryJson = {}
   
   filters.forEach(function (value) {
