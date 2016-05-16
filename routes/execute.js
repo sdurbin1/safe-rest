@@ -79,12 +79,20 @@ function count (visualization, res, queryJson) {
 
 function search (req, res, queryJson) {
   const src = req.visualization.source._id.toString()
+  if (req.visualization.visualizationType.name === 'Map'){
+    mongoUtil.queryMongo(req.app.get('db'), src, queryJson)
+    .then(function(out){ console.log("Transforming map"); var output = transformMap(req.visualization, out); res.json(output)})
+    .catch(error => {
+      res.status(503).send(error)
+    })    
+  } else {
 
     mongoUtil.queryMongo(req.app.get('db'), src, queryJson)
     .then((out) => res.json(out))
     .catch(error => {
       res.status(503).send(error)
     })
+  }
     
 }
 
@@ -177,7 +185,6 @@ function transformBasic (raw) {
   for (var i=0; i < raw.length; i=i+1){
     var record = {}
     for (var k in raw[i]){
-      console.log(k)
       record[k] = raw[i][k]
     }
         
@@ -187,6 +194,24 @@ function transformBasic (raw) {
   return output
 }
 
+function transformMap (visualization, raw) {
+  const output = []
+  console.log("RAW:"+raw)
+  for (var i=0; i < raw.length; i=i+1){
+    var record = {}
+    for (var k in raw[i]){
+      if (k === visualization.visualizationParams.longitudeField || k === visualization.visualizationParams.latitudeField){
+        record[k] = raw[i][k]
+      } else if (k == visualization.visualizationParams.labelField){
+        record['Label'] = raw[i][k]
+      }
+    }
+        
+    output.push(record)
+  }
+  
+  return output
+}
 
 
 function transformDetailed (raw) {
