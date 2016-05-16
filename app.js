@@ -16,6 +16,7 @@ require('./models/Analytics')
 require('./models/Sources')
 require('./models/Visualizations')
 require('./models/Dashboards')
+require('./extensions')
 
 mongoose.connect(config.mongourl)
 
