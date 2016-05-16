@@ -9,7 +9,6 @@ const http = require('http')
 const https = require('https')
 const connectMongo = require('connect-mongo')
 const mongoose = require('mongoose')
-
 const config = require('./config')
 
 require('./models/VisualizationTypes')
@@ -32,7 +31,7 @@ const authentication = require('./routes/authentication')
 const query = require('./routes/query')
 const upload = require('./routes/upload')
 const cloud = require('./routes/cloud')
-
+const cloudExecute = require('./routes/cloudExecute')
 const app = express()
 
 // view engine setup
@@ -83,6 +82,7 @@ app.use('/sources', query)
 app.use('/sources', upload)
 app.use('/execute', execute)
 app.use('/cloud', cloud)
+app.use('/cloudExecute', cloudExecute)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
