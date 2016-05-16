@@ -18,7 +18,7 @@ router.param('analytic', function (req, res, next, id) {
     if (!analytic) { return next(new Error('can\'t find analytic')) }
 
     req.analytic = analytic
-    
+
     return next()
   })
 })
@@ -32,7 +32,7 @@ router.param('visualizationType', function (req, res, next, id) {
     if (!visualizationType) { return next(new Error('can\'t find visualization-type')) }
 
     req.visualizationType = visualizationType
-    
+
     return next()
   })
 })
@@ -43,7 +43,7 @@ router.param('visualizationType', function (req, res, next, id) {
 router.get('/', function (req, res, next) {
   Analytic.find().populate('visualizationTypes').exec(function (err, analytics) {
     if (err) { return next(err) }
-    
+
     res.json(analytics)
   })
 })
@@ -54,10 +54,10 @@ router.post('/', function (req, res, next) {
 
   analytic.save(function (err, analytic) {
     if (err) { return next(err) }
-    
+
     analytic.populate('visualizationTypes', function (err, analytic) {
       if (err) { return next(err) }
-      
+
       res.json(analytic)
     })
   })
@@ -85,7 +85,7 @@ router.put('/:analytic', function (req, res, next) {
 router.delete('/:analytic', function (req, res, next) {
   Analytic.find({'_id': req.analytic._id}).remove(function (err) {
     if (err) { return next(err) }
-  
+
     res.json({})
   })
 })
@@ -104,14 +104,14 @@ router.get('/:analytic/visualization-types', function (req, res, next) {
 router.put('/:analytic/visualization-types', function (req, res, next) {
   // first doing concat as req.body["visualizaitonTypes"] is not an array if only one element passed in
   const updatedVisualizationTypes = [].concat(req.body['visualizationTypes'])
-  
+
   req.analytic.visualizationTypes.push.apply(req.analytic.visualizationTypes, updatedVisualizationTypes)
   req.analytic.save(function (err, analytic) {
     if (err) { return next(err) }
-    
+
     analytic.populate('visualizationTypes', function (err, analytic) {
       if (err) { return next(err) }
-      
+
       res.json(analytic.visualizationTypes)
     })
   })
@@ -126,7 +126,7 @@ router.delete('/:analytic/visualization-types/:visualizationType', function (req
 
     analytic.populate('visualizationTypes', function (err, analytic) {
       if (err) { return next(err) }
-      
+
       res.json(analytic.visualizationTypes)
     })
   })
