@@ -10,6 +10,7 @@ const https = require('https')
 const connectMongo = require('connect-mongo')
 const mongoose = require('mongoose')
 const config = require('./config')
+const compression = require('compression')
 
 require('./models/VisualizationTypes')
 require('./models/Analytics')
@@ -34,6 +35,8 @@ const upload = require('./routes/upload')
 const cloud = require('./routes/cloud')
 const cloudExecute = require('./routes/cloudExecute')
 const app = express()
+
+app.use(compression())
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
