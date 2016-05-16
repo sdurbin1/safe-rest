@@ -27,4 +27,4 @@ exports.servercertificateauthority = 'ssl/ca.crt'
 // Environment
 exports.environment = 'development'
 
-exports.hosts = 'localhost'
+exports.host = 'localhost'
