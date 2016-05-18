@@ -29,6 +29,12 @@ mongod --smallfiles
 npm run-script db-fill
 ```
 
+### Edit config.js
+Edit the appropriate line in `config.js`
+```
+exports.host = 'https://safe-app-<username>.c9users.io'
+```
+
 ### Run application
 ```
 node app.js
