@@ -39,7 +39,7 @@ describe('CRUD for analytics', function () {
     })
   })
   
-  it('POST /analytics', function testCreate (done) {
+  it('POST /analytics', function testPostAnalytics (done) {
     request(server)
       .post('/analytics')
       .send({'name': 'analytic1'})
@@ -137,10 +137,12 @@ describe('CRUD for analytics', function () {
   })
   
   it('DELETE /analytics/:analytic/visualization-types/:visualizationType', function testDeleteVisualizationType (done) {
+    // First add visualization-type to analytic so we can test deleting it
     request(server)
       .put('/analytics/' + cannedAnalytic._id + '/visualization-types')
       .send({'visualizationTypes': [cannedVisualizationType._id]})
       .end(function () {
+        // Test delete
         request(server)
           .delete('/analytics/' + cannedAnalytic._id + '/visualization-types/' + cannedVisualizationType._id)
           .expect(200, [], done)
