@@ -1,6 +1,10 @@
 parser: babel-eslint
 globals:
   $: false
+  describe: false
+  it: false
+  beforeEach: false
+  afterEach: false
 parserOptions:
   ecmaFeatures:
     jsx: true

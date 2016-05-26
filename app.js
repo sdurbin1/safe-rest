@@ -19,7 +19,12 @@ require('./models/Visualizations')
 require('./models/Dashboards')
 require('./extensions')
 
-mongoose.connect(config.mongourl)
+if (require.main === module) {
+  mongoose.connect(config.mongourl)
+} else {
+  // for unit testing
+  mongoose.connect(config.mongourltest)
+}
 
 const routes = require('./routes/index')
 const users = require('./routes/users')
@@ -35,6 +40,22 @@ const upload = require('./routes/upload')
 const cloud = require('./routes/cloud')
 const cloudExecute = require('./routes/cloudExecute')
 const app = express()
+let server = null
+const serveroptions = {
+  key: fs.readFileSync(config.serverkey),
+  cert: fs.readFileSync(config.servercertificate),
+  ca: fs.readFileSync(config.servercertificateauthority),
+  requestCert: true,
+  rejectUnauthorized: true,
+  secureProtocol: 'TLSv1_2_method',
+  ciphers: 'ECDHE-RSA-AES128-SHA256:AES128-GCM-SHA256:RC4:HIGH:!MD5:!aNULL:!EDH'
+}
+
+if (config.environment === 'production') {
+  server = https.createServer(serveroptions, app)
+} else {
+  server = http.createServer(app)
+}
 
 app.use(compression())
 
@@ -153,24 +174,23 @@ process.on('SIGINT', exitHandler.bind(null, {exit: true}))
 // catches uncaught exceptions
 process.on('uncaughtException', exitHandler.bind(null, {exit: true}))
 
-module.exports = app
-
-const serveroptions = {
-  key: fs.readFileSync(config.serverkey),
-  cert: fs.readFileSync(config.servercertificate),
-  ca: fs.readFileSync(config.servercertificateauthority),
-  requestCert: true,
-  rejectUnauthorized: true,
-  secureProtocol: 'TLSv1_2_method',
-  ciphers: 'ECDHE-RSA-AES128-SHA256:AES128-GCM-SHA256:RC4:HIGH:!MD5:!aNULL:!EDH'
-}
-
-if (config.environment === 'production') {
-  https.createServer(serveroptions, app).listen(app.get('port'), function () {
+const start = function () {
+  server.listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'))
   })
-} else {
-  http.createServer(app).listen(app.get('port'), function () {
-    console.log('Express http server listening on port ' + app.get('port'))
-  })
 }
+
+const stop = function () {
+  server.close()
+}
+
+if (require.main === module) {
+  start()
+} else {
+  // for unit testing
+  console.info('Running app as a module')
+  module.exports = start
+  module.exports = stop
+}
+
+module.exports = app

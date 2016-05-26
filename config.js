@@ -1,12 +1,14 @@
 const mongoaddress = 'localhost'
 const mongoport = '27017'
 const mongoschema = 'safe'
+const mongoschematest = 'safe_test'
 
 exports.mongoaddress = mongoaddress
 exports.mongoport = mongoport
 exports.mongoschema = mongoschema
 
 exports.mongourl = 'mongodb://' + mongoaddress + ':' + mongoport + '/' + mongoschema
+exports.mongourltest = 'mongodb://' + mongoaddress + ':' + mongoport + '/' + mongoschematest
 
 exports.mongoenabled = true
 
