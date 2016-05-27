@@ -80,11 +80,20 @@ function count (visualization, res, queryJson) {
 function search (req, res, queryJson) {
   const src = req.visualization.source._id.toString()
   if (req.visualization.visualizationType.name === 'Map'){
+    if (req.visualization.analyticParams.type == 'multiQuery'){
+      
+      runMultipleQueries(req).then(function(results){
+      var output = transformLayeredMap(req.visualization, results)
+      res.json(output)
+      })
+
+    } else {
     mongoUtil.queryMongo(req.app.get('db'), src, queryJson)
-    .then(function(out){ console.log("Transforming map"); var output = transformMap(req.visualization, out); res.json(output)})
+    .then(function(out){ console.log(out); var output = transformMap(req.visualization, out); res.json(output)})
     .catch(error => {
       res.status(503).send(error)
     })    
+    }  
   } else {
 
     mongoUtil.queryMongo(req.app.get('db'), src, queryJson)
@@ -196,23 +205,68 @@ function transformBasic (raw) {
 
 function transformMap (visualization, raw) {
   const output = []
-  console.log("RAW:"+raw)
+  
   for (var i=0; i < raw.length; i=i+1){
     var record = {}
-    for (var k in raw[i]){
-      if (k === visualization.visualizationParams.longitudeField || k === visualization.visualizationParams.latitudeField){
-        record[k] = raw[i][k]
-      } else if (k == visualization.visualizationParams.labelField){
-        record['Label'] = raw[i][k]
+
+    if (raw[i][visualization.visualizationParams.longField] != null){
+      record[visualization.visualizationParams.longField] = raw[i][visualization.visualizationParams.longField]
+    }
+      if (raw[i][visualization.visualizationParams.latField] != null){
+      record[visualization.visualizationParams.latField] = raw[i][visualization.visualizationParams.latField]
+    }
+    for (var l = 0; l< visualization.visualizationParams.label.length; l++){
+      if (raw[i][visualization.visualizationParams.label[l]] != null){
+        record[visualization.visualizationParams.label[l]] = raw[i][visualization.visualizationParams.label[l]]
       }
     }
-        
+   
+    
     output.push(record)
+  
   }
   
   return output
 }
+  
+function transformLayeredMap (visualization, raw) {
+  const outputObject = {}
+  const layers = []
 
+  for (var i=0; i < raw.length; i=i+1){
+    var results = raw[i].results
+    var type = raw[i].type
+    var outputRecords = []
+    for (var j=0; j<results.length; j=j+1){
+      
+    var record = {}
+  
+    if (results[j][visualization.visualizationParams.longField] != null){
+      record[visualization.visualizationParams.longField] = results[j][visualization.visualizationParams.longField]
+    }
+      if (results[j][visualization.visualizationParams.latField] != null){
+      record[visualization.visualizationParams.latField] = results[j][visualization.visualizationParams.latField]
+    }
+    for (var l = 0; l< visualization.visualizationParams.label.length; l++){
+      if (results[j][visualization.visualizationParams.label[l]] != null){
+        record[visualization.visualizationParams.label[l]] = results[j][visualization.visualizationParams.label[l]]
+      }
+    }
+   
+    
+    outputRecords.push(record)
+    }
+    if (type === 'BASE'){
+      outputObject["baseData"] = outputRecords
+    } else {
+      layers.push(outputRecords)
+    }
+  
+  }
+  outputObject["layers"] = layers
+  
+  return outputObject
+}
 
 function transformDetailed (raw) {
   const output = []
@@ -226,4 +280,15 @@ function transformDetailed (raw) {
   }
   
   return output
+}
+
+function runMultipleQueries(req){
+  const src = req.visualization.source._id.toString()
+  const layers = req.visualization.analyticParams.outputTypeFilters
+  const db = req.app.get('db')
+  
+  return Promise.all(layers.map(function (layer) {
+    const query = mongoUtil.buildFilterJson(layer.filter)
+      return mongoUtil.labeledQueryMongo(db, src, query, layer.dataType, layer.name)
+  }));
 }
