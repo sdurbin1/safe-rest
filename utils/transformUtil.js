@@ -74,7 +74,9 @@ function transformLayeredMap (visualization, raw) {
   for (let i=0; i < raw.length; i=i+1){
     const results = raw[i].results
     const type = raw[i].type
+    const name = raw[i].name
     const outputRecords = []
+    const layerObj = {}
     
     for (let j=0; j<results.length; j=j+1){
     const record = {}
@@ -97,7 +99,9 @@ function transformLayeredMap (visualization, raw) {
     if (type === 'BASE'){
       outputObject["baseData"] = outputRecords
     } else {
-      layers.push(outputRecords)
+        layerObj["name"] = name
+        layerObj["data"] = outputRecords
+      layers.push(layerObj)
     }
   }
   outputObject["layers"] = layers
