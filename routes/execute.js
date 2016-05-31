@@ -1,4 +1,4 @@
-"use strict";
+'use strict'
 const express = require('express')
 const router = express.Router()
 const MongoClient = require('mongodb').MongoClient
@@ -70,7 +70,7 @@ function count (visualization, res, queryJson) {
       if (err) {
         console.log(err)
       } else if (result.length) {
-       const out = transformUtil.transformBasicCount(result)
+        const out = transformUtil.transformBasicCount(result)
        
         res.json(out)
       } else {
@@ -83,31 +83,33 @@ function count (visualization, res, queryJson) {
 function search (req, res, queryJson) {
   const src = req.visualization.source._id.toString()
   
-  if (req.visualization.visualizationType.name === 'Map'){
-    if (req.visualization.analyticParams.type == 'multiQuery'){
-      runMultipleQueries(req).then(function(results){
-      const output = transformUtil.transformLayeredMap(req.visualization, results)
+  if (req.visualization.visualizationType.name === 'Map') {
+    if (req.visualization.analyticParams.type === 'multiQuery') {
+      runMultipleQueries(req).then(function (results) {
+        const output = transformUtil.transformLayeredMap(req.visualization, results)
       
-      res.json(output)
+        res.json(output)
       })
-    } else if (req.visualization.analyticParams.toLatField != null){
-          mongoUtil.queryMongo(req.app.get('db'), src, queryJson)
-    .then(function(out){
-       const output = transformUtil.transformP2PMap(req.visualization, out)
+    } else if (req.visualization.analyticParams.toLatField != null) {
+      mongoUtil.queryMongo(req.app.get('db'), src, queryJson)
+      .then(function (out) {
+        const output = transformUtil.transformP2PMap(req.visualization, out)
       
-      res.json(output)})
-    .catch(error => {
-      res.status(503).send(error)
-    })
+        res.json(output)
+      })
+      .catch(error => {
+        res.status(503).send(error)
+      })
     } else {
-    mongoUtil.queryMongo(req.app.get('db'), src, queryJson)
-    .then(function(out){
-      const output = transformUtil.transformMap(req.visualization, out);
+      mongoUtil.queryMongo(req.app.get('db'), src, queryJson)
+      .then(function (out) {
+        const output = transformUtil.transformMap(req.visualization, out)
       
-      res.json(output)})
-    .catch(error => {
-      res.status(503).send(error)
-    })
+        res.json(output)
+      })
+      .catch(error => {
+        res.status(503).send(error)
+      })
     }
   } else {
     mongoUtil.queryMongo(req.app.get('db'), src, queryJson)
@@ -133,7 +135,7 @@ function detailedCount (visualization, res, queryJson) {
       if (err) {
         console.log(err)
       } else if (result.length) {
-       const out = transformUtil.transformDetailed(result)
+        const out = transformUtil.transformDetailed(result)
        
         res.json(out)
       } else {
@@ -157,7 +159,7 @@ function average (visualization, res, queryJson) {
       if (err) {
         console.log(err)
       } else if (result.length) {
-       const out = transformBasicAverage(result)
+        const out = transformBasicAverage(result)
        
         res.json(out)
       } else {
@@ -167,26 +169,24 @@ function average (visualization, res, queryJson) {
   })
 }
 
-
 function transformBasicAverage (raw) {
   const output = []
   
-  for (let i=0; i < raw.length; i=i+1){
+  for (let i = 0; i < raw.length; i = i + 1) {
     const record = {}
     
-    for (const k in raw[i]['_id']){
-      record["Value"] = raw[i]['_id'][k]
+    for (const k in raw[i]['_id']) {
+      record['Value'] = raw[i]['_id'][k]
     }
         
-    record["Average"] = raw[i].average
+    record['Average'] = raw[i].average
     output.push(record)
   }
   
   return output
 }
 
-
-function runMultipleQueries(req){
+function runMultipleQueries (req) {
   const src = req.visualization.source._id.toString()
   const layers = req.visualization.analyticParams.outputTypeFilters
   const db = req.app.get('db')
@@ -194,6 +194,6 @@ function runMultipleQueries(req){
   return Promise.all(layers.map(function (layer) {
     const query = mongoUtil.buildFilterJson(layer.filter)
     
-      return mongoUtil.labeledQueryMongo(db, src, query, layer.dataType, layer.name)
-  }));
+    return mongoUtil.labeledQueryMongo(db, src, query, layer.dataType, layer.name)
+  }))
 }

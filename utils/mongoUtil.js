@@ -46,9 +46,9 @@ function labeledQueryMongo (db, collection, query, type, name) {
       if (doc != null) {
         results.push(doc)
       } else {
-        final["type"] = type
-        final["name"] = name
-        final["results"] = results
+        final['type'] = type
+        final['name'] = name
+        final['results'] = results
         resolve(final)
       }
     })
@@ -77,14 +77,14 @@ function buildFilterJson (value) {
   if (!value) { return {} }
   const queryJson = {}
   
-    const field = value.field
-    const operator = value.operator
-    const val = value.value
-    const mongoOperator = operatorMap[operator]
-    const comparison = {}
+  const field = value.field
+  const operator = value.operator
+  const val = value.value
+  const mongoOperator = operatorMap[operator]
+  const comparison = {}
     
-    comparison[mongoOperator] = val
-    queryJson[field] = comparison
+  comparison[mongoOperator] = val
+  queryJson[field] = comparison
   
   return queryJson
 }
