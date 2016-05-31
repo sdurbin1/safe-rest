@@ -19,11 +19,13 @@ require('./models/Visualizations')
 require('./models/Dashboards')
 require('./extensions')
 
+let mongourl
+
 if (require.main === module) {
-  mongoose.connect(config.mongourl)
+  mongourl = config.mongourl
 } else {
   // for unit testing
-  mongoose.connect(config.mongourltest)
+  mongourl = config.mongourltest
 }
 
 const routes = require('./routes/index')
@@ -72,9 +74,11 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
+mongoose.connect(mongourl)
+
 const MongoStore = connectMongo(session)
 const mongoOptions = {
-  url: config.mongourl,
+  url: mongourl,
   pool: true
 }
 
@@ -147,7 +151,7 @@ app.use(function (err, req, res, next) {
 if (config.mongoenabled === true) {
   const MongoClient = require('mongodb').MongoClient
 
-  MongoClient.connect(config.mongourl, function (err, db) {
+  MongoClient.connect(mongourl, function (err, db) {
     if (err !== 'null') {
       app.set('db', db)
     } else {

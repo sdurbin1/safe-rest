@@ -51,8 +51,9 @@ router.post('/:source/data', function (req, res, next) {
 /* Create source and upload document */
 router.post('/data', function (req, res, next) {
   const doc = req.body.document
+  const sourceJson = req.body.source
 
-  const source = new Source(source)
+  const source = new Source(sourceJson)
     
   source.save(function (err, source) {
     if (err) { return next(err) }
@@ -68,7 +69,7 @@ router.post('/data', function (req, res, next) {
 /* GET /sources/:source/hasData */
 router.get('/:source/hasData', function (req, res, next) {
   const sourceId = req.source._id.toString()
-    
+
   mongoUtil.documentExists(req.app.get('db'), sourceId)
     .then((out) => res.json(out))
     .catch(error => {
