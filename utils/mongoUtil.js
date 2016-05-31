@@ -55,7 +55,7 @@ function insertDocument (db, name, doc) {
     db.collection(name).insert(doc, function (err, result) {
       if (err != null) { reject(err) }
     
-      resolve({'Succes': true})
+      resolve({'success': true})
     })
   })
 }
@@ -65,17 +65,18 @@ function deleteDocument (db, name) {
     db.collection(name).drop(function (err, numberRemoved) {
       if (err != null) { reject(err) }
             
-      resolve({'Success': true})
+      resolve({'success': true})
     })
   })
 }
 
 function documentExists (db, collectionName) {
   return new Promise(function (resolve, reject) {
-    db.collectionNames(function (err, collections) {
+    db.listCollections({name: collectionName})
+    .next(function (err, collinfo) {
       if (err != null) { reject(err) }
-            
-      if (collections.indexOf(collectionName) > -1) {
+      
+      if (collinfo) {
         resolve({'hasData': true})
       } else {
         resolve({'hasData': false})
