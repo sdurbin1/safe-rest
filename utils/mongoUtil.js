@@ -55,7 +55,7 @@ function insertDocument (db, name, doc) {
     db.collection(name).insert(doc, function (err, result) {
       if (err != null) { reject(err) }
     
-      resolve({'Success': true})
+      resolve({'success': true})
     })
   })
 }
@@ -65,7 +65,7 @@ function deleteDocument (db, name) {
     db.collection(name).drop(function (err, numberRemoved) {
       if (err != null) { reject(err) }
             
-      resolve({'Success': true})
+      resolve({'success': true})
     })
   })
 }

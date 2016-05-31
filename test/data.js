@@ -86,7 +86,7 @@ describe('Test data', function () {
           'name': 'source'
         },
         'upload': {
-          'Success': true
+          'success': true
         }
       }, done)
   })
@@ -117,7 +117,7 @@ describe('Test data', function () {
           'name': 'source1'
         },
         'upload': {
-          'Success': true
+          'success': true
         }
       }, function () {
         mongoUtil.deleteDocument(server.get('db'), sourceId)
@@ -158,7 +158,7 @@ describe('Test data', function () {
       .end(function () {
         request(server)
           .delete('/sources/' + cannedSource._id + '/data')
-          .expect(200, {'Success': true}, done)
+          .expect(200, {'success': true}, done)
       })
   })
   
