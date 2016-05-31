@@ -3,7 +3,8 @@ const express = require('express')
 const router = express.Router()
 const MongoClient = require('mongodb').MongoClient
 const assert = require('assert')
-const url = 'mongodb://localhost:27017/safe'
+const config = require('../config')
+const url = config.mongourl
 const mongoUtil = require('../utils/mongoUtil')
 const transformUtil = require('../utils/transformUtil')
 
