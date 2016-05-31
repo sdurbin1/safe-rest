@@ -1,9 +1,11 @@
+"use strict";
 const express = require('express')
 const router = express.Router()
 const MongoClient = require('mongodb').MongoClient
 const assert = require('assert')
 const url = 'mongodb://localhost:27017/safe'
 const mongoUtil = require('../utils/mongoUtil')
+const transformUtil = require('../utils/transformUtil')
 
 module.exports = router
 
@@ -68,7 +70,8 @@ function count (visualization, res, queryJson) {
       if (err) {
         console.log(err)
       } else if (result.length) {
-       var out = transformBasicCount(result)
+       const out = transformUtil.transformBasicCount(result)
+       
         res.json(out)
       } else {
         console.log('No document(s) found with defined "find" criteria!')
@@ -79,21 +82,40 @@ function count (visualization, res, queryJson) {
 
 function search (req, res, queryJson) {
   const src = req.visualization.source._id.toString()
+  
   if (req.visualization.visualizationType.name === 'Map'){
-    mongoUtil.queryMongo(req.app.get('db'), src, queryJson)
-    .then(function(out){ console.log("Transforming map"); var output = transformMap(req.visualization, out); res.json(output)})
+    if (req.visualization.analyticParams.type == 'multiQuery'){
+      runMultipleQueries(req).then(function(results){
+      const output = transformUtil.transformLayeredMap(req.visualization, results)
+      
+      res.json(output)
+      })
+    } else if (req.visualization.analyticParams.toLatField != null){
+          mongoUtil.queryMongo(req.app.get('db'), src, queryJson)
+    .then(function(out){
+       const output = transformUtil.transformP2PMap(req.visualization, out)
+      
+      res.json(output)})
     .catch(error => {
       res.status(503).send(error)
-    })    
+    })
+    } else {
+    mongoUtil.queryMongo(req.app.get('db'), src, queryJson)
+    .then(function(out){
+      const output = transformUtil.transformMap(req.visualization, out);
+      
+      res.json(output)})
+    .catch(error => {
+      res.status(503).send(error)
+    })
+    }
   } else {
-
     mongoUtil.queryMongo(req.app.get('db'), src, queryJson)
     .then((out) => res.json(out))
     .catch(error => {
       res.status(503).send(error)
     })
   }
-    
 }
 
 function detailedCount (visualization, res, queryJson) {
@@ -111,7 +133,8 @@ function detailedCount (visualization, res, queryJson) {
       if (err) {
         console.log(err)
       } else if (result.length) {
-       var out = transformDetailed(result)
+       const out = transformUtil.transformDetailed(result)
+       
         res.json(out)
       } else {
         console.log('No document(s) found with defined "find" criteria!')
@@ -134,7 +157,8 @@ function average (visualization, res, queryJson) {
       if (err) {
         console.log(err)
       } else if (result.length) {
-       var out = transformBasicAverage(result)
+       const out = transformBasicAverage(result)
+       
         res.json(out)
       } else {
         console.log('No document(s) found with defined "find" criteria!')
@@ -144,30 +168,13 @@ function average (visualization, res, queryJson) {
 }
 
 
-function transformBasicCount (raw) {
-  const output = []
-  
-  for (var i=0; i < raw.length; i=i+1){
-    var record = {}
-    for (var k in raw[i]['_id']){
-      console.log(k)
-      record["Value"] = raw[i]['_id'][k]
-    }
-        
-    record["Count"] = raw[i].count
-    output.push(record)
-  }
-  
-  return output
-}
-
 function transformBasicAverage (raw) {
   const output = []
   
-  for (var i=0; i < raw.length; i=i+1){
-    var record = {}
-    for (var k in raw[i]['_id']){
-      console.log(k)
+  for (let i=0; i < raw.length; i=i+1){
+    const record = {}
+    
+    for (const k in raw[i]['_id']){
       record["Value"] = raw[i]['_id'][k]
     }
         
@@ -179,51 +186,14 @@ function transformBasicAverage (raw) {
 }
 
 
-function transformBasic (raw) {
-  const output = []
+function runMultipleQueries(req){
+  const src = req.visualization.source._id.toString()
+  const layers = req.visualization.analyticParams.outputTypeFilters
+  const db = req.app.get('db')
   
-  for (var i=0; i < raw.length; i=i+1){
-    var record = {}
-    for (var k in raw[i]){
-      record[k] = raw[i][k]
-    }
-        
-    output.push(record)
-  }
-  
-  return output
-}
-
-function transformMap (visualization, raw) {
-  const output = []
-  console.log("RAW:"+raw)
-  for (var i=0; i < raw.length; i=i+1){
-    var record = {}
-    for (var k in raw[i]){
-      if (k === visualization.visualizationParams.longitudeField || k === visualization.visualizationParams.latitudeField){
-        record[k] = raw[i][k]
-      } else if (k == visualization.visualizationParams.labelField){
-        record['Label'] = raw[i][k]
-      }
-    }
-        
-    output.push(record)
-  }
-  
-  return output
-}
-
-
-function transformDetailed (raw) {
-  const output = []
-  
-  for (var i=0; i < raw.length; i=i+1){
-    var record = {}
-    record["Value"] = raw[i]._id
-    record["Details"] = raw[i].Details
-    record["Count"] = raw[i].Count
-    output.push(record)
-  }
-  
-  return output
+  return Promise.all(layers.map(function (layer) {
+    const query = mongoUtil.buildFilterJson(layer.filter)
+    
+      return mongoUtil.labeledQueryMongo(db, src, query, layer.dataType, layer.name)
+  }));
 }
