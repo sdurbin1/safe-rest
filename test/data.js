@@ -11,10 +11,7 @@ const Analytic = mongoose.model('Analytic')
 const Source = mongoose.model('Source')
 const VisualizationType = mongoose.model('VisualizationType')
 const server = require('../app')
-let cannedVisualization
-let cannedAnalytic
 let cannedSource
-let cannedVisualizationType
 const testData = [
   {'Age': 21, 'County': 'Anne Arundel'},
   {'Age': 33, 'County': 'Howard'},
@@ -27,27 +24,7 @@ describe('Test data', function () {
       .then((source) => {
         cannedSource = source
         
-        createObject(Analytic, {'name': 'analytic'})
-          .then((analytic) => {
-            cannedAnalytic = analytic
-            
-            createObject(VisualizationType, {'name': 'chart'})
-              .then((visualizationType) => {
-                cannedVisualizationType = visualizationType
-                
-                createObject(Visualization, {
-                  'name': 'visualization',
-                  'source': cannedSource._id.toString(),
-                  'analytic': cannedAnalytic._id.toString(),
-                  'visualizationType': cannedVisualizationType._id.toString()
-                })
-                .then((visualization) => {
-                  cannedVisualization = visualization
-                    
-                  done()
-                })
-              })
-          })
+        done()
       })
       .catch(error => {
         console.log('Error: ' + error)
