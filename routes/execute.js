@@ -37,9 +37,7 @@ router.get('/', function (req, res, next) {
 
 /* GET /visualizations/:visualization */
 router.post('/:visualization', function (req, res, next) {
-  const queryJson = mongoUtil.buildQueryJson(req.body.filters)
-  
-  req.visualization.execute(queryJson, req.app.get('db')).then(function (out) {
+  req.visualization.execute(req.body, req.app.get('db')).then(function (out) {
     res.json(out)
   }).catch(function (error) {
     res.status(503).send(error)

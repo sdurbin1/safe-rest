@@ -13,8 +13,8 @@ const VisualizationSchema = new mongoose.Schema({
 
 mongoose.model('Visualization', VisualizationSchema)
 
-VisualizationSchema.methods.execute = function execute (queryJson, db) {
-  return mongoExecute.mongoExecute(queryJson, db, this)
+VisualizationSchema.methods.execute = function execute (requestBody, db) {
+  return mongoExecute.mongoExecute(requestBody, db, this)
 }
 
 delete mongoose.connection.models['Visualization']
