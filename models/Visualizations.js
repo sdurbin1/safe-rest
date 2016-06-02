@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const mongoExecute = require('../utils/mongoExecute')
 
 const VisualizationSchema = new mongoose.Schema({
   name: String,
@@ -10,4 +11,11 @@ const VisualizationSchema = new mongoose.Schema({
   analyticParams: mongoose.Schema.Types.Mixed
 })
 
+mongoose.model('Visualization', VisualizationSchema)
+
+VisualizationSchema.methods.execute = function execute (requestBody, db) {
+  return mongoExecute.mongoExecute(requestBody, db, this)
+}
+
+delete mongoose.connection.models['Visualization']
 mongoose.model('Visualization', VisualizationSchema)

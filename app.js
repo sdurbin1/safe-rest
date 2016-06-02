@@ -13,13 +13,6 @@ const mongoose = require('mongoose')
 const config = require('./config')
 const compression = require('compression')
 
-require('./models/VisualizationTypes')
-require('./models/Analytics')
-require('./models/Sources')
-require('./models/Visualizations')
-require('./models/Dashboards')
-require('./extensions')
-
 let mongourl
 
 if (require.main === module) {
@@ -28,6 +21,15 @@ if (require.main === module) {
   // for unit testing
   mongourl = config.mongourltest
 }
+
+mongoose.connect(mongourl)
+
+require('./models/VisualizationTypes')
+require('./models/Analytics')
+require('./models/Sources')
+require('./models/Visualizations')
+require('./models/Dashboards')
+require('./extensions')
 
 const routes = require('./routes/index')
 const users = require('./routes/users')
@@ -75,8 +77,6 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
-
-mongoose.connect(mongourl)
 
 const MongoStore = connectMongo(session)
 const mongoOptions = {
