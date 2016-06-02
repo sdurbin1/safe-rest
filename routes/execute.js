@@ -2,7 +2,6 @@
 const express = require('express')
 const router = express.Router()
 const mongoUtil = require('../utils/mongoUtil')
-const transformUtil = require('../utils/transformUtil')
 
 module.exports = router
 
@@ -45,5 +44,4 @@ router.post('/:visualization', function (req, res, next) {
   }).catch(function (error) {
     res.status(503).send(error)
   })
-  
 })

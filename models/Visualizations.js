@@ -13,7 +13,7 @@ const VisualizationSchema = new mongoose.Schema({
 
 mongoose.model('Visualization', VisualizationSchema)
 
-VisualizationSchema.methods.execute = function execute (queryJson, db)  {
+VisualizationSchema.methods.execute = function execute (queryJson, db) {
   return mongoExecute.mongoExecute(queryJson, db, this)
 }
 

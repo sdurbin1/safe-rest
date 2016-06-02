@@ -1,26 +1,23 @@
 'use strict'
-const express = require('express')
-const router = express.Router()
 const mongoUtil = require('../utils/mongoUtil')
 const transformUtil = require('../utils/transformUtil')
 
 exports.mongoExecute = mongoExecute
 
-
 function mongoExecute (queryJson, db, visualization) {
   return new Promise(function (resolve, reject) {
-     visualization.populate(['visualizationType', 'analytic', 'source'], function (err, visualization) {
-        if (err) { throw err }
-        if (visualization.analytic.name === 'Count') {
-         resolve(count(queryJson, db, visualization))
-        } else if (visualization.analytic.name === 'Average') {
-          resolve(average(queryJson, db, visualization))
-        } else if (visualization.analytic.name === 'Detailed Count') {
-          resolve(detailedCount(queryJson, db, visualization))
-        } else {
-          resolve(search(queryJson, db, visualization))
-        }
-      })
+    visualization.populate(['visualizationType', 'analytic', 'source'], function (err, visualization) {
+      if (err) { throw err }
+      if (visualization.analytic.name === 'Count') {
+        resolve(count(queryJson, db, visualization))
+      } else if (visualization.analytic.name === 'Average') {
+        resolve(average(queryJson, db, visualization))
+      } else if (visualization.analytic.name === 'Detailed Count') {
+        resolve(detailedCount(queryJson, db, visualization))
+      } else {
+        resolve(search(queryJson, db, visualization))
+      }
+    })
   })
 }
 
@@ -63,7 +60,6 @@ function search (queryJson, db, visualization) {
       
         return output
       })
-
     } else {
       return mongoUtil.queryMongo(db, src, queryJson)
       .then(function (out) {
