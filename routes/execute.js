@@ -1,7 +1,6 @@
 'use strict'
 const express = require('express')
 const router = express.Router()
-const mongoUtil = require('../utils/mongoUtil')
 
 module.exports = router
 
@@ -37,7 +36,7 @@ router.get('/', function (req, res, next) {
 
 /* GET /visualizations/:visualization */
 router.post('/:visualization', function (req, res, next) {
-  req.visualization.execute(req.body, req.app.get('db')).then(function (out) {
+  req.visualization.execute(req.body, req.app.get('db'), req.session).then(function (out) {
     res.json(out)
   }).catch(function (error) {
     res.status(503).send(error)

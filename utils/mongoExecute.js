@@ -7,6 +7,7 @@ exports.mongoExecute = mongoExecute
 function mongoExecute (requestBody, db, visualization) {
   return new Promise(function (resolve, reject) {
     const queryJson = mongoUtil.buildQueryJson(requestBody.filters)
+
     visualization.populate(['visualizationType', 'analytic', 'source'], function (err, visualization) {
       if (err) { throw err }
       if (visualization.analytic.name === 'Count') {
