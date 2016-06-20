@@ -5,7 +5,7 @@ module.exports = router
 
 /* GET /authenticate */
 router.get('/', function (req, res, next) {
-  const result = {username: 'user', authenticated: true}
+  const result = {username: 'user', authenticated: true, sid: 'sid'}
     
   res.json(result)
 })
