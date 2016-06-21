@@ -55,6 +55,15 @@ router.get('/', function (req, res, next) {
   })
 })
 
+/* GET /dashboards/simple */
+router.get('/simple', function (req, res, next) {
+  Dashboard.find({}, 'title _id', function (err, dashboards) {
+    if (err) { return next(err) }
+
+    res.json(dashboards)
+  })
+})
+
 /* POST /dashboards */
 router.post('/', function (req, res, next) {
   const dashboard = new Dashboard(req.body)
@@ -132,6 +141,15 @@ router.get('/:dashboard/visualizations', function (req, res, next) {
       {path: 'visualizationType'}
     ]
   }, function (err, dashboard) {
+    if (err) { return next(err) }
+
+    res.json(dashboard.visualizations)
+  })
+})
+
+/* GET /dashboards/:dashboard/visualizations/simple */
+router.get('/:dashboard/visualizations/simple', function (req, res, next) {
+  req.dashboard.populate('visualizations', {'name': 1}, function (err, dashboard) {
     if (err) { return next(err) }
 
     res.json(dashboard.visualizations)
