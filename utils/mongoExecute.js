@@ -4,12 +4,19 @@ const transformUtil = require('../utils/transformUtil')
 
 exports.mongoExecute = mongoExecute
 
+let limit = Number.MAX_SAFE_INTEGER
+
 function mongoExecute (requestBody, db, visualization) {
   return new Promise(function (resolve, reject) {
     const queryJson = mongoUtil.buildQueryJson(requestBody.filters)
 
     visualization.populate(['visualizationType', 'analytic', 'source'], function (err, visualization) {
       if (err) { throw err }
+      
+      if (visualization.visualizationType.queryLimit) {
+        limit = visualization.visualizationType.queryLimit
+      }
+      
       if (visualization.analytic.name === 'Count') {
         resolve(count(queryJson, db, visualization))
       } else if (visualization.analytic.name === 'Average') {
@@ -29,7 +36,7 @@ function count (queryJson, db, visualization) {
     const params = visualization.analyticParams
     const collection = db.collection('' + src)
       
-    collection.aggregate([{$match: queryJson}, {$group: {_id: params, count: {$sum: 1}}}], function (err, result) {
+    collection.aggregate([{$match: queryJson}, {$limit: limit}, {$group: {_id: params, count: {$sum: 1}}}], function (err, result) {
       if (err) {
         console.log(err)
         reject(err)
@@ -50,20 +57,20 @@ function search (queryJson, db, visualization) {
   
   if (visualization.visualizationType.name === 'Map') {
     if (visualization.analyticParams.type === 'multiQuery') {
-      return runMultipleQueries(db, visualization).then(function (results) {
+      return runMultipleQueries(db, visualization, limit).then(function (results) {
         const output = transformUtil.transformLayeredMap(visualization, results)
       
         return output
       })
     } else if (visualization.analyticParams.toLatField != null) {
-      return mongoUtil.queryMongo(db, src, queryJson)
+      return mongoUtil.queryMongo(db, src, queryJson, limit)
       .then(function (out) {
         const output = transformUtil.transformP2PMap(visualization, out)
       
         return output
       })
     } else {
-      return mongoUtil.queryMongo(db, src, queryJson)
+      return mongoUtil.queryMongo(db, src, queryJson, limit)
       .then(function (out) {
         const output = transformUtil.transformMap(visualization, out)
       
@@ -71,7 +78,7 @@ function search (queryJson, db, visualization) {
       })
     }
   } else {
-    return mongoUtil.queryMongo(db, src, queryJson).then(function (output) {
+    return mongoUtil.queryMongo(db, src, queryJson, limit).then(function (output) {
       return output
     })
   }
@@ -85,7 +92,7 @@ function detailedCount (queryJson, db, visualization) {
     const lowerLevel = visualization.analyticParams.lowerLevel
     const collection = db.collection('' + src)
   
-    collection.aggregate([{$match: queryJson}, {$group: {_id: {groupBy}, 'subTotals': {$sum: 1}}}, {$group: {_id: topLevel, 'Count': {$sum: '$subTotals'}, 'Details': {'$push': {'Value': lowerLevel, 'Count': '$subTotals'}}}}], function (err, result) {
+    collection.aggregate([{$match: queryJson}, {$limit: limit}, {$group: {_id: {groupBy}, 'subTotals': {$sum: 1}}}, {$group: {_id: topLevel, 'Count': {$sum: '$subTotals'}, 'Details': {'$push': {'Value': lowerLevel, 'Count': '$subTotals'}}}}], function (err, result) {
       if (err) {
         console.log(err)
         reject(err)
@@ -108,7 +115,7 @@ function average (queryJson, db, visualization) {
     const averageOn = visualization.analyticParams.averageOn
     const collection = db.collection('' + src)
   
-    collection.aggregate([{$match: queryJson}, {$group: {_id: params, average: {$avg: averageOn}}}], function (err, result) {
+    collection.aggregate([{$match: queryJson}, {$limit: limit}, {$group: {_id: params, average: {$avg: averageOn}}}], function (err, result) {
       if (err) {
         console.log(err)
         reject(err)
@@ -148,6 +155,6 @@ function runMultipleQueries (db, visualization) {
   return Promise.all(layers.map(function (layer) {
     const query = mongoUtil.buildFilterJson(layer.filter)
     
-    return mongoUtil.labeledQueryMongo(db, src, query, layer.dataType, layer.name)
+    return mongoUtil.labeledQueryMongo(db, src, query, layer.dataType, layer.name, limit)
   }))
 }

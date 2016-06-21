@@ -11,7 +11,7 @@ let cannedVisualization
 
 describe('CRUD for dashboards', function () {
   beforeEach(function (done) {
-    const dashboardJson = {'title': 'dashboard', 'subtitle': 'subtitle'}
+    const dashboardJson = {'title': 'dashboard', 'subtitle': 'subtitle', 'dashboardParams': {'size': 2, 'visualizationSizes': {1: 2, 2: 2}}}
 
     Dashboard.create(dashboardJson, function (err, dashboard) {
       if (err) { throw err }
@@ -44,7 +44,7 @@ describe('CRUD for dashboards', function () {
   it('POST /dashboards', function testPostDashboards (done) {
     request(server)
       .post('/dashboards')
-      .send({'title': 'dashboard1', 'subtitle': 'subtitle'})
+      .send({'title': 'dashboard1', 'subtitle': 'subtitle', 'dashboardParams': {'size': 2, 'visualizationSizes': {1: 2, 2: 2}}})
       .expect(function (res) {
         res.body.__v = 0
         res.body._id = 1
@@ -53,6 +53,10 @@ describe('CRUD for dashboards', function () {
         'title': 'dashboard1',
         'subtitle': 'subtitle',
         'visualizations': [],
+        'dashboardParams': {
+          'size': 2,
+          'visualizationSizes': {1: 2, 2: 2}
+        },
         '__v': 0,
         '_id': 1
       }, done)
@@ -68,6 +72,10 @@ describe('CRUD for dashboards', function () {
         '_id': cannedDashboard._id.toString(),
         'title': 'dashboard',
         'subtitle': 'subtitle',
+        'dashboardParams': {
+          'size': 2,
+          'visualizationSizes': {1: 2, 2: 2}
+        },
         'visualizations': [],
         '__v': 0
       }], done)
@@ -83,6 +91,10 @@ describe('CRUD for dashboards', function () {
         '_id': cannedDashboard._id.toString(),
         'title': 'dashboard',
         'subtitle': 'subtitle',
+        'dashboardParams': {
+          'size': 2,
+          'visualizationSizes': {1: 2, 2: 2}
+        },
         'visualizations': [],
         '__v': 0
       }, done)
@@ -99,6 +111,10 @@ describe('CRUD for dashboards', function () {
         '_id': cannedDashboard._id.toString(),
         'title': 'dashboard1',
         'subtitle': 'subtitle',
+        'dashboardParams': {
+          'size': 2,
+          'visualizationSizes': {1: 2, 2: 2}
+        },
         'visualizations': [],
         '__v': 0
       }, done)

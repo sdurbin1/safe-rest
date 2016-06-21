@@ -32,8 +32,9 @@ router.post('/:source/query', function (req, res, next) {
   const filters = req.body.filters
     
   const queryJson = mongoUtil.buildQueryJson(filters)
+  const limit = Number.MAX_SAFE_INTEGER
 
-  mongoUtil.queryMongo(req.app.get('db'), sourceId, queryJson)
+  mongoUtil.queryMongo(req.app.get('db'), sourceId, queryJson, limit)
     .then((out) => res.json(out))
     .catch(error => {
       res.status(503).send(error)

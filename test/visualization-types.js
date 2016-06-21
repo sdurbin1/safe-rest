@@ -8,7 +8,7 @@ let cannedVisualizationType
 
 describe('CRUD for visualizationTypes', function () {
   beforeEach(function (done) {
-    VisualizationType.create({'name': 'chart'}, function (err, visualizationType) {
+    VisualizationType.create({'name': 'chart', 'queryLimit': 5}, function (err, visualizationType) {
       if (err) { throw err }
       cannedVisualizationType = visualizationType
       
@@ -31,13 +31,14 @@ describe('CRUD for visualizationTypes', function () {
   it('POST /visualization-types', function testPostVisualizationTypes (done) {
     request(server)
       .post('/visualization-types')
-      .send({'name': 'chart1'})
+      .send({'name': 'chart1', 'queryLimit': 3})
       .expect(function (res) {
         res.body.__v = 0
         res.body._id = 1
       })
       .expect(200, {
         'name': 'chart1',
+        'queryLimit': 3,
         '__v': 0,
         '_id': 1
       }, done)
@@ -52,6 +53,7 @@ describe('CRUD for visualizationTypes', function () {
       .expect(200, [{
         '_id': cannedVisualizationType._id.toString(),
         'name': 'chart',
+        'queryLimit': 5,
         '__v': 0
       }], done)
   })
@@ -65,6 +67,7 @@ describe('CRUD for visualizationTypes', function () {
       .expect(200, {
         '_id': cannedVisualizationType._id.toString(),
         'name': 'chart',
+        'queryLimit': 5,
         '__v': 0
       }, done)
   })
@@ -79,6 +82,7 @@ describe('CRUD for visualizationTypes', function () {
       .expect(200, {
         '_id': cannedVisualizationType._id.toString(),
         'name': 'chart1',
+        'queryLimit': 5,
         '__v': 0
       }, done)
   })

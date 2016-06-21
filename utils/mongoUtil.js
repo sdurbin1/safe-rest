@@ -17,9 +17,9 @@ const operatorMap = {
   '!=': '$ne'
 }
 
-function queryMongo (db, collection, query) {
+function queryMongo (db, collection, query, limit) {
   return new Promise(function (resolve, reject) {
-    const cursor = db.collection(collection).find(query)
+    const cursor = db.collection(collection).find(query).limit(limit)
     const results = []
 
     cursor.each(function (err, doc) {
@@ -34,9 +34,9 @@ function queryMongo (db, collection, query) {
   })
 }
 
-function labeledQueryMongo (db, collection, query, type, name) {
+function labeledQueryMongo (db, collection, query, type, name, limit) {
   return new Promise(function (resolve, reject) {
-    const cursor = db.collection(collection).find(query)
+    const cursor = db.collection(collection).find(query).limit(limit)
     const results = []
     const final = {}
 
