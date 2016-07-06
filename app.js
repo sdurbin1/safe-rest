@@ -43,7 +43,6 @@ const authentication = require('./routes/authentication')
 const query = require('./routes/query')
 const upload = require('./routes/upload')
 const cloud = require('./routes/cloud')
-const cloudExecute = require('./routes/cloudExecute')
 const metrics = require('./routes/metrics')
 const app = express()
 let server = null
@@ -116,7 +115,6 @@ app.use('/sources', query)
 app.use('/sources', upload)
 app.use('/execute', execute)
 app.use('/cloud', cloud)
-app.use('/cloudExecute', cloudExecute)
 app.use('/metrics', metrics)
 
 // catch 404 and forward to error handler
