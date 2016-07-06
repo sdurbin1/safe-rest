@@ -3,6 +3,7 @@ const mongoUtil = require('../utils/mongoUtil')
 const transformUtil = require('../utils/transformUtil')
 
 exports.mongoExecute = mongoExecute
+exports.mongoQuery = mongoQuery
 
 let limit = Number.MAX_SAFE_INTEGER
 
@@ -28,6 +29,14 @@ function mongoExecute (requestBody, db, visualization) {
       }
     })
   })
+}
+
+function mongoQuery (requestBody, db, source) {
+  const queryJson = mongoUtil.buildQueryJson(requestBody.filters)
+  const sourceId = source._id.toString()
+  const limit = Number.MAX_SAFE_INTEGER
+    
+  return mongoUtil.queryMongo(db, sourceId, queryJson, limit)
 }
 
 function count (queryJson, db, visualization) {

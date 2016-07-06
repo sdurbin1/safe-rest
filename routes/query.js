@@ -1,8 +1,6 @@
 const express = require('express')
 const router = express.Router()
 
-const mongoUtil = require('../utils/mongoUtil')
-
 const mongoose = require('mongoose')
 const Source = mongoose.model('Source')
 
@@ -28,15 +26,9 @@ router.param('source', function (req, res, next, id) {
 
 /* GET /sources/:source/query */
 router.post('/:source/query', function (req, res, next) {
-  const sourceId = req.source._id.toString()
-  const filters = req.body.filters
-    
-  const queryJson = mongoUtil.buildQueryJson(filters)
-  const limit = Number.MAX_SAFE_INTEGER
-
-  mongoUtil.queryMongo(req.app.get('db'), sourceId, queryJson, limit)
+  req.source.query(req.body, req.app.get('db'), req.session)
     .then((out) => res.json(out))
-    .catch(error => {
+    .catch(function (error) {
       res.status(503).send(error)
     })
 })
