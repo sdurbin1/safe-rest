@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const mongoExecute = require('../utils/mongoExecute')
 
 const SourceSchema = new mongoose.Schema({
   name: String,
@@ -8,4 +9,11 @@ const SourceSchema = new mongoose.Schema({
   metadata: mongoose.Schema.Types.Mixed
 })
 
+mongoose.model('Source', SourceSchema)
+
+SourceSchema.methods.query = function query (requestBody, db, session) {
+  return mongoExecute.mongoQuery(requestBody, db, this)
+}
+
+delete mongoose.connection.models['Source']
 mongoose.model('Source', SourceSchema)
