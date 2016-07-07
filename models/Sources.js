@@ -4,6 +4,7 @@ const mongoExecute = require('../utils/mongoExecute')
 const SourceSchema = new mongoose.Schema({
   name: String,
   type: String,
+  searchFilter: String,
   analytics: [{type: mongoose.Schema.Types.ObjectId, ref: 'Analytic'}],
   fields: mongoose.Schema.Types.Mixed,
   metadata: mongoose.Schema.Types.Mixed
