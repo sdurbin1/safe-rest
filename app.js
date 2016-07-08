@@ -40,6 +40,7 @@ const visualizations = require('./routes/visualizations')
 const execute = require('./routes/execute')
 const dashboards = require('./routes/dashboards')
 const authentication = require('./routes/authentication')
+const authUtils = require('./utils/authentication')
 const query = require('./routes/query')
 const upload = require('./routes/upload')
 const cloud = require('./routes/cloud')
@@ -101,6 +102,21 @@ app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
   res.header('Access-Control-Allow-Credentials', 'true')
   next()
+})
+
+app.use(function (req, res, next) {
+  if (req.path === '/authenticate') {
+    next()
+  } else {
+    authUtils.authenticate(req, res)
+      .then((user) => next())
+      .catch(error => {
+        const err = new Error('Could not authenticate you: ' + error)
+        
+        err.status = 503
+        next(err)
+    })
+  }
 })
 
 app.use('/', routes)
