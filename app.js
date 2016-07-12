@@ -104,18 +104,14 @@ app.use(function (req, res, next) {
   next()
 })
 
+//authenticate all requests
 app.use(function (req, res, next) {
   if (req.path === '/authenticate') {
     next()
   } else {
     authUtils.authenticate(req, res)
       .then((user) => next())
-      .catch(error => {
-        const err = new Error('Could not authenticate you: ' + error)
-        
-        err.status = 503
-        next(err)
-    })
+      .catch((error) => res.status(503).send(error))
   }
 })
 
@@ -142,27 +138,10 @@ app.use(function (req, res, next) {
 })
 
 // error handlers
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function (err, req, res, next) {
-    res.status(err.status || 500)
-    res.render('error', {
-      message: err.message,
-      error: err
-    })
-  })
-}
-
-// production error handler
-// no stacktraces leaked to user
+// UI will render the error
 app.use(function (err, req, res, next) {
   res.status(err.status || 500)
-  res.render('error', {
-    message: err.message,
-    error: {}
-  })
+  res.send(err)
 })
 
 if (config.mongoenabled === true) {
