@@ -1,5 +1,6 @@
 'use strict'
 const mongoUtil = require('../utils/mongoUtil')
+const Promise = require('bluebird')
 const transformUtil = require('../utils/transformUtil')
 
 exports.mongoExecute = mongoExecute

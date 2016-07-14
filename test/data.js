@@ -1,6 +1,7 @@
 const request = require('supertest')
 const mongoose = require('mongoose')
 const mongoUtil = require('../utils/mongoUtil')
+const Promise = require('bluebird')
 
 require('../models/Visualizations')
 require('../models/Analytics')
