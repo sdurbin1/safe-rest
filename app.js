@@ -104,7 +104,7 @@ app.use(function (req, res, next) {
   next()
 })
 
-//authenticate all requests
+// authenticate all requests
 app.use(function (req, res, next) {
   if (req.path === '/authenticate') {
     next()

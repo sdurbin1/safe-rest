@@ -26,6 +26,9 @@ exports.servercertificate = 'ssl/server.crt'
 // Directory path to the server certificate authority
 exports.servercertificateauthority = 'ssl/ca.crt'
 
+// Max results returned for query endpoint
+exports.searchquerylimit = 10000
+
 // Environment
 exports.environment = 'development'
 

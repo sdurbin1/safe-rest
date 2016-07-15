@@ -2,11 +2,10 @@
 const mongoUtil = require('../utils/mongoUtil')
 const Promise = require('bluebird')
 const transformUtil = require('../utils/transformUtil')
+const config = require('../config')
 
 exports.mongoExecute = mongoExecute
 exports.mongoQuery = mongoQuery
-
-let limit = Number.MAX_SAFE_INTEGER
 
 function mongoExecute (requestBody, db, visualization) {
   return new Promise(function (resolve, reject) {
@@ -15,18 +14,24 @@ function mongoExecute (requestBody, db, visualization) {
     visualization.populate(['visualizationType', 'analytic', 'source'], function (err, visualization) {
       if (err) { throw err }
       
-      if (visualization.visualizationType.queryLimit) {
+      let limit
+      
+      if (visualization.queryLimit && visualization.queryLimit > 0) {
+        limit = visualization.queryLimit
+      } else if (visualization.visualizationType.queryLimit && visualization.visualizationType.queryLimit > 0) {
         limit = visualization.visualizationType.queryLimit
+      } else {
+        limit = Number.MAX_SAFE_INTEGER
       }
       
       if (visualization.analytic.name === 'Count') {
-        resolve(count(queryJson, db, visualization))
+        resolve(count(queryJson, db, visualization, limit))
       } else if (visualization.analytic.name === 'Average') {
-        resolve(average(queryJson, db, visualization))
+        resolve(average(queryJson, db, visualization, limit))
       } else if (visualization.analytic.name === 'Detailed Count') {
-        resolve(detailedCount(queryJson, db, visualization))
+        resolve(detailedCount(queryJson, db, visualization, limit))
       } else {
-        resolve(search(queryJson, db, visualization))
+        resolve(search(queryJson, db, visualization, limit))
       }
     })
   })
@@ -35,12 +40,12 @@ function mongoExecute (requestBody, db, visualization) {
 function mongoQuery (requestBody, db, source) {
   const queryJson = mongoUtil.buildQueryJson(requestBody.filters)
   const sourceId = source._id.toString()
-  const limit = Number.MAX_SAFE_INTEGER
+  const limit = config.searchquerylimit
     
   return mongoUtil.queryMongo(db, sourceId, queryJson, limit)
 }
 
-function count (queryJson, db, visualization) {
+function count (queryJson, db, visualization, limit) {
   return new Promise(function (resolve, reject) {
     const src = visualization.source._id
     const params = visualization.analyticParams
@@ -62,7 +67,7 @@ function count (queryJson, db, visualization) {
   })
 }
 
-function search (queryJson, db, visualization) {
+function search (queryJson, db, visualization, limit) {
   const src = visualization.source._id.toString()
   
   if (visualization.visualizationType.name === 'Map') {
@@ -94,7 +99,7 @@ function search (queryJson, db, visualization) {
   }
 }
 
-function detailedCount (queryJson, db, visualization) {
+function detailedCount (queryJson, db, visualization, limit) {
   return new Promise(function (resolve, reject) {
     const src = visualization.source._id
     const groupBy = visualization.analyticParams.groupBy
@@ -118,7 +123,7 @@ function detailedCount (queryJson, db, visualization) {
   })
 }
 
-function average (queryJson, db, visualization) {
+function average (queryJson, db, visualization, limit) {
   return new Promise(function (resolve, reject) {
     const src = visualization.source._id
     const params = visualization.analyticParams.groupBy
@@ -158,7 +163,7 @@ function transformBasicAverage (raw) {
   return output
 }
 
-function runMultipleQueries (db, visualization) {
+function runMultipleQueries (db, visualization, limit) {
   const src = visualization.source._id.toString()
   const layers = visualization.analyticParams.outputTypeFilters
   
