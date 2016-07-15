@@ -65,13 +65,17 @@ describe('CRUD for sources', function () {
   it('POST /sources', function testPostVisualization (done) {
     request(server)
       .post('/visualizations')
-      .send({'name': 'visualization'})
+      .send({
+        'name': 'visualization',
+        'queryLimit': 10
+      })
       .expect(function (res) {
         res.body.__v = 0
         res.body._id = 1
       })
       .expect(200, {
         'name': 'visualization',
+        'queryLimit': 10,
         '__v': 0,
         '_id': 1
       }, done)

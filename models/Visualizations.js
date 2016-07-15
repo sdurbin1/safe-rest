@@ -3,6 +3,7 @@ const mongoExecute = require('../utils/mongoExecute')
 
 const VisualizationSchema = new mongoose.Schema({
   name: String,
+  queryLimit: Number,
   source: {type: mongoose.Schema.Types.ObjectId, ref: 'Source'},
   visualizationType: {type: mongoose.Schema.Types.ObjectId, ref: 'VisualizationType'},
   analytic: {type: mongoose.Schema.Types.ObjectId, ref: 'Analytic'},
