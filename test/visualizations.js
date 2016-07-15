@@ -1,5 +1,6 @@
 const request = require('supertest')
 const mongoose = require('mongoose')
+const Promise = require('bluebird')
 
 require('../models/Visualizations')
 require('../models/Analytics')
