@@ -14,15 +14,7 @@ function mongoExecute (requestBody, db, visualization) {
     visualization.populate(['visualizationType', 'analytic', 'source'], function (err, visualization) {
       if (err) { throw err }
       
-      let limit
-      
-      if (visualization.queryLimit && visualization.queryLimit > 0) {
-        limit = visualization.queryLimit
-      } else if (visualization.visualizationType.queryLimit && visualization.visualizationType.queryLimit > 0) {
-        limit = visualization.visualizationType.queryLimit
-      } else {
-        limit = Number.MAX_SAFE_INTEGER
-      }
+      const limit = getExecuteQueryLimit(visualization)
       
       if (visualization.analytic.name === 'Count') {
         resolve(count(queryJson, db, visualization, limit))
@@ -40,8 +32,8 @@ function mongoExecute (requestBody, db, visualization) {
 function mongoQuery (requestBody, db, source) {
   const queryJson = mongoUtil.buildQueryJson(requestBody.filters)
   const sourceId = source._id.toString()
-  const limit = config.searchquerylimit
-    
+  const limit = getSearchQueryLimit()
+
   return mongoUtil.queryMongo(db, sourceId, queryJson, limit)
 }
 
@@ -172,4 +164,30 @@ function runMultipleQueries (db, visualization, limit) {
     
     return mongoUtil.labeledQueryMongo(db, src, query, layer.dataType, layer.name, limit)
   }))
+}
+
+function getSearchQueryLimit () {
+  let limit
+
+  if (config.searchquerylimit) {
+    limit = config.searchquerylimit
+  } else {
+    limit = Number.MAX_SAFE_INTEGER
+  }
+  
+  return limit
+}
+
+function getExecuteQueryLimit (visualization) {
+  let limit
+  
+  if (visualization.queryLimit && visualization.queryLimit > 0) {
+    limit = visualization.queryLimit
+  } else if (visualization.visualizationType.queryLimit && visualization.visualizationType.queryLimit > 0) {
+    limit = visualization.visualizationType.queryLimit
+  } else {
+    limit = Number.MAX_SAFE_INTEGER
+  }
+  
+  return limit
 }

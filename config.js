@@ -27,7 +27,7 @@ exports.servercertificate = 'ssl/server.crt'
 exports.servercertificateauthority = 'ssl/ca.crt'
 
 // Max results returned for query endpoint
-exports.searchquerylimit = 10000
+// exports.searchquerylimit = 10000
 
 // Environment
 exports.environment = 'development'

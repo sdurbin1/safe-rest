@@ -24,7 +24,7 @@ describe('Test data', function () {
     createObject(Source, {'name': 'source'})
       .then((source) => {
         cannedSource = source
-        
+
         done()
       })
       .catch(error => {
@@ -32,7 +32,7 @@ describe('Test data', function () {
         done()
       })
   })
-  
+
   afterEach(function (done) {
     mongoUtil.deleteDocument(server.get('db'), cannedSource._id.toString())
     .then(removeObject(Source))
@@ -44,7 +44,7 @@ describe('Test data', function () {
       console.log('Error: ' + error)
     })
   })
-  
+
   it('POST /sources/:source/data', function testPostData (done) {
     request(server)
       .post('/sources/' + cannedSource._id + '/data')
@@ -68,10 +68,10 @@ describe('Test data', function () {
         }
       }, done)
   })
-  
+
   it('POST /sources/data', function testPostDataCreateSource (done) {
     let sourceId
-    
+
     request(server)
       .post('/sources/data')
       .send({
@@ -102,7 +102,7 @@ describe('Test data', function () {
         done()
       })
   })
-  
+
   it('GET /sources/:source/hasData', function testSourceHasData (done) {
     request(server)
       .post('/sources/' + cannedSource._id + '/data')
@@ -115,7 +115,7 @@ describe('Test data', function () {
           }, done)
       })
   })
-  
+
   it('GET /sources/:source/hasData', function testSourceHasData (done) {
     request(server)
       .post('/sources/' + cannedSource._id + '/data')
@@ -128,7 +128,7 @@ describe('Test data', function () {
           }, done)
       })
   })
-  
+
   it('DELETE /sources/:source/data', function testSourceDeleteData (done) {
     request(server)
       .post('/sources/' + cannedSource._id + '/data')
@@ -139,7 +139,7 @@ describe('Test data', function () {
           .expect(200, {'success': true}, done)
       })
   })
-  
+
   it('POST /sources/:source/query', function testSourceQueryData (done) {
     request(server)
       .post('/sources/' + cannedSource._id + '/data')
@@ -164,7 +164,7 @@ function createObject (model, json) {
   return new Promise(function (resolve, reject) {
     model.create(json, function (err, result) {
       if (err) { reject(err) }
-      
+
       resolve(result)
     })
   })
@@ -174,7 +174,7 @@ function removeObject (model) {
   return new Promise(function (resolve, reject) {
     model.remove({}, function (err, result) {
       if (err) { reject(err) }
-      
+
       resolve(result)
     })
   })
