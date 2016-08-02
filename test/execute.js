@@ -28,15 +28,15 @@ describe('Test execute', function () {
     createObject(Source, {'name': 'source'})
       .then((source) => {
         cannedSource = source
-        
+
         createObject(Analytic, {'name': 'analytic'})
           .then((analytic) => {
             cannedAnalytic = analytic
-            
+
             createObject(VisualizationType, {'name': 'chart'})
               .then((visualizationType) => {
                 cannedVisualizationType = visualizationType
-                
+
                 createObject(Visualization, {
                   'name': 'visualization',
                   'source': cannedSource._id.toString(),
@@ -58,7 +58,7 @@ describe('Test execute', function () {
         done()
       })
   })
-  
+
   afterEach(function (done) {
     mongoUtil.deleteDocument(server.get('db'), cannedSource._id.toString())
     .then(removeObject(Source))
@@ -70,7 +70,7 @@ describe('Test execute', function () {
       console.log('Error: ' + error)
     })
   })
-  
+
   it('POST /execute/:visualization for count', function testPostExecuteCount (done) {
     request(server)
       .put('/analytics/' + cannedAnalytic._id)
@@ -89,7 +89,7 @@ describe('Test execute', function () {
           })
       })
   })
-  
+
   it('POST /execute/:visualization for average', function testPostExecuteAverage (done) {
     request(server)
       .put('/analytics/' + cannedAnalytic._id)
@@ -108,7 +108,7 @@ describe('Test execute', function () {
             })
         })
   })
-  
+
   it('POST /execute/:visualization for detailed count', function testPostExecuteDetailedCount (done) {
     request(server)
       .put('/analytics/' + cannedAnalytic._id)
@@ -136,7 +136,7 @@ describe('Test execute', function () {
             })
         })
   })
-  
+
   it('POST /execute/:visualization for simple map', function testPostExecuteMap (done) {
     request(server)
       .put('/analytics/' + cannedAnalytic._id)
@@ -162,7 +162,7 @@ describe('Test execute', function () {
             })
         })
   })
-  
+
   it('POST /execute/:visualization for simple map table view', function testPostExecuteMapTableView (done) {
     request(server)
       .put('/analytics/' + cannedAnalytic._id)
@@ -189,7 +189,7 @@ describe('Test execute', function () {
             })
         })
   })
-  
+
   it('POST /execute/:visualization for layered map', function testPostExecuteLayeredMap (done) {
     request(server)
       .put('/analytics/' + cannedAnalytic._id)
@@ -229,7 +229,7 @@ describe('Test execute', function () {
             })
         })
   })
-  
+
   it('POST /execute/:visualization for p2p map', function testPostExecuteP2PMap (done) {
     request(server)
       .put('/analytics/' + cannedAnalytic._id)
@@ -290,7 +290,7 @@ function createObject (model, json) {
   return new Promise(function (resolve, reject) {
     model.create(json, function (err, result) {
       if (err) { reject(err) }
-      
+
       resolve(result)
     })
   })
@@ -300,7 +300,7 @@ function removeObject (model) {
   return new Promise(function (resolve, reject) {
     model.remove({}, function (err, result) {
       if (err) { reject(err) }
-      
+
       resolve(result)
     })
   })

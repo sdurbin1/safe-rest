@@ -21,15 +21,15 @@ describe('CRUD for sources', function () {
     createObject(Source, {'name': 'source'})
       .then((source) => {
         cannedSource = source
-        
+
         createObject(Analytic, {'name': 'analytic'})
           .then((analytic) => {
             cannedAnalytic = analytic
-            
+
             createObject(VisualizationType, {'name': 'chart'})
               .then((visualizationType) => {
                 cannedVisualizationType = visualizationType
-                
+
                 createObject(Visualization, {
                   'name': 'visualization',
                   'source': cannedSource._id.toString(),
@@ -38,7 +38,7 @@ describe('CRUD for sources', function () {
                 })
                   .then((visualization) => {
                     cannedVisualization = visualization
-                    
+
                     done()
                   })
               })
@@ -49,7 +49,7 @@ describe('CRUD for sources', function () {
         done()
       })
   })
-  
+
   afterEach(function (done) {
     removeObject(Source)
     .then(removeObject(Analytic))
@@ -61,7 +61,7 @@ describe('CRUD for sources', function () {
       done()
     })
   })
-  
+
   it('POST /sources', function testPostVisualization (done) {
     request(server)
       .post('/visualizations')
@@ -80,7 +80,7 @@ describe('CRUD for sources', function () {
         '_id': 1
       }, done)
   })
-  
+
   it('GET /visualizations', function testGetVisualizations (done) {
     request(server)
       .get('/visualizations')
@@ -110,7 +110,7 @@ describe('CRUD for sources', function () {
         '__v': 0
       }], done)
   })
-  
+
   it('GET /visualizations/:visualization', function testGetVisualization (done) {
     request(server)
       .get('/visualizations/' + cannedVisualization._id)
@@ -140,7 +140,7 @@ describe('CRUD for sources', function () {
         '__v': 0
       }, done)
   })
-  
+
   it('PUT /visualizations/:visualization', function testPutVisualization (done) {
     request(server)
       .put('/visualizations/' + cannedVisualization._id)
@@ -171,7 +171,7 @@ describe('CRUD for sources', function () {
         '__v': 0
       }, done)
   })
-  
+
   it('DELETE /visualizations/:visualization', function testDeleteVisualization (done) {
     request(server)
       .delete('/visualizations/' + cannedVisualization._id)
@@ -182,7 +182,7 @@ function createObject (model, json) {
   return new Promise(function (resolve, reject) {
     model.create(json, function (err, result) {
       if (err) { reject(err) }
-      
+
       resolve(result)
     })
   })
@@ -192,7 +192,7 @@ function removeObject (model) {
   return new Promise(function (resolve, reject) {
     model.remove({}, function (err, result) {
       if (err) { reject(err) }
-      
+
       resolve(result)
     })
   })
