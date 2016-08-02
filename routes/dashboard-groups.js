@@ -41,7 +41,7 @@ router.param('dashboardGroup', function (req, res, next, id) {
 
 /* GET /dashboard-groups */
 router.get('/', function (req, res, next) {
-  DashboardGroup.find(function (err, dashboardGroups) {
+  DashboardGroup.find().populate('dashboards', '_id title').exec(function (err, dashboardGroups) {
     if (err) { return next(err) }
 
     res.json(dashboardGroups)
