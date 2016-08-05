@@ -22,6 +22,8 @@ function mongoExecute (requestBody, db, visualization) {
         resolve(average(queryJson, db, visualization, limit))
       } else if (visualization.analytic.name === 'Detailed Count') {
         resolve(detailedCount(queryJson, db, visualization, limit))
+      } else if (visualization.visualizationType.name === 'Summary') { 
+        resolve(summaryCount(queryJson, db, visualization, limit))
       } else {
         resolve(search(queryJson, db, visualization, limit))
       }
@@ -138,7 +140,40 @@ function average (queryJson, db, visualization, limit) {
   })
 }
 
+function summaryCount (queryJson, db, visualization, limit) {
+  return new Promise(function (resolve, reject) {
+    const src = visualization.source._id
+    const summaryValues = visualization.analyticParams.summaryValues
+    const collection = db.collection('' + src)
+    
+    return mongoUtil.queryMongo(db, src.toString(), queryJson, limit)
+      .then(function (out) {
+        const output = transformUtil.transformSummaryCount(visualization, out)
+      
+        resolve(output)
+      })
+  })
+}
+
 function transformBasicAverage (raw) {
+  const output = []
+  
+  for (let i = 0; i < raw.length; i = i + 1) {
+    const record = {}
+    
+    for (const k in raw[i]['_id']) {
+      record['Value'] = raw[i]['_id'][k]
+    }
+        
+    record['Average'] = raw[i].average
+    output.push(record)
+  }
+  
+  return output
+}
+
+// TODO: Fix this!
+function transformSummaryCount (raw) {
   const output = []
   
   for (let i = 0; i < raw.length; i = i + 1) {
