@@ -5,6 +5,7 @@ exports.transformP2PMap = transformP2PMap
 exports.transformBasic = transformBasic
 exports.transformBasicCount = transformBasicCount
 exports.transformDetailed = transformDetailed
+exports.transformSummaryCount = transformSummaryCount
 // exports.transformBasicAverage = transformBasicAverage()
 
 function transformMap (visualization, raw) {
@@ -149,6 +150,24 @@ function transformDetailed (raw) {
     record['Value'] = raw[i]._id
     record['Details'] = raw[i].Details
     record['Count'] = raw[i].Count
+    output.push(record)
+  }
+  
+  return output
+}
+
+function transformSummaryCount (visualization, raw) {
+  const output = []
+  const summaryValues = visualization.analyticParams.summaryValues
+  
+  for (let i = 0; i < raw.length; i = i + 1) {
+    const record = {}
+
+    for (const key in raw[i]) {
+      if (summaryValues.indexOf(key) > -1) {
+        record[key] = raw[i][key]
+      }
+    }
     output.push(record)
   }
   

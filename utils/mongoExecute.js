@@ -22,6 +22,8 @@ function mongoExecute (requestBody, db, visualization) {
         resolve(average(queryJson, db, visualization, limit))
       } else if (visualization.analytic.name === 'Detailed Count') {
         resolve(detailedCount(queryJson, db, visualization, limit))
+      } else if (visualization.visualizationType.name === 'Summary') {
+        resolve(summaryCount(queryJson, db, visualization, limit))
       } else {
         resolve(search(queryJson, db, visualization, limit))
       }
@@ -135,6 +137,19 @@ function average (queryJson, db, visualization, limit) {
         reject('No document(s) found with defined "find" criteria!')
       }
     })
+  })
+}
+
+function summaryCount (queryJson, db, visualization, limit) {
+  return new Promise(function (resolve, reject) {
+    const src = visualization.source._id
+    
+    return mongoUtil.queryMongo(db, src.toString(), queryJson, limit)
+      .then(function (out) {
+        const output = transformUtil.transformSummaryCount(visualization, out)
+      
+        resolve(output)
+      })
   })
 }
 
