@@ -161,14 +161,11 @@ function transformSummaryCount (visualization, raw) {
   const summaryValues = visualization.analyticParams.summaryValues
   
   for (let i = 0; i < raw.length; i = i + 1) {
-    const record = {}
-
     for (const key in raw[i]) {
       if (summaryValues.indexOf(key) > -1) {
-        record[key] = raw[i][key]
+        output.push({[key]: raw[i][key]})
       }
     }
-    output.push(record)
   }
   
   return output
