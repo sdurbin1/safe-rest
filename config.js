@@ -22,15 +22,16 @@ exports.sessionsecret = '348SESSIONSECRETTTTTTT1234'
 // Directory path to the server key
 exports.serverkey = 'ssl/server.key'
 // Directory path to the server certificate
-exports.servercertificate = 'ssl/server.crt'
+exports.servercertificate = 'ssl/server.pem'
 // Directory path to the server certificate authority
-exports.servercertificateauthority = 'ssl/ca.crt'
+exports.servercertificateauthority = 'ssl/ca.pem'
 
 // Max results returned for query endpoint
 // exports.searchquerylimit = 10000
 
-// Environment
-exports.environment = 'development'
+// SSL
+exports.sslmode = true
+exports.environment = 'production'
 
 exports.hosts = [
   'https://localhost'
