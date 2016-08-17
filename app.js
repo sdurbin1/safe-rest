@@ -108,7 +108,6 @@ app.use(function (req, res, next) {
 
 // authenticate all requests
 app.use(function (req, res, next) {
-  console.log("ENV: " + process.env.NODE_ENV)
   if ((req.path === '/authenticate') || (process.env.NODE_ENV === 'test') || (config.environment !== 'production')) {
     next()
   } else {
