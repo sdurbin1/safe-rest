@@ -1,4 +1,5 @@
 const request = require('supertest')
+const session = require('supertest-session')
 const mongoose = require('mongoose')
 
 require('../models/Dashboards')
@@ -8,9 +9,11 @@ const Visualization = mongoose.model('Visualization')
 const server = require('../app')
 let cannedDashboard
 let cannedVisualization
+let testSession = null
 
 describe('CRUD for dashboards', function () {
   beforeEach(function (done) {
+    testSession = session(server)
     const dashboardJson = {'title': 'dashboard', 'subtitle': 'subtitle', 'dashboardParams': {'size': 2, 'visualizationSizes': {1: 2, 2: 2}}}
 
     Dashboard.create(dashboardJson, function (err, dashboard) {
@@ -42,7 +45,7 @@ describe('CRUD for dashboards', function () {
   })
   
   it('POST /dashboards', function testPostDashboards (done) {
-    request(server)
+    testSession
       .post('/dashboards')
       .send({'title': 'dashboard1', 'subtitle': 'subtitle', 'dashboardParams': {'size': 2, 'visualizationSizes': {1: 2, 2: 2}}})
       .expect(function (res) {

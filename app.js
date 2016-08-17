@@ -108,7 +108,7 @@ app.use(function (req, res, next) {
 
 // authenticate all requests
 app.use(function (req, res, next) {
-  if ((req.path === '/authenticate') || (require.main !== module) || (exports.environment !== 'production')) {
+  if ((req.path === '/authenticate') || (require.main !== module) || (config.environment !== 'production')) {
     next()
   } else {
     authUtils.authenticate(req, res)

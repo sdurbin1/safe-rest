@@ -39,8 +39,16 @@ router.param('visualization', function (req, res, next, id) {
 
 /* END PRELOADING OBJECTS */
 
+const roleAdmin = function (req, res, next) {
+  if (req.session.admin || process.env.NODE_ENV === 'Test') {
+    return next()
+  } else {
+    return next(new Error('Error: must be admin to perform this action'))
+  }
+}
+
 /* GET /dashboards */
-router.get('/', function (req, res, next) {
+router.get('/', roleAdmin, function (req, res, next) {
   Dashboard.find().populate({
     path: 'visualizations',
     populate: [
@@ -65,7 +73,7 @@ router.get('/simple', function (req, res, next) {
 })
 
 /* POST /dashboards */
-router.post('/', function (req, res, next) {
+router.post('/', roleAdmin, function (req, res, next) {
   const dashboard = new Dashboard(req.body)
 
   dashboard.save(function (err, dashboard) {
@@ -103,7 +111,7 @@ router.get('/:dashboard', function (req, res, next) {
 })
 
 /* PUT /dashboards/:dashboard */
-router.put('/:dashboard', function (req, res, next) {
+router.put('/:dashboard', roleAdmin, function (req, res, next) {
   Dashboard.findOneAndUpdate({'_id': req.dashboard._id}, req.body, {new: true}, function (err, dashboard) {
     if (err) { return next(err) }
 
@@ -123,7 +131,7 @@ router.put('/:dashboard', function (req, res, next) {
 })
 
 /* DELETE /dashboards/:dashboard */
-router.delete('/:dashboard', function (req, res, next) {
+router.delete('/:dashboard', roleAdmin, function (req, res, next) {
   Dashboard.find({'_id': req.dashboard._id}).remove(function (err) {
     if (err) { return next(err) }
   
@@ -158,7 +166,7 @@ router.get('/:dashboard/visualizations/simple', function (req, res, next) {
 
 /* PUT /dashboards/:dashboard/visualizations */
 /* Add an existing visualization to a dashboard */
-router.put('/:dashboard/visualizations', function (req, res, next) {
+router.put('/:dashboard/visualizations', roleAdmin, function (req, res, next) {
   // first doing concat as req.body["visualizations"] is not an array if only one element passed in
   const updatedVisualizations = [].concat(req.body['visualizations'])
   
@@ -183,7 +191,7 @@ router.put('/:dashboard/visualizations', function (req, res, next) {
 
 /* DELETE /dashboards/:dashboard/visualizations/:visualization */
 /* Removes a visualization from a dashboard but doesn't delete it */
-router.delete('/:dashboard/visualizations/:visualization', function (req, res, next) {
+router.delete('/:dashboard/visualizations/:visualization', roleAdmin, function (req, res, next) {
   req.dashboard.visualizations.remove(req.visualization)
   req.dashboard.save(function (err, dashboard) {
     if (err) { return next(err) }

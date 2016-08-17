@@ -61,6 +61,11 @@ function saveUser (req, res, user) {
     if (user) {
       // The result from updateLoginDate does not contain user data that is needed by the UI. Resolved with user object instead
       req.session.userId = user._id
+      if (user.admin) {
+        req.session.admin = user.admin
+      } else {
+        req.session.admin = false
+      }
       updateLoginDate(req)
         .then(() => resolve(user))
         .catch((error) => reject(error))
