@@ -19,6 +19,8 @@ const testData = [
   {'Age': 29, 'County': 'Anne Arundel'}
 ]
 
+process.env.NODE_ENV = 'test'
+
 describe('Test data', function () {
   beforeEach(function (done) {
     createObject(Source, {'name': 'source'})

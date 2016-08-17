@@ -40,7 +40,7 @@ router.param('visualization', function (req, res, next, id) {
 /* END PRELOADING OBJECTS */
 
 const roleAdmin = function (req, res, next) {
-  if (req.session.admin || process.env.NODE_ENV === 'Test') {
+  if (req.session.admin || process.env.NODE_ENV === 'test') {
     return next()
   } else {
     return next(new Error('Error: must be admin to perform this action'))

@@ -9,6 +9,8 @@ const server = require('../app')
 let cannedAnalytic
 let cannedVisualizationType
 
+process.env.NODE_ENV = 'test'
+
 describe('CRUD for analytics', function () {
   beforeEach(function (done) {
     Analytic.create({'name': 'analytic'}, function (err, analytic) {

@@ -9,6 +9,8 @@ const server = require('../app')
 let cannedSource
 let cannedAnalytic
 
+process.env.NODE_ENV = 'test'
+
 describe('CRUD for sources', function () {
   beforeEach(function (done) {
     const sourceJson = {'name': 'source', 'type': 'mongo'}
