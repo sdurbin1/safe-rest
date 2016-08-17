@@ -59,7 +59,7 @@ const serveroptions = {
   ciphers: 'ECDHE-RSA-AES128-SHA256:AES128-GCM-SHA256:RC4:HIGH:!MD5:!aNULL:!EDH'
 }
 
-if (config.environment === 'production') {
+if (config.sslmode === true) {
   server = https.createServer(serveroptions, app)
 } else {
   server = http.createServer(app)
@@ -108,7 +108,7 @@ app.use(function (req, res, next) {
 
 // authenticate all requests
 app.use(function (req, res, next) {
-  if (req.path === '/authenticate') {
+  if ((req.path === '/authenticate') || (process.env.NODE_ENV === 'test')) {
     next()
   } else {
     authUtils.authenticate(req, res)

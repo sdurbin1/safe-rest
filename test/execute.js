@@ -23,6 +23,8 @@ const testData = [
   {'Age': 35, 'County': 'Howard', 'Name': 'Sarah', 'Gender': 'F', 'Latitude': '39.23', 'Longitude': '-76.82', 'toLatitude': '38.44', 'toLongitude': '-76.77'}
 ]
 
+process.env.NODE_ENV = 'test'
+
 describe('Test execute', function () {
   beforeEach(function (done) {
     createObject(Source, {'name': 'source'})

@@ -6,6 +6,8 @@ const VisualizationType = mongoose.model('VisualizationType')
 const server = require('../app')
 let cannedVisualizationType
 
+process.env.NODE_ENV = 'test'
+
 describe('CRUD for visualizationTypes', function () {
   beforeEach(function (done) {
     VisualizationType.create({'name': 'chart', 'queryLimit': 5}, function (err, visualizationType) {

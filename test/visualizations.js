@@ -16,6 +16,8 @@ let cannedAnalytic
 let cannedSource
 let cannedVisualizationType
 
+process.env.NODE_ENV = 'test'
+
 describe('CRUD for sources', function () {
   beforeEach(function (done) {
     createObject(Source, {'name': 'source'})

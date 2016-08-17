@@ -9,6 +9,8 @@ const server = require('../app')
 let cannedDashboard
 let cannedVisualization
 
+process.env.NODE_ENV = 'test'
+
 describe('CRUD for dashboards', function () {
   beforeEach(function (done) {
     const dashboardJson = {'title': 'dashboard', 'subtitle': 'subtitle', 'dashboardParams': {'size': 2, 'visualizationSizes': {1: 2, 2: 2}}}
