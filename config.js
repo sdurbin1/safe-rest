@@ -31,7 +31,6 @@ exports.servercertificateauthority = 'ssl/ca.pem'
 
 // SSL
 exports.sslmode = true
-exports.environment = 'production'
 
 exports.hosts = [
   'https://localhost'
