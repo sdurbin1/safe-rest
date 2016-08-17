@@ -48,7 +48,7 @@ const roleAdmin = function (req, res, next) {
 }
 
 /* GET /dashboards */
-router.get('/', roleAdmin, function (req, res, next) {
+router.get('/', function (req, res, next) {
   Dashboard.find().populate({
     path: 'visualizations',
     populate: [
