@@ -12,6 +12,7 @@ function authenticate (req, res) {
       const result = {username: 'user', authenticated: true}
         
       resolve(result)
+      return
     } 
 
     if (!req.client.authorized) {
