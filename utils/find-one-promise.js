@@ -7,10 +7,10 @@ function findOnePromise (collection, query) {
     collection.findOne(query, function (error, result) {
       if (error) {
         reject(error)
-        
+
         return
       }
-      
+
       resolve(result || false)
     })
   })
