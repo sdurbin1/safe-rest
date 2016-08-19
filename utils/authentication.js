@@ -13,7 +13,7 @@ function authenticate (req, res) {
         
       resolve(result)
       return
-    } 
+    }
 
     if (!req.client.authorized) {
       console.log('No user certificate')
