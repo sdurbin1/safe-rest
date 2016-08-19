@@ -2,11 +2,18 @@ const Promise = require('bluebird')
 const findOnePromise = require('./find-one-promise')
 const insertPromise = require('./insert-promise')
 const updatePromise = require('./update-promise')
+const config = require('../config')
 
 exports.authenticate = authenticate
 
 function authenticate (req, res) {
   return new Promise(function (resolve, reject) {
+    if (config.sslmode === false) {
+      const result = {username: 'user', authenticated: true}
+        
+      resolve(result)
+    } 
+
     if (!req.client.authorized) {
       console.log('No user certificate')
       reject('A valid PKI certificate is required for access')
