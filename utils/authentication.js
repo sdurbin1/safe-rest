@@ -11,6 +11,8 @@ function authenticate (req, res) {
     if (config.sslmode === false) {
       const result = {username: 'user', authenticated: true}
         
+      req.session.admin = true
+        
       resolve(result)
       return
     }
