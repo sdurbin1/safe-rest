@@ -3,7 +3,6 @@ const express = require('express')
 const session = require('express-session')
 const path = require('path')
 const logger = require('morgan')
-const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const fs = require('fs')
 const http = require('http')
@@ -25,6 +24,7 @@ if (require.main === module) {
 mongoose.connect(mongourl)
 
 require('./models/VisualizationTypes')
+require('./models/Alerts')
 require('./models/Analytics')
 require('./models/Sources')
 require('./models/Visualizations')
@@ -34,6 +34,7 @@ require('./extensions')
 
 const routes = require('./routes/index')
 const users = require('./routes/users')
+const alerts = require('./routes/alerts')
 const analytics = require('./routes/analytics')
 const visualizationTypes = require('./routes/visualization-types')
 const sources = require('./routes/sources')
@@ -77,12 +78,11 @@ app.set('port', process.env.PORT || config.portNumber)
 app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
-app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
 const MongoStore = connectMongo(session)
 const mongoOptions = {
-  url: mongourl,
+  mongooseConnection: mongoose.connection,
   pool: true
 }
 
@@ -131,6 +131,7 @@ app.use('/sources', upload)
 app.use('/execute', execute)
 app.use('/cloud', cloud)
 app.use('/metrics', metrics)
+app.use('/alerts', alerts)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
