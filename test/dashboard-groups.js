@@ -44,9 +44,9 @@ describe('CRUD for dashboardGroups', function () {
     })
   })
   
-  it('POST /dashboard-groups', function testPostDashboardGroups (done) {
+  it('POST /api/dashboard-groups', function testPostDashboardGroups (done) {
     request(server)
-      .post('/dashboard-groups')
+      .post('/api/dashboard-groups')
       .send({'title': 'group1'})
       .expect(function (res) {
         res.body.__v = 0
@@ -60,9 +60,9 @@ describe('CRUD for dashboardGroups', function () {
       }, done)
   })
   
- it('GET /dashboard-groups', function testGetDashboardGroups (done) {
+ it('GET /api/dashboard-groups', function testGetDashboardGroups (done) {
     request(server)
-      .get('/dashboard-groups')
+      .get('/api/dashboard-groups')
       .expect(function (res) {
         res.body[0].__v = 0
       })
@@ -74,9 +74,9 @@ describe('CRUD for dashboardGroups', function () {
       }], done)
   })
   
-  it('GET /dashboard-groups/:dashboard-group', function testGetDashboardGroup (done) {
+  it('GET /api/dashboard-groups/:dashboard-group', function testGetDashboardGroup (done) {
     request(server)
-      .get('/dashboard-groups/' + cannedDashboardGroup._id)
+      .get('/api/dashboard-groups/' + cannedDashboardGroup._id)
       .expect(function (res) {
         res.body.__v = 0
       })
@@ -88,9 +88,9 @@ describe('CRUD for dashboardGroups', function () {
       }, done)
   })
   
-  it('PUT /dashboard-groups/:dashboard-group', function testPutDashboardGroup (done) {
+  it('PUT /api/dashboard-groups/:dashboard-group', function testPutDashboardGroup (done) {
     request(server)
-      .put('/dashboard-groups/' + cannedDashboardGroup._id)
+      .put('/api/dashboard-groups/' + cannedDashboardGroup._id)
       .send({'title': 'group1'})
       .expect(function (res) {
         res.body.__v = 0
@@ -103,19 +103,19 @@ describe('CRUD for dashboardGroups', function () {
       }, done)
   })
   
-  it('DELETE /dashboard-groups/:dashboard-group', function testDeleteDashboardGroup (done) {
+  it('DELETE /api/dashboard-groups/:dashboard-group', function testDeleteDashboardGroup (done) {
     request(server)
-      .delete('/dashboard-groups/' + cannedDashboardGroup._id)
+      .delete('/api/dashboard-groups/' + cannedDashboardGroup._id)
       .expect(200, {}, done)
   })
   
-  it('GET /dashboard-groups/:dashboard-group/visualizations', function testGetDashboardGroupVisualizations (done) {
+  it('GET /api/dashboard-groups/:dashboard-group/visualizations', function testGetDashboardGroupVisualizations (done) {
     request(server)
-      .put('/dashboard-groups/' + cannedDashboardGroup._id)
+      .put('/api/dashboard-groups/' + cannedDashboardGroup._id)
       .send({'dashboards': [cannedDashboard._id]})
       .end(function () {
         request(server)
-          .get('/dashboard-groups/' + cannedDashboardGroup._id + '/dashboards')
+          .get('/api/dashboard-groups/' + cannedDashboardGroup._id + '/dashboards')
           .expect(function (res) {
             res.body[0].__v = 0
           })

@@ -43,9 +43,9 @@ describe('CRUD for dashboards', function () {
     })
   })
   
-  it('POST /dashboards', function testPostDashboards (done) {
+  it('POST /api/dashboards', function testPostDashboards (done) {
     request(server)
-      .post('/dashboards')
+      .post('/api/dashboards')
       .send({'title': 'dashboard1', 'subtitle': 'subtitle', 'dashboardParams': {'size': 2, 'visualizationSizes': {1: 2, 2: 2}}})
       .expect(function (res) {
         res.body.__v = 0
@@ -64,9 +64,9 @@ describe('CRUD for dashboards', function () {
       }, done)
   })
   
-  it('GET /dashboards', function testGetDashboards (done) {
+  it('GET /api/dashboards', function testGetDashboards (done) {
     request(server)
-      .get('/dashboards')
+      .get('/api/dashboards')
       .expect(function (res) {
         res.body[0].__v = 0
       })
@@ -83,9 +83,9 @@ describe('CRUD for dashboards', function () {
       }], done)
   })
   
-  it('GET /dashboards/:dashboard', function testGetDashboard (done) {
+  it('GET /api/dashboards/:dashboard', function testGetDashboard (done) {
     request(server)
-      .get('/dashboards/' + cannedDashboard._id)
+      .get('/api/dashboards/' + cannedDashboard._id)
       .expect(function (res) {
         res.body.__v = 0
       })
@@ -102,9 +102,9 @@ describe('CRUD for dashboards', function () {
       }, done)
   })
   
-  it('PUT /dashboards/:dashboard', function testPutDashboard (done) {
+  it('PUT /api/dashboards/:dashboard', function testPutDashboard (done) {
     request(server)
-      .put('/dashboards/' + cannedDashboard._id)
+      .put('/api/dashboards/' + cannedDashboard._id)
       .send({'title': 'dashboard1'})
       .expect(function (res) {
         res.body.__v = 0
@@ -122,15 +122,15 @@ describe('CRUD for dashboards', function () {
       }, done)
   })
   
-  it('DELETE /dashboards/:dashboard', function testDeleteDashboard (done) {
+  it('DELETE /api/dashboards/:dashboard', function testDeleteDashboard (done) {
     request(server)
-      .delete('/dashboards/' + cannedDashboard._id)
+      .delete('/api/dashboards/' + cannedDashboard._id)
       .expect(200, {}, done)
   })
  
-  it('PUT /dashboards/:dashboard/visualizations', function testPutVisualization (done) {
+  it('PUT /api/dashboards/:dashboard/visualizations', function testPutVisualization (done) {
     request(server)
-      .put('/dashboards/' + cannedDashboard._id + '/visualizations')
+      .put('/api/dashboards/' + cannedDashboard._id + '/visualizations')
       .send({'visualizations': [cannedVisualization._id]})
       .expect(function (res) {
         res.body[0].__v = 0
@@ -142,13 +142,13 @@ describe('CRUD for dashboards', function () {
       }], done)
   })
   
-  it('GET /dashboards/:dashboard/visualizations', function testGetVisualization (done) {
+  it('GET /api/dashboards/:dashboard/visualizations', function testGetVisualization (done) {
     request(server)
-      .put('/dashboards/' + cannedDashboard._id + '/visualizations')
+      .put('/api/dashboards/' + cannedDashboard._id + '/visualizations')
       .send({'visualizations': [cannedVisualization._id]})
       .end(function () {
         request(server)
-          .get('/dashboards/' + cannedDashboard._id + '/visualizations')
+          .get('/api/dashboards/' + cannedDashboard._id + '/visualizations')
           .expect(function (res) {
             res.body[0].__v = 0
           })
@@ -160,15 +160,15 @@ describe('CRUD for dashboards', function () {
       })
   })
   
-  it('DELETE /dashboards/:dashboard/visualizations/:visualization', function testDeleteVisualization (done) {
+  it('DELETE /api/dashboards/:dashboard/visualizations/:visualization', function testDeleteVisualization (done) {
     // First add visualization-type to analytic so we can test deleting it
     request(server)
-      .put('/dashboards/' + cannedDashboard._id + '/visualizations')
+      .put('/api/dashboards/' + cannedDashboard._id + '/visualizations')
       .send({'visualizations': [cannedVisualization._id]})
       .end(function () {
         // Test delete
         request(server)
-          .delete('/dashboards/' + cannedDashboard._id + '/visualizations/' + cannedVisualization._id)
+          .delete('/api/dashboards/' + cannedDashboard._id + '/visualizations/' + cannedVisualization._id)
           .expect(200, [], done)
       })
   })

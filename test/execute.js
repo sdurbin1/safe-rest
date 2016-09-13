@@ -48,7 +48,7 @@ describe('Test execute', function () {
                 .then((visualization) => {
                   cannedVisualization = visualization
                   request(server)
-                    .post('/sources/' + cannedSource._id + '/data')
+                    .post('/api/sources/' + cannedSource._id + '/data')
                     .send({'document': testData})
                     .end(done)
                 })
@@ -73,17 +73,17 @@ describe('Test execute', function () {
     })
   })
 
-  it('POST /execute/:visualization for count', function testPostExecuteCount (done) {
+  it('POST /api/execute/:visualization for count', function testPostExecuteCount (done) {
     request(server)
-      .put('/analytics/' + cannedAnalytic._id)
+      .put('/api/analytics/' + cannedAnalytic._id)
       .send({'name': 'Count'})
       .end(function () {
         request(server)
-          .put('/visualizations/' + cannedVisualization._id)
+          .put('/api/visualizations/' + cannedVisualization._id)
           .send({'analyticParams': {'county': '$County'}})
           .end(function () {
             request(server)
-              .post('/execute/' + cannedVisualization._id)
+              .post('/api/execute/' + cannedVisualization._id)
               .expect(200, [
                 {'Value': 'Howard', 'Count': 2},
                 {'Value': 'Anne Arundel', 'Count': 2}
@@ -92,17 +92,17 @@ describe('Test execute', function () {
       })
   })
 
-  it('POST /execute/:visualization for average', function testPostExecuteAverage (done) {
+  it('POST /api/execute/:visualization for average', function testPostExecuteAverage (done) {
     request(server)
-      .put('/analytics/' + cannedAnalytic._id)
+      .put('/api/analytics/' + cannedAnalytic._id)
         .send({'name': 'Average'})
         .end(function () {
           request(server)
-            .put('/visualizations/' + cannedVisualization._id)
+            .put('/api/visualizations/' + cannedVisualization._id)
             .send({'analyticParams': {'groupBy': {'county': '$County'}, 'averageOn': '$Age'}})
             .end(function () {
               request(server)
-                .post('/execute/' + cannedVisualization._id)
+                .post('/api/execute/' + cannedVisualization._id)
                 .expect(200, [
                   {'Average': 34, 'Value': 'Howard'},
                   {'Average': 25, 'Value': 'Anne Arundel'}
@@ -111,13 +111,13 @@ describe('Test execute', function () {
         })
   })
 
-  it('POST /execute/:visualization for detailed count', function testPostExecuteDetailedCount (done) {
+  it('POST /api/execute/:visualization for detailed count', function testPostExecuteDetailedCount (done) {
     request(server)
-      .put('/analytics/' + cannedAnalytic._id)
+      .put('/api/analytics/' + cannedAnalytic._id)
         .send({'name': 'Detailed Count'})
         .end(function () {
           request(server)
-            .put('/visualizations/' + cannedVisualization._id)
+            .put('/api/visualizations/' + cannedVisualization._id)
             .send({'analyticParams': {
               'groupBy': {'County': '$County', 'Gender': '$Gender'},
               'topLevel': '$_id.groupBy.County',
@@ -126,7 +126,7 @@ describe('Test execute', function () {
             }})
             .end(function () {
               request(server)
-                .post('/execute/' + cannedVisualization._id)
+                .post('/api/execute/' + cannedVisualization._id)
                 .expect(200, [{
                   'Value': 'Anne Arundel',
                   'Details': [{'Count': 1, 'Value': 'M'}, {'Count': 1, 'Value': 'F'}],
@@ -139,21 +139,21 @@ describe('Test execute', function () {
         })
   })
 
-  it('POST /execute/:visualization for simple map', function testPostExecuteMap (done) {
+  it('POST /api/execute/:visualization for simple map', function testPostExecuteMap (done) {
     request(server)
-      .put('/analytics/' + cannedAnalytic._id)
+      .put('/api/analytics/' + cannedAnalytic._id)
         .send({'name': 'Search'})
         .end(function () {
           request(server)
-            .put('/visualization-types/' + cannedVisualizationType._id)
+            .put('/api/visualization-types/' + cannedVisualizationType._id)
             .send({'name': 'Map'})
             .end(function () {
               request(server)
-                .put('/visualizations/' + cannedVisualization._id)
+                .put('/api/visualizations/' + cannedVisualization._id)
                 .send({'visualizationParams': {'latField': 'Latitude', 'longField': 'Longitude', 'label': ['County']}, 'analyticParams': {'label': 'County'}})
                 .end(function () {
                   request(server)
-                    .post('/execute/' + cannedVisualization._id)
+                    .post('/api/execute/' + cannedVisualization._id)
                     .expect(200, [
                       {'County': 'Anne Arundel', 'Latitude': '38.97', 'Longitude': '-76.68'},
                       {'County': 'Howard', 'Latitude': '39.18', 'Longitude': '-76.94'},
@@ -165,17 +165,17 @@ describe('Test execute', function () {
         })
   })
 
-  it('POST /execute/:visualization for simple map table view', function testPostExecuteMapTableView (done) {
+  it('POST /api/execute/:visualization for simple map table view', function testPostExecuteMapTableView (done) {
     request(server)
-      .put('/analytics/' + cannedAnalytic._id)
+      .put('/api/analytics/' + cannedAnalytic._id)
         .send({'name': 'Search'})
         .end(function () {
           request(server)
-            .put('/visualization-types/' + cannedVisualizationType._id)
+            .put('/api/visualization-types/' + cannedVisualizationType._id)
             .send({'name': 'Table'})
             .end(function () {
               request(server)
-                .post('/execute/' + cannedVisualization._id)
+                .post('/api/execute/' + cannedVisualization._id)
                 .expect(function (res) {
                   res.body[0]._id = 1
                   res.body[1]._id = 1
@@ -192,17 +192,17 @@ describe('Test execute', function () {
         })
   })
 
-  it('POST /execute/:visualization for layered map', function testPostExecuteLayeredMap (done) {
+  it('POST /api/execute/:visualization for layered map', function testPostExecuteLayeredMap (done) {
     request(server)
-      .put('/analytics/' + cannedAnalytic._id)
+      .put('/api/analytics/' + cannedAnalytic._id)
         .send({'name': 'Search'})
         .end(function () {
           request(server)
-            .put('/visualization-types/' + cannedVisualizationType._id)
+            .put('/api/visualization-types/' + cannedVisualizationType._id)
             .send({'name': 'Map'})
             .end(function () {
               request(server)
-                .put('/visualizations/' + cannedVisualization._id)
+                .put('/api/visualizations/' + cannedVisualization._id)
                 .send({
                   'visualizationParams': {'latField': 'Latitude', 'longField': 'Longitude', 'label': ['County', 'Name']},
                   'analyticParams': {
@@ -214,7 +214,7 @@ describe('Test execute', function () {
                 })
                 .end(function () {
                   request(server)
-                    .post('/execute/' + cannedVisualization._id)
+                    .post('/api/execute/' + cannedVisualization._id)
                     .expect(200, {
                       'baseData': [
                         {'County': 'Anne Arundel', 'Latitude': '38.97', 'Longitude': '-76.68', 'Name': 'Jane'},
@@ -232,17 +232,17 @@ describe('Test execute', function () {
         })
   })
 
-  it('POST /execute/:visualization for p2p map', function testPostExecuteP2PMap (done) {
+  it('POST /api/execute/:visualization for p2p map', function testPostExecuteP2PMap (done) {
     request(server)
-      .put('/analytics/' + cannedAnalytic._id)
+      .put('/api/analytics/' + cannedAnalytic._id)
         .send({'name': 'Search'})
         .end(function () {
           request(server)
-            .put('/visualization-types/' + cannedVisualizationType._id)
+            .put('/api/visualization-types/' + cannedVisualizationType._id)
             .send({'name': 'Map'})
             .end(function () {
               request(server)
-                .put('/visualizations/' + cannedVisualization._id)
+                .put('/api/visualizations/' + cannedVisualization._id)
                 .send({
                   'visualizationParams': {'latField': 'Latitude', 'longField': 'Longitude', 'label': 'Label', 'sourcePrefix': 'from', 'destinationPrefix': 'to'},
                   'analyticParams': {
@@ -256,7 +256,7 @@ describe('Test execute', function () {
                 })
                 .end(function () {
                   request(server)
-                    .post('/execute/' + cannedVisualization._id)
+                    .post('/api/execute/' + cannedVisualization._id)
                     .expect(200, [{
                       'fromLongitude': '-76.68',
                       'fromLatitude': '38.97',
