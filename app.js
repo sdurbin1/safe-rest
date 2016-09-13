@@ -78,7 +78,6 @@ app.set('port', process.env.PORT || config.portNumber)
 app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
-app.use(express.static(path.join(__dirname, 'public')))
 
 const MongoStore = connectMongo(session)
 const mongoOptions = {
@@ -108,7 +107,7 @@ app.use(function (req, res, next) {
 
 // authenticate all requests
 app.use(function (req, res, next) {
-  if ((req.path === '/authenticate') || (process.env.NODE_ENV === 'test')) {
+  if ((req.path === '/api/authenticate') || (process.env.NODE_ENV === 'test')) {
     next()
   } else {
     authUtils.authenticate(req, res)
@@ -117,21 +116,28 @@ app.use(function (req, res, next) {
   }
 })
 
-app.use('/', routes)
-app.use('/users', users)
-app.use('/analytics', analytics)
-app.use('/visualization-types', visualizationTypes)
-app.use('/sources', sources)
-app.use('/visualizations', visualizations)
-app.use('/dashboards', dashboards)
-app.use('/dashboard-groups', dashboardGroups)
-app.use('/authenticate', authentication)
-app.use('/sources', query)
-app.use('/sources', upload)
-app.use('/execute', execute)
-app.use('/cloud', cloud)
-app.use('/metrics', metrics)
-app.use('/alerts', alerts)
+app.use('/api', routes)
+app.use('/api/users', users)
+app.use('/api/analytics', analytics)
+app.use('/api/visualization-types', visualizationTypes)
+app.use('/api/sources', sources)
+app.use('/api/visualizations', visualizations)
+app.use('/api/dashboards', dashboards)
+app.use('/api/dashboard-groups', dashboardGroups)
+app.use('/api/authenticate', authentication)
+app.use('/api/sources', query)
+app.use('/api/sources', upload)
+app.use('/api/execute', execute)
+app.use('/api/cloud', cloud)
+app.use('/api/metrics', metrics)
+app.use('/api/alerts', alerts)
+app.use(express.static(path.join(__dirname, 'public/dist')))
+app.use(express.static(path.join(__dirname, 'public/fonts')))
+app.use(express.static(path.join(__dirname, 'public/node_modules')))
+
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, 'public/src/html/index.html'))
+})
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -64,9 +64,9 @@ describe('CRUD for sources', function () {
     })
   })
 
-  it('POST /sources', function testPostVisualization (done) {
+  it('POST /api/sources', function testPostVisualization (done) {
     request(server)
-      .post('/visualizations')
+      .post('/api/visualizations')
       .send({
         'name': 'visualization',
         'queryLimit': 10
@@ -83,9 +83,9 @@ describe('CRUD for sources', function () {
       }, done)
   })
 
-  it('GET /visualizations', function testGetVisualizations (done) {
+  it('GET /api/visualizations', function testGetVisualizations (done) {
     request(server)
-      .get('/visualizations')
+      .get('/api/visualizations')
       .expect(function (res) {
         res.body[0].__v = 0
       })
@@ -113,9 +113,9 @@ describe('CRUD for sources', function () {
       }], done)
   })
 
-  it('GET /visualizations/:visualization', function testGetVisualization (done) {
+  it('GET /api/visualizations/:visualization', function testGetVisualization (done) {
     request(server)
-      .get('/visualizations/' + cannedVisualization._id)
+      .get('/api/visualizations/' + cannedVisualization._id)
       .expect(function (res) {
         res.body.__v = 0
       })
@@ -143,9 +143,9 @@ describe('CRUD for sources', function () {
       }, done)
   })
 
-  it('PUT /visualizations/:visualization', function testPutVisualization (done) {
+  it('PUT /api/visualizations/:visualization', function testPutVisualization (done) {
     request(server)
-      .put('/visualizations/' + cannedVisualization._id)
+      .put('/api/visualizations/' + cannedVisualization._id)
       .send({'name': 'visualization1'})
       .expect(function (res) {
         res.body.__v = 0
@@ -174,9 +174,9 @@ describe('CRUD for sources', function () {
       }, done)
   })
 
-  it('DELETE /visualizations/:visualization', function testDeleteVisualization (done) {
+  it('DELETE /api/visualizations/:visualization', function testDeleteVisualization (done) {
     request(server)
-      .delete('/visualizations/' + cannedVisualization._id)
+      .delete('/api/visualizations/' + cannedVisualization._id)
       .expect(200, {}, done)
   })
 })

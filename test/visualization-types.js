@@ -30,9 +30,9 @@ describe('CRUD for visualizationTypes', function () {
     })
   })
   
-  it('POST /visualization-types', function testPostVisualizationTypes (done) {
+  it('POST /api/visualization-types', function testPostVisualizationTypes (done) {
     request(server)
-      .post('/visualization-types')
+      .post('/api/visualization-types')
       .send({'name': 'chart1', 'queryLimit': 3})
       .expect(function (res) {
         res.body.__v = 0
@@ -46,9 +46,9 @@ describe('CRUD for visualizationTypes', function () {
       }, done)
   })
   
-  it('GET /visualization-types', function testGetVisualizationTypes (done) {
+  it('GET /api/visualization-types', function testGetVisualizationTypes (done) {
     request(server)
-      .get('/visualization-types')
+      .get('/api/visualization-types')
       .expect(function (res) {
         res.body[0].__v = 0
       })
@@ -60,9 +60,9 @@ describe('CRUD for visualizationTypes', function () {
       }], done)
   })
   
-  it('GET /visualizaiton-types/:visualization-type', function testGetVisualizationType (done) {
+  it('GET /api/visualizaiton-types/:visualization-type', function testGetVisualizationType (done) {
     request(server)
-      .get('/visualization-types/' + cannedVisualizationType._id)
+      .get('/api/visualization-types/' + cannedVisualizationType._id)
       .expect(function (res) {
         res.body.__v = 0
       })
@@ -74,9 +74,9 @@ describe('CRUD for visualizationTypes', function () {
       }, done)
   })
   
-  it('PUT /visualization-types/:visualization-type', function testPutVisualizationType (done) {
+  it('PUT /api/visualization-types/:visualization-type', function testPutVisualizationType (done) {
     request(server)
-      .put('/visualization-types/' + cannedVisualizationType._id)
+      .put('/api/visualization-types/' + cannedVisualizationType._id)
       .send({'name': 'chart1'})
       .expect(function (res) {
         res.body.__v = 0
@@ -89,9 +89,9 @@ describe('CRUD for visualizationTypes', function () {
       }, done)
   })
   
-  it('DELETE /visualization-types/:visualization-type', function testDeleteVisualizationType (done) {
+  it('DELETE /api/visualization-types/:visualization-type', function testDeleteVisualizationType (done) {
     request(server)
-      .delete('/visualization-types/' + cannedVisualizationType._id)
+      .delete('/api/visualization-types/' + cannedVisualizationType._id)
       .expect(200, {}, done)
   })
 })

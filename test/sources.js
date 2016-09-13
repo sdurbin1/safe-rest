@@ -43,9 +43,9 @@ describe('CRUD for sources', function () {
     })
   })
   
-  it('POST /sources', function testPostSources (done) {
+  it('POST /api/sources', function testPostSources (done) {
     request(server)
-      .post('/sources')
+      .post('/api/sources')
       .send({'name': 'source1', 'type': 'mongo', 'metadata': {'test': 'test'}})
       .expect(function (res) {
         res.body.__v = 0
@@ -61,9 +61,9 @@ describe('CRUD for sources', function () {
       }, done)
   })
   
-  it('GET /sources', function testGetSources (done) {
+  it('GET /api/sources', function testGetSources (done) {
     request(server)
-      .get('/sources')
+      .get('/api/sources')
       .expect(function (res) {
         res.body[0].__v = 0
       })
@@ -74,9 +74,9 @@ describe('CRUD for sources', function () {
       }], done)
   })
   
-  it('GET /sources/:source', function testGetSource (done) {
+  it('GET /api/sources/:source', function testGetSource (done) {
     request(server)
-      .get('/sources/' + cannedSource._id)
+      .get('/api/sources/' + cannedSource._id)
       .expect(function (res) {
         res.body.__v = 0
       })
@@ -89,9 +89,9 @@ describe('CRUD for sources', function () {
       }, done)
   })
   
-  it('PUT /sources/:source', function testPutSource (done) {
+  it('PUT /api/sources/:source', function testPutSource (done) {
     request(server)
-      .put('/sources/' + cannedSource._id)
+      .put('/api/sources/' + cannedSource._id)
       .send({'name': 'source1'})
       .expect(function (res) {
         res.body.__v = 0
@@ -105,15 +105,15 @@ describe('CRUD for sources', function () {
       }, done)
   })
   
-  it('DELETE /sources/:source', function testDeleteSource (done) {
+  it('DELETE /api/sources/:source', function testDeleteSource (done) {
     request(server)
-      .delete('/sources/' + cannedSource._id)
+      .delete('/api/sources/' + cannedSource._id)
       .expect(200, {}, done)
   })
  
-  it('PUT /sources/:source/analytics', function testPutAnalytics (done) {
+  it('PUT /api/sources/:source/analytics', function testPutAnalytics (done) {
     request(server)
-      .put('/sources/' + cannedSource._id + '/analytics')
+      .put('/api/sources/' + cannedSource._id + '/analytics')
       .send({'analytics': [cannedAnalytic._id]})
       .expect(function (res) {
         res.body.__v = 0
@@ -133,13 +133,13 @@ describe('CRUD for sources', function () {
       }, done)
   })
   
-  it('GET /sources/:source/analytics', function testGetAnalytics (done) {
+  it('GET /api/sources/:source/analytics', function testGetAnalytics (done) {
     request(server)
-      .put('/sources/' + cannedSource._id + '/analytics')
+      .put('/api/sources/' + cannedSource._id + '/analytics')
       .send({'analytics': [cannedAnalytic._id]})
       .end(function () {
         request(server)
-          .get('/sources/' + cannedSource._id + '/analytics')
+          .get('/api/sources/' + cannedSource._id + '/analytics')
           .expect(function (res) {
             res.body[0].__v = 0
           })
@@ -152,15 +152,15 @@ describe('CRUD for sources', function () {
       })
   })
   
-  it('DELETE /sources/:source/analytics/:analytic', function testDeleteAnalytic (done) {
+  it('DELETE /api/sources/:source/analytics/:analytic', function testDeleteAnalytic (done) {
     // First add analytic to source so we can test deleting it
     request(server)
-      .put('/sources/' + cannedSource._id + '/analytics')
+      .put('/api/sources/' + cannedSource._id + '/analytics')
       .send({'analytics': [cannedAnalytic._id]})
       .end(function () {
         // Test delete
         request(server)
-          .delete('/sources/' + cannedSource._id + '/analytics/' + cannedAnalytic._id)
+          .delete('/api/sources/' + cannedSource._id + '/analytics/' + cannedAnalytic._id)
           .expect(function (res) {
             res.body.__v = 0
           })
@@ -174,15 +174,15 @@ describe('CRUD for sources', function () {
       })
   })
   
-  it('GET /sources/:source/fields', function testGetFields (done) {
+  it('GET /api/sources/:source/fields', function testGetFields (done) {
     // First add fields to source so we can test getting it
     request(server)
-      .put('/sources/' + cannedSource._id)
+      .put('/api/sources/' + cannedSource._id)
       .send({'fields': [{'test': 'test'}]})
       .end(function () {
         // Test delete
         request(server)
-          .get('/sources/' + cannedSource._id + '/fields')
+          .get('/api/sources/' + cannedSource._id + '/fields')
           .expect(200, [{
             'test': 'test'
           }], done)

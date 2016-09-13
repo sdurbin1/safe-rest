@@ -47,9 +47,9 @@ describe('Test data', function () {
     })
   })
 
-  it('POST /sources/:source/data', function testPostData (done) {
+  it('POST /api/sources/:source/data', function testPostData (done) {
     request(server)
-      .post('/sources/' + cannedSource._id + '/data')
+      .post('/api/sources/' + cannedSource._id + '/data')
       .send({'document': testData})
       .expect(function (res) {
         res.body.__v = 0
@@ -71,11 +71,11 @@ describe('Test data', function () {
       }, done)
   })
 
-  it('POST /sources/data', function testPostDataCreateSource (done) {
+  it('POST /api/sources/data', function testPostDataCreateSource (done) {
     let sourceId
 
     request(server)
-      .post('/sources/data')
+      .post('/api/sources/data')
       .send({
         'document': testData,
         'source': {'name': 'source1'}
@@ -105,50 +105,50 @@ describe('Test data', function () {
       })
   })
 
-  it('GET /sources/:source/hasData', function testSourceHasData (done) {
+  it('GET /api/sources/:source/hasData', function testSourceHasData (done) {
     request(server)
-      .post('/sources/' + cannedSource._id + '/data')
+      .post('/api/sources/' + cannedSource._id + '/data')
       .send({'document': testData})
       .end(function () {
         request(server)
-          .get('/sources/' + cannedSource._id + '/hasData')
+          .get('/api/sources/' + cannedSource._id + '/hasData')
           .expect(200, {
             'hasData': true
           }, done)
       })
   })
 
-  it('GET /sources/:source/hasData', function testSourceHasData (done) {
+  it('GET /api/sources/:source/hasData', function testSourceHasData (done) {
     request(server)
-      .post('/sources/' + cannedSource._id + '/data')
+      .post('/api/sources/' + cannedSource._id + '/data')
       .send({'document': testData})
       .end(function () {
         request(server)
-          .get('/sources/' + cannedSource._id + '/hasData')
+          .get('/api/sources/' + cannedSource._id + '/hasData')
           .expect(200, {
             'hasData': true
           }, done)
       })
   })
 
-  it('DELETE /sources/:source/data', function testSourceDeleteData (done) {
+  it('DELETE /api/sources/:source/data', function testSourceDeleteData (done) {
     request(server)
-      .post('/sources/' + cannedSource._id + '/data')
+      .post('/api/sources/' + cannedSource._id + '/data')
       .send({'document': testData})
       .end(function () {
         request(server)
-          .delete('/sources/' + cannedSource._id + '/data')
+          .delete('/api/sources/' + cannedSource._id + '/data')
           .expect(200, {'success': true}, done)
       })
   })
 
-  it('POST /sources/:source/query', function testSourceQueryData (done) {
+  it('POST /api/sources/:source/query', function testSourceQueryData (done) {
     request(server)
-      .post('/sources/' + cannedSource._id + '/data')
+      .post('/api/sources/' + cannedSource._id + '/data')
       .send({'document': testData})
       .end(function () {
         request(server)
-          .post('/sources/' + cannedSource._id + '/query')
+          .post('/api/sources/' + cannedSource._id + '/query')
           .expect(function (res) {
             res.body[0]._id = 1
             res.body[1]._id = 1

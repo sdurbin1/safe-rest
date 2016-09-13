@@ -29,9 +29,9 @@ describe('CRUD for alerts', function () {
     })
   })
   
-  it('GET /alerts', function testGetAlerts (done) {
+  it('GET /api/alerts', function testGetAlerts (done) {
     request(server)
-      .get('/alerts')
+      .get('/api/alerts')
       .expect(function (res) {
         res.body.__v = 0
       })
@@ -42,9 +42,9 @@ describe('CRUD for alerts', function () {
       }, done)
   })
   
-  it('POST /analytics', function testPostAlerts (done) {
+  it('POST /api/alerts', function testPostAlerts (done) {
     request(server)
-      .post('/alerts')
+      .post('/api/alerts')
       .send({
         '_id': cannedAlert._id.toString(),
         'text': 'alert2!',
