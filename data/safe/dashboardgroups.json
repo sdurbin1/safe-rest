@@ -1,0 +1,3 @@
+{ "_id" : { "$oid" : "57a0c262a846191f096f0b2a" }, "title" : "Group 1", "dashboards" : [ { "$oid" : "5734616be0f94390072b1127" }, { "$oid" : "573461eee0f94390072b1128" } ], "__v" : 0 }
+{ "_id" : { "$oid" : "57a0c286a846191f096f0b2b" }, "title" : "Group 2", "dashboards" : [ { "$oid" : "5734620ee0f94390072b1129" } ], "__v" : 0 }
+{ "_id" : { "$oid" : "57a0c29ba846191f096f0b2c" }, "title" : "Group 3", "dashboards" : [ { "$oid" : "57360667ceba86130af2b47a" } ], "__v" : 0 }
