@@ -8,7 +8,7 @@ fi
 DBNAME=$1
 
 rm data/safe/*.json
-mongoexport --db $DBNAME --collection 56eaec7a2308db1b1c6f795f --out data/safe/57a4d2c21c5e543405b806cd.json
+mongoexport --db $DBNAME --collection 56eaec7a2308db1b1c6f795f --out data/safe/56eaec7a2308db1b1c6f795f.json
 mongoexport --db $DBNAME --collection 572a16e5fbdcac91218b9a1c --out data/safe/572a16e5fbdcac91218b9a1c.json
 mongoexport --db $DBNAME --collection 5748845f8058984023ca43d6 --out data/safe/5748845f8058984023ca43d6.json
 mongoexport --db $DBNAME --collection 57a4d2c21c5e543405b806cd --out data/safe/57a4d2c21c5e543405b806cd.json

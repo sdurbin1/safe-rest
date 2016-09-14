@@ -1,0 +1,3 @@
+{ "_id" : { "$oid" : "5717d5c39ef51c8133913636" }, "Age" : 21, "County" : "Anne Arundel", "Height" : 61, "Latitude" : 31.33, "Longitude" : 33, "Street Address" : "123 Main St.", "Weight" : 133 }
+{ "_id" : { "$oid" : "5717d5c39ef51c8133913637" }, "Age" : 33, "County" : "Howard", "Height" : 67, "Latitude" : 31.33, "Longitude" : 33, "Street Address" : "456 Main St.", "Weight" : 188 }
+{ "_id" : { "$oid" : "5717d5c39ef51c8133913638" }, "Age" : 29, "County" : "Anne Arundel", "Height" : 63, "Latitude" : 31.33, "Longitude" : 33, "Street Address" : "789 Main St.", "Weight" : 142 }
