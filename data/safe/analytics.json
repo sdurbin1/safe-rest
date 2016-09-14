@@ -1,0 +1,23 @@
+{ "_id" : { "$oid" : "56ea93bcec9cc0f3098ae30a" }, "name" : "Binomial Distribution", "__v" : 0 }
+{ "_id" : { "$oid" : "56ea93c7ec9cc0f3098ae30b" }, "name" : "Chi-Squared Distribution", "__v" : 0 }
+{ "_id" : { "$oid" : "56ea93d4ec9cc0f3098ae30c" }, "name" : "Confidence", "__v" : 0 }
+{ "_id" : { "$oid" : "56ea93dfec9cc0f3098ae30e" }, "name" : "Covariance", "__v" : 0 }
+{ "_id" : { "$oid" : "56ea93eaec9cc0f3098ae30f" }, "name" : "Forecast", "__v" : 0 }
+{ "_id" : { "$oid" : "56ea93f1ec9cc0f3098ae310" }, "name" : "Frequency", "__v" : 0 }
+{ "_id" : { "$oid" : "56ea93f8ec9cc0f3098ae311" }, "name" : "Maximum", "__v" : 0 }
+{ "_id" : { "$oid" : "56ea9677ec9cc0f3098ae313" }, "name" : "Median", "__v" : 0 }
+{ "_id" : { "$oid" : "56ea9746ec9cc0f3098ae314" }, "name" : "Minimum", "__v" : 0 }
+{ "_id" : { "$oid" : "56ea974cec9cc0f3098ae315" }, "name" : "Mode", "__v" : 0 }
+{ "_id" : { "$oid" : "56ea975aec9cc0f3098ae316" }, "name" : "Normal Distribution", "__v" : 8, "visualizationTypes" : [] }
+{ "_id" : { "$oid" : "56ea9765ec9cc0f3098ae317" }, "name" : "Percentile", "__v" : 0 }
+{ "_id" : { "$oid" : "56ea976dec9cc0f3098ae318" }, "name" : "Permutations", "__v" : 0 }
+{ "_id" : { "$oid" : "56ea977dec9cc0f3098ae319" }, "name" : "Poisson Distribution", "__v" : 0 }
+{ "_id" : { "$oid" : "56ea97a8ec9cc0f3098ae31b" }, "name" : "Skew", "__v" : 0 }
+{ "_id" : { "$oid" : "56ea97b0ec9cc0f3098ae31c" }, "name" : "Standard Deviation", "__v" : 0 }
+{ "_id" : { "$oid" : "56ea97b8ec9cc0f3098ae31d" }, "name" : "Sum", "__v" : 0 }
+{ "_id" : { "$oid" : "56ea97bfec9cc0f3098ae31e" }, "name" : "Variance", "__v" : 0 }
+{ "_id" : { "$oid" : "571e16d91d6cb28808526d64" }, "name" : "Count", "visualizationTypes" : [ { "$oid" : "571e0faf1d6cb28808526d5e" } ], "__v" : 1 }
+{ "_id" : { "$oid" : "571e17c51d6cb28808526d65" }, "name" : "Average", "visualizationTypes" : [ { "$oid" : "571e0faf1d6cb28808526d5e" } ], "__v" : 3 }
+{ "_id" : { "$oid" : "572b4231560c766d0a301994" }, "name" : "Detailed Count", "visualizationTypes" : [ { "$oid" : "571e0faf1d6cb28808526d5e" } ], "__v" : 0 }
+{ "_id" : { "$oid" : "57333266564f49e0071b5040" }, "name" : "Search", "visualizationTypes" : [ { "$oid" : "571e0faf1d6cb28808526d5e" }, { "$oid" : "573602f7ceba86130af2b474" } ], "__v" : 0 }
+{ "_id" : { "$oid" : "5733526052e3ef7a0a58995b" }, "name" : "Detailed Sum", "visualizationTypes" : [], "__v" : 0 }

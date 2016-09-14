@@ -1,11 +1,10 @@
 {
   "name": "safe-rest",
-  "version": "0.0.23",
+  "version": "0.0.26",
   "repository": "https://github.com/sdurbin1/safe-rest",
   "license": "MIT",
   "scripts": {
     "start": "node ./bin/www",
-    "db-fill": "mongorestore ./data/latest/safe/ --db safe",
     "lint": "eslint --ext .js routes/ models/ utils/ test/ ./*.js"
   },
   "devDependencies": {

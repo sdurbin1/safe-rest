@@ -1,0 +1,6 @@
+{ "_id" : { "$oid" : "56eaec7a2308db1b1c6f795f" }, "name" : "CSV_20160122", "fields" : [ { "dataType" : "Number", "name" : "Age" }, { "dataType" : "String", "name" : "County" }, { "dataType" : "Number", "name" : "Height" }, { "dataType" : "Number", "name" : "Latitude" }, { "dataType" : "Number", "name" : "Longitude" }, { "dataType" : "String", "name" : "Street Address" }, { "dataType" : "Number", "name" : "Weight" } ], "__v" : 46, "analytics" : [ { "$oid" : "571e16d91d6cb28808526d64" } ], "type" : "mongo" }
+{ "_id" : { "$oid" : "56eaec892308db1b1c6f7960" }, "name" : "CSV_20160121", "fields" : [], "analytics" : [], "__v" : 0, "type" : "mongo" }
+{ "_id" : { "$oid" : "56eaec922308db1b1c6f7961" }, "name" : "CSV_20160101", "fields" : [], "analytics" : [], "__v" : 0, "type" : "mongo" }
+{ "_id" : { "$oid" : "572a16e5fbdcac91218b9a1c" }, "name" : "TrafficViolationsData", "fields" : [], "analytics" : [], "__v" : 0, "type" : "mongo" }
+{ "_id" : { "$oid" : "5748845f8058984023ca43d6" }, "name" : "AirlineRouteData", "analytics" : [], "__v" : 0, "type" : "mongo" }
+{ "_id" : { "$oid" : "57a4d2c21c5e543405b806cd" }, "name" : "Summary Data", "type" : "mongo", "analytics" : [], "__v" : 0 }

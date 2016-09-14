@@ -1,0 +1,8 @@
+{ "_id" : { "$oid" : "571e0f8d1d6cb28808526d5d" }, "name" : "Area", "__v" : 0 }
+{ "_id" : { "$oid" : "571e0faf1d6cb28808526d5e" }, "name" : "Column", "__v" : 0 }
+{ "_id" : { "$oid" : "571e10b01d6cb28808526d5f" }, "name" : "Bar", "__v" : 0 }
+{ "_id" : { "$oid" : "571e10b61d6cb28808526d60" }, "name" : "Line", "__v" : 0 }
+{ "_id" : { "$oid" : "571e10bd1d6cb28808526d61" }, "name" : "Pie", "__v" : 0 }
+{ "_id" : { "$oid" : "571e10c31d6cb28808526d62" }, "name" : "Table", "__v" : 0 }
+{ "_id" : { "$oid" : "573602f7ceba86130af2b474" }, "name" : "Map", "__v" : 0 }
+{ "_id" : { "$oid" : "577d004b558e3d06097ba6e5" }, "name" : "Summary", "__v" : 0 }
