@@ -2,3 +2,4 @@ npm-debug.log
 data/latest/safe/charts.*
 data/latest/safe/system.indexes.bson
 data/latest/safe/sessions.*
+config.js
