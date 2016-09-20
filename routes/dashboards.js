@@ -43,6 +43,7 @@ const roleAdmin = function (req, res, next) {
   if (req.session.admin || process.env.NODE_ENV === 'test') {
     return next()
   } else {
+    console.log('Error: must be admin to perform this action')
     return next(new Error('Error: must be admin to perform this action'))
   }
 }
