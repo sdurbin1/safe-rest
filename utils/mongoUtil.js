@@ -7,6 +7,7 @@ exports.buildQueryJson = buildQueryJson
 exports.buildFilterJson = buildFilterJson
 exports.deleteDocument = deleteDocument
 exports.documentExists = documentExists
+exports.populateRouterParam = populateRouterParam
 
 const operatorMap = {
   '=': '$eq',
@@ -122,4 +123,17 @@ function documentExists (db, collectionName) {
       }
     })
   })
+}
+
+function populateRouterParam (collection, id, req, next, paramName) {
+  collection
+    .findById(id)
+    .then(paramValue => {
+      if (!paramValue) { return next(new Error('can\'t find ' + paramName)) }
+
+      req[paramName] = paramValue
+      
+      return next()
+    })
+    .catch(err => next(err))
 }
