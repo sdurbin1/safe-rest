@@ -1,68 +1,46 @@
 const express = require('express')
+const mongoose = require('mongoose')
+const mongoUtils = require('../utils/mongoUtil')
+
 const router = express.Router()
+const VisualizationType = mongoose.model('VisualizationType')
 
 module.exports = router
-
-const mongoose = require('mongoose')
-const VisualizationType = mongoose.model('VisualizationType')
 
 /* PRELOADING OBJECTS */
 
 /* :visualization-type param */
-router.param('visualizationType', function (req, res, next, id) {
-  const query = VisualizationType.findById(id)
-
-  query.exec(function (err, visualizationType) {
-    if (err) { return next(err) }
-    if (!visualizationType) { return next(new Error('can\'t find visualization type')) }
-
-    req.visualizationType = visualizationType
-    
-    return next()
-  })
+router.param('visualizationType', (req, res, next, id) => {
+  mongoUtils.populateRouterParam(VisualizationType, id, req, next, 'visualizationType')
 })
 
 /* END PRELOADING OBJECTS */
 
 /* GET /visualization-types */
-router.get('/', function (req, res, next) {
-  VisualizationType.find(function (err, visualizationTypes) {
-    if (err) { return next(err) }
-
-    res.json(visualizationTypes)
-  })
+router.get('/', (req, res, next) => {
+  mongoUtils.getAllModelObject(VisualizationType, res, next)
 })
 
 /* POST /visualization-types */
-router.post('/', function (req, res, next) {
-  const visualizationType = new VisualizationType(req.body)
-
-  visualizationType.save(function (err, visualizationType) {
-    if (err) { return next(err) }
-
-    res.json(visualizationType)
-  })
+router.post('/', (req, res, next) => {
+  mongoUtils.saveModelObject(VisualizationType, res, req, next)
 })
 
 /* GET /visualization-types/:visualizationType */
-router.get('/:visualizationType', function (req, res, next) {
+router.get('/:visualizationType', (req, res, next) => {
   res.json(req.visualizationType)
 })
 
 /* PUT /visualization-types/:visualizationType */
-router.put('/:visualizationType', function (req, res, next) {
-  VisualizationType.findOneAndUpdate({'_id': req.visualizationType._id}, req.body, {new: true}, function (err, visualizationType) {
-    if (err) { return next(err) }
-
-    res.json(visualizationType)
-  })
+router.put('/:visualizationType', (req, res, next) => {
+  mongoUtils.returnResults(
+    VisualizationType.findOneAndUpdate({'_id': req.visualizationType._id}, req.body, {new: true}),
+    res,
+    next
+  )
 })
 
 /* DELETE /visualization-types/:visualizationType */
-router.delete('/:visualizationType', function (req, res, next) {
-  VisualizationType.find({'_id': req.visualizationType._id}).remove(function (err) {
-    if (err) { return next(err) }
-  
-    res.json({})
-  })
+router.delete('/:visualizationType', (req, res, next) => {
+  mongoUtils.removeModelObject(VisualizationType, req.visualizationType._id, res, next)
 })

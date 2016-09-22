@@ -1,143 +1,95 @@
 const express = require('express')
-const router = express.Router()
-
-module.exports = router
-
 const mongoose = require('mongoose')
+const mongoUtils = require('../utils/mongoUtil')
+
+const router = express.Router()
 const Source = mongoose.model('Source')
 const Analytic = mongoose.model('Analytic')
+
+module.exports = router
 
 /* PRELOADING OBJECTS */
 
 /* :source param */
-router.param('source', function (req, res, next, id) {
-  const query = Source.findById(id)
-
-  query.exec(function (err, source) {
-    if (err) { return next(err) }
-    if (!source) { return next(new Error('can\'t find source')) }
-
-    req.source = source
-    
-    return next()
-  })
+router.param('source', (req, res, next, id) => {
+  mongoUtils.populateRouterParam(Source, id, req, next, 'source')
 })
 
 /* :analytic param */
-router.param('analytic', function (req, res, next, id) {
-  const query = Analytic.findById(id)
-
-  query.exec(function (err, analytic) {
-    if (err) { return next(err) }
-    if (!analytic) { return next(new Error('can\'t find analytic')) }
-
-    req.analytic = analytic
-    
-    return next()
-  })
+router.param('analytic', (req, res, next, id) => {
+  mongoUtils.populateRouterParam(Analytic, id, req, next, 'analytic')
 })
 
 /* END PRELOADING OBJECTS */
 
 /* GET /sources */
-router.get('/', function (req, res, next) {
-  Source.find({}, 'name _id', function (err, sources) {
-    if (err) { return next(err) }
-
-    res.json(sources)
-  })
+router.get('/', (req, res, next) => {
+  mongoUtils.returnResults(Source.find({}, 'name _id'), res, next)
 })
 
 /* GET /sources/:source */
-router.get('/:source', function (req, res, next) {
-  req.source.populate('analytics', function (err, source) {
-    if (err) { return next(err) }
-
-    res.json(source)
-  })
+router.get('/:source', (req, res, next) => {
+  populateSource(req.source, res, next)
 })
 
 /* POST /sources */
-router.post('/', function (req, res, next) {
+router.post('/', (req, res, next) => {
   const source = new Source(req.body)
 
-  source.save(function (err, source) {
-    if (err) { return next(err) }
-
-    source.populate('analytics', function (err, source) {
-      if (err) { return next(err) }
-      
-      res.json(source)
-    })
-  })
+  populateSource(source.save(), res, next)
 })
 
 /* PUT /sources/:source */
-router.put('/:source', function (req, res, next) {
-  Source.findOneAndUpdate({'_id': req.source._id}, req.body, {new: true}, function (err, source) {
-    if (err) { return next(err) }
-
-    source.populate('analytics', function (err, source) {
-      if (err) { return next(err) }
-      
-      res.json(source)
-    })
-  })
+router.put('/:source', (req, res, next) => {
+  populateSource(
+    Source.findOneAndUpdate({'_id': req.source._id}, req.body, {new: true}), res, next
+  )
 })
 
 /* DELETE /sources/:source */
 /* Delete source and delete all associated fields */
-router.delete('/:source', function (req, res, next) {
-  Source.find({'_id': req.source._id}).remove(function (err) {
-    if (err) { return next(err) }
-  
-    res.json({})
-  })
+router.delete('/:source', (req, res, next) => {
+  mongoUtils.removeModelObject(Source, req.source._id, res, next)
 })
 
 /* PUT /sources/:source/analytics */
 /* Adds an existing analytic to a source */
-router.put('/:source/analytics', function (req, res, next) {
+router.put('/:source/analytics', (req, res, next) => {
   // first doing concat as req.body["analytics"] is not an array if only one element passed in
   const updatedAnalytics = [].concat(req.body['analytics'])
   
   req.source.analytics.push.apply(req.source.analytics, updatedAnalytics)
-  req.source.save(function (err, source) {
-    if (err) { return next(err) }
-
-    source.populate('analytics', function (err, source) {
-      if (err) { return next(err) }
-      
-      res.json(source)
-    })
-  })
+  
+  populateSource(req.source.save(), res, next)
 })
 
 /* GET /sources/:source/analytics */
-router.get('/:source/analytics', function (req, res, next) {
-  req.source.populate('analytics', function (err, source) {
-    if (err) { return next(err) }
-
-    res.json(source.analytics)
-  })
+router.get('/:source/analytics', (req, res, next) => {
+  req.source
+    .populate('analytics')
+    .execPopulate()
+    .then(result => { res.json(result.analytics) })
+    .catch(err => next(err))
 })
 
 /* DELETE /sources/:source/analytics/:analytic */
 /* Removes an analytic from a source but does not delete the analytic */
-router.delete('/:source/analytics/:analytic', function (req, res, next) {
+router.delete('/:source/analytics/:analytic', (req, res, next) => {
   req.source.analytics.remove(req.analytic)
-  req.source.save(function (err, source) {
-    if (err) { return next(err) }
-
-    source.populate('analytics', function (err, source) {
-      if (err) { return next(err) }
-      
-      res.json(source)
-    })
-  })
+  
+  populateSource(req.source.save(), res, next)
 })
 
 /* GET /sources/:source/fields */
-router.get('/:source/fields', function (req, res, next) {
+router.get('/:source/fields', (req, res, next) => {
   res.json(req.source.fields)
 })
+
+const populateSource = (source, res, next) => (
+   mongoUtils.populateAndReturnResults(
+    source,
+    'analytics',
+    res,
+    next
+  )
+)

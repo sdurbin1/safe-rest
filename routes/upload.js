@@ -1,9 +1,8 @@
 const express = require('express')
-const router = express.Router()
-
-const mongoUtil = require('../utils/mongoUtil')
-
 const mongoose = require('mongoose')
+const mongoUtils = require('../utils/mongoUtil')
+
+const router = express.Router()
 const Source = mongoose.model('Source')
 
 module.exports = router
@@ -11,37 +10,26 @@ module.exports = router
 /* PRELOADING OBJECTS */
 
 /* :source param */
-router.param('source', function (req, res, next, id) {
-  const query = Source.findById(id)
-
-  query.exec(function (err, source) {
-    if (err) { return next(err) }
-    if (!source) { return next(new Error('can\'t find source')) }
-
-    req.source = source
-    
-    return next()
-  })
+router.param('source', (req, res, next, id) => {
+  mongoUtils.populateRouterParam(Source, id, req, next, 'source')
 })
 
 /* END PRELOADING OBJECTS */
 
 /* POST /sources/:source/data */
 /* Upload document to existing source.  Also update field list if specified */
-router.post('/:source/data', function (req, res, next) {
-  const doc = req.body.document
-  const fields = req.body.fields
+router.post('/:source/data', (req, res, next) => {
+  const {document: doc} = req.body
+  const {fields} = req.body
     
   if (fields) {
-    Source.findOneAndUpdate({'_id': req.source._id}, {'fields': fields}, {new: true}, function (err, source) {
-      if (err) { return next(err) }
-            
-      source.populate('analytics', function (err, source) {
-        if (err) { return next(err) }
-              
+    Source
+      .findOneAndUpdate({'_id': req.source._id}, {'fields': fields}, {new: true})
+      .then(source => source.populate('analytics'))
+      .then(source => {
         insertDocument(req.app.get('db'), source, doc, res)
       })
-    })
+      .catch(err => next(err))
   } else {
     insertDocument(req.app.get('db'), req.source, doc, res)
   }
@@ -49,29 +37,27 @@ router.post('/:source/data', function (req, res, next) {
 
 /* POST /sources/data */
 /* Create source and upload document */
-router.post('/data', function (req, res, next) {
+router.post('/data', (req, res, next) => {
   const doc = req.body.document
   const sourceJson = req.body.source
 
   const source = new Source(sourceJson)
-    
-  source.save(function (err, source) {
-    if (err) { return next(err) }
-    
-    source.populate('analytics', function (err, source) {
-      if (err) { return next(err) }
-          
+  
+  source
+    .save()
+    .then(source => source.populate('analytics'))
+    .then(source => {
       insertDocument(req.app.get('db'), source, doc, res)
     })
-  })
+    .catch(err => next(err))
 })
 
 /* GET /sources/:source/hasData */
-router.get('/:source/hasData', function (req, res, next) {
+router.get('/:source/hasData', (req, res, next) => {
   const sourceId = req.source._id.toString()
 
-  mongoUtil.documentExists(req.app.get('db'), sourceId)
-    .then((out) => res.json(out))
+  mongoUtils.documentExists(req.app.get('db'), sourceId)
+    .then(out => res.json(out))
     .catch(error => {
       res.status(503).send(error)
     })
@@ -79,18 +65,18 @@ router.get('/:source/hasData', function (req, res, next) {
 
 /* DELETE /sources/:source/data */
 /* Delete data associated with source */
-router.delete('/:source/data', function (req, res, next) {
+router.delete('/:source/data', (req, res, next) => {
   const sourceId = req.source._id.toString()
  
-  mongoUtil.deleteDocument(req.app.get('db'), sourceId)
-    .then((out) => res.json(out))
+  mongoUtils.deleteDocument(req.app.get('db'), sourceId)
+    .then(out => res.json(out))
     .catch(error => {
       res.status(503).send(error)
     })
 })
 
-function insertDocument (db, source, doc, res) {
-  mongoUtil.insertDocument(db, source._id.toString(), doc)
+const insertDocument = (db, source, doc, res) => {
+  mongoUtils.insertDocument(db, source._id.toString(), doc)
    .then((out) => res.json({'source': source, 'upload': out}))
    .catch(error => {
      res.status(503).send(error)

@@ -23,6 +23,9 @@ if (require.main === module) {
 
 mongoose.connect(mongourl)
 
+// Use promises for Mongoose queries.
+mongoose.Promise = require('bluebird')
+
 require('./models/VisualizationTypes')
 require('./models/Alerts')
 require('./models/Analytics')

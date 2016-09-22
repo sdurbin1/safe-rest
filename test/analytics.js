@@ -11,41 +11,41 @@ let cannedVisualizationType
 
 process.env.NODE_ENV = 'test'
 
-describe('CRUD for analytics', function () {
-  beforeEach(function (done) {
-    Analytic.create({'name': 'analytic'}, function (err, analytic) {
-      if (err) { throw err }
-      cannedAnalytic = analytic
+describe('CRUD for analytics', () => {
+  beforeEach(done => {
+    Analytic
+      .create({'name': 'analytic'})
+      .then(analytic => {
+        cannedAnalytic = analytic
       
-      VisualizationType.create({'name': 'chart'}, function (err, visualizationType) {
-        if (err) { throw err }
-        
+        return VisualizationType.create({'name': 'chart'})
+      })
+      .then(visualizationType => {
         server.start
         cannedVisualizationType = visualizationType
       
         done()
       })
-    })
+      .catch(err => { throw err })
   })
   
-  afterEach(function (done) {
-    Analytic.remove({}, function (err) {
-      if (err) { throw err }
-      
-      VisualizationType.remove({}, function (err) {
-        if (err) { throw err }
+  afterEach(done => {
+    Analytic
+      .remove()
+      .then(() => VisualizationType.remove({}))
+      .then(() => {
         server.stop
       
         done()
       })
-    })
+      .catch(err => { throw err })
   })
   
-  it('POST /api/analytics', function testPostAnalytics (done) {
+  it('POST /api/analytics', done => {
     request(server)
       .post('/api/analytics')
       .send({'name': 'analytic1'})
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
         res.body._id = 1
       })
@@ -57,10 +57,10 @@ describe('CRUD for analytics', function () {
       }, done)
   })
   
-  it('GET /api/analytics', function testGetAnalytics (done) {
+  it('GET /api/analytics', done => {
     request(server)
       .get('/api/analytics')
-      .expect(function (res) {
+      .expect(res => {
         res.body[0].__v = 0
       })
       .expect(200, [{
@@ -71,10 +71,10 @@ describe('CRUD for analytics', function () {
       }], done)
   })
   
-  it('GET /api/analytics/:analytic', function testGetAnalytic (done) {
+  it('GET /api/analytics/:analytic', done => {
     request(server)
       .get('/api/analytics/' + cannedAnalytic._id)
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
       })
       .expect(200, {
@@ -85,11 +85,11 @@ describe('CRUD for analytics', function () {
       }, done)
   })
   
-  it('PUT /api/analytics/:analytic', function testPutAnalytic (done) {
+  it('PUT /api/analytics/:analytic', done => {
     request(server)
       .put('/api/analytics/' + cannedAnalytic._id)
       .send({'name': 'analytic2'})
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
       })
       .expect(200, {
@@ -100,34 +100,39 @@ describe('CRUD for analytics', function () {
       }, done)
   })
   
-  it('DELETE /api/analytics/:analytic', function testDeleteAnalytic (done) {
+  it('DELETE /api/analytics/:analytic', done => {
     request(server)
       .delete('/api/analytics/' + cannedAnalytic._id)
       .expect(200, {}, done)
   })
  
-  it('PUT /api/analytics/:analytic/visualization-types', function testPutVisualizationType (done) {
+  it('PUT /api/analytics/:analytic/visualization-types', done => {
     request(server)
       .put('/api/analytics/' + cannedAnalytic._id + '/visualization-types')
       .send({'visualizationTypes': [cannedVisualizationType._id]})
-      .expect(function (res) {
-        res.body[0].__v = 0
+      .expect(res => {
+        res.body.__v = 0
       })
-      .expect(200, [{
-        '_id': cannedVisualizationType._id.toString(),
+      .expect(200, {
+        '_id': cannedAnalytic._id.toString(),
         '__v': 0,
-        'name': 'chart'
-      }], done)
+        'name': 'analytic',
+        'visualizationTypes': [{
+          _id: cannedVisualizationType._id.toString(),
+          name: 'chart',
+          __v: 0
+        }]
+      }, done)
   })
   
-  it('GET /api/analytics/:analytic/visualization-types', function testGetVisualizationType (done) {
+  it('GET /api/analytics/:analytic/visualization-types', done => {
     request(server)
       .put('/api/analytics/' + cannedAnalytic._id + '/visualization-types')
       .send({'visualizationTypes': [cannedVisualizationType._id]})
-      .end(function () {
+      .end(() => {
         request(server)
           .get('/api/analytics/' + cannedAnalytic._id + '/visualization-types')
-          .expect(function (res) {
+          .expect(res => {
             res.body[0].__v = 0
           })
           .expect(200, [{
@@ -138,12 +143,12 @@ describe('CRUD for analytics', function () {
       })
   })
   
-  it('DELETE /api/analytics/:analytic/visualization-types/:visualizationType', function testDeleteVisualizationType (done) {
+  it('DELETE /api/analytics/:analytic/visualization-types/:visualizationType', done => {
     // First add visualization-type to analytic so we can test deleting it
     request(server)
       .put('/api/analytics/' + cannedAnalytic._id + '/visualization-types')
       .send({'visualizationTypes': [cannedVisualizationType._id]})
-      .end(function () {
+      .end(() => {
         // Test delete
         request(server)
           .delete('/api/analytics/' + cannedAnalytic._id + '/visualization-types/' + cannedVisualizationType._id)

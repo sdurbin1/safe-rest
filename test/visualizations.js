@@ -1,6 +1,5 @@
 const request = require('supertest')
 const mongoose = require('mongoose')
-const Promise = require('bluebird')
 
 require('../models/Visualizations')
 require('../models/Analytics')
@@ -18,60 +17,62 @@ let cannedVisualizationType
 
 process.env.NODE_ENV = 'test'
 
-describe('CRUD for sources', function () {
-  beforeEach(function (done) {
-    createObject(Source, {'name': 'source'})
+describe('CRUD for sources', () => {
+  beforeEach(done => {
+    Source
+      .create({'name': 'source'})
       .then((source) => {
         cannedSource = source
 
-        createObject(Analytic, {'name': 'analytic'})
-          .then((analytic) => {
-            cannedAnalytic = analytic
-
-            createObject(VisualizationType, {'name': 'chart'})
-              .then((visualizationType) => {
-                cannedVisualizationType = visualizationType
-
-                createObject(Visualization, {
-                  'name': 'visualization',
-                  'source': cannedSource._id.toString(),
-                  'analytic': cannedAnalytic._id.toString(),
-                  'visualizationType': cannedVisualizationType._id.toString()
-                })
-                  .then((visualization) => {
-                    cannedVisualization = visualization
-
-                    done()
-                  })
-              })
-          })
+        return Analytic.create({'name': 'analytic'})
       })
+      .then((analytic) => {
+        cannedAnalytic = analytic
+
+        return VisualizationType.create({'name': 'chart'})
+      })
+      .then((visualizationType) => {
+        cannedVisualizationType = visualizationType
+
+        return Visualization.create({
+          'name': 'visualization',
+          'source': cannedSource._id.toString(),
+          'analytic': cannedAnalytic._id.toString(),
+          'visualizationType': cannedVisualizationType._id.toString()
+        })
+      })
+      .then((visualization) => {
+        cannedVisualization = visualization
+
+        done()
+      })
+      .catch(err => {
+        console.log('Error: ' + err)
+        done()
+      })
+  })
+
+  afterEach(done => {
+    Source
+      .remove()
+      .then(() => Analytic.remove())
+      .then(() => VisualizationType.remove())
+      .then(() => Visualization.remove())
+      .then(() => done())
       .catch(error => {
         console.log('Error: ' + error)
         done()
       })
   })
 
-  afterEach(function (done) {
-    removeObject(Source)
-    .then(removeObject(Analytic))
-    .then(removeObject(VisualizationType))
-    .then(removeObject(Visualization))
-    .then(done())
-    .catch(error => {
-      console.log('Error: ' + error)
-      done()
-    })
-  })
-
-  it('POST /api/sources', function testPostVisualization (done) {
+  it('POST /api/sources', done => {
     request(server)
       .post('/api/visualizations')
       .send({
         'name': 'visualization',
         'queryLimit': 10
       })
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
         res.body._id = 1
       })
@@ -83,10 +84,10 @@ describe('CRUD for sources', function () {
       }, done)
   })
 
-  it('GET /api/visualizations', function testGetVisualizations (done) {
+  it('GET /api/visualizations', done => {
     request(server)
       .get('/api/visualizations')
-      .expect(function (res) {
+      .expect(res => {
         res.body[0].__v = 0
       })
       .expect(200, [{
@@ -113,10 +114,10 @@ describe('CRUD for sources', function () {
       }], done)
   })
 
-  it('GET /api/visualizations/:visualization', function testGetVisualization (done) {
+  it('GET /api/visualizations/:visualization', done => {
     request(server)
       .get('/api/visualizations/' + cannedVisualization._id)
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
       })
       .expect(200, {
@@ -143,11 +144,11 @@ describe('CRUD for sources', function () {
       }, done)
   })
 
-  it('PUT /api/visualizations/:visualization', function testPutVisualization (done) {
+  it('PUT /api/visualizations/:visualization', done => {
     request(server)
       .put('/api/visualizations/' + cannedVisualization._id)
       .send({'name': 'visualization1'})
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
       })
       .expect(200, {
@@ -174,28 +175,9 @@ describe('CRUD for sources', function () {
       }, done)
   })
 
-  it('DELETE /api/visualizations/:visualization', function testDeleteVisualization (done) {
+  it('DELETE /api/visualizations/:visualization', done => {
     request(server)
       .delete('/api/visualizations/' + cannedVisualization._id)
       .expect(200, {}, done)
   })
 })
-function createObject (model, json) {
-  return new Promise(function (resolve, reject) {
-    model.create(json, function (err, result) {
-      if (err) { reject(err) }
-
-      resolve(result)
-    })
-  })
-}
-
-function removeObject (model) {
-  return new Promise(function (resolve, reject) {
-    model.remove({}, function (err, result) {
-      if (err) { reject(err) }
-
-      resolve(result)
-    })
-  })
-}

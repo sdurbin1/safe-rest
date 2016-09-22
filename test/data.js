@@ -1,7 +1,6 @@
 const request = require('supertest')
 const mongoose = require('mongoose')
 const mongoUtil = require('../utils/mongoUtil')
-const Promise = require('bluebird')
 
 require('../models/Visualizations')
 require('../models/Analytics')
@@ -21,9 +20,10 @@ const testData = [
 
 process.env.NODE_ENV = 'test'
 
-describe('Test data', function () {
-  beforeEach(function (done) {
-    createObject(Source, {'name': 'source'})
+describe('Test data', () => {
+  beforeEach(done => {
+    Source
+      .create({'name': 'source'})
       .then((source) => {
         cannedSource = source
 
@@ -35,23 +35,23 @@ describe('Test data', function () {
       })
   })
 
-  afterEach(function (done) {
+  afterEach(done => {
     mongoUtil.deleteDocument(server.get('db'), cannedSource._id.toString())
-    .then(removeObject(Source))
-    .then(removeObject(Analytic))
-    .then(removeObject(VisualizationType))
-    .then(removeObject(Visualization))
+    .then(Source.remove({}))
+    .then(Analytic.remove({}))
+    .then(VisualizationType.remove({}))
+    .then(Visualization.remove({}))
     .then(done())
     .catch(error => {
       console.log('Error: ' + error)
     })
   })
 
-  it('POST /api/sources/:source/data', function testPostData (done) {
+  it('POST /api/sources/:source/data', done => {
     request(server)
       .post('/api/sources/' + cannedSource._id + '/data')
       .send({'document': testData})
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
         res.body._id = 1
         res.body.source.__v = 0
@@ -71,7 +71,7 @@ describe('Test data', function () {
       }, done)
   })
 
-  it('POST /api/sources/data', function testPostDataCreateSource (done) {
+  it('POST /api/sources/data', done => {
     let sourceId
 
     request(server)
@@ -80,7 +80,7 @@ describe('Test data', function () {
         'document': testData,
         'source': {'name': 'source1'}
       })
-      .expect(function (res) {
+      .expect(res => {
         sourceId = res.body.source._id
         res.body.__v = 0
         res.body._id = 1
@@ -99,17 +99,17 @@ describe('Test data', function () {
         'upload': {
           'success': true
         }
-      }, function () {
+      }, () => {
         mongoUtil.deleteDocument(server.get('db'), sourceId)
         done()
       })
   })
 
-  it('GET /api/sources/:source/hasData', function testSourceHasData (done) {
+  it('GET /api/sources/:source/hasData', done => {
     request(server)
       .post('/api/sources/' + cannedSource._id + '/data')
       .send({'document': testData})
-      .end(function () {
+      .end(() => {
         request(server)
           .get('/api/sources/' + cannedSource._id + '/hasData')
           .expect(200, {
@@ -118,11 +118,11 @@ describe('Test data', function () {
       })
   })
 
-  it('GET /api/sources/:source/hasData', function testSourceHasData (done) {
+  it('GET /api/sources/:source/hasData', done => {
     request(server)
       .post('/api/sources/' + cannedSource._id + '/data')
       .send({'document': testData})
-      .end(function () {
+      .end(() => {
         request(server)
           .get('/api/sources/' + cannedSource._id + '/hasData')
           .expect(200, {
@@ -131,25 +131,25 @@ describe('Test data', function () {
       })
   })
 
-  it('DELETE /api/sources/:source/data', function testSourceDeleteData (done) {
+  it('DELETE /api/sources/:source/data', done => {
     request(server)
       .post('/api/sources/' + cannedSource._id + '/data')
       .send({'document': testData})
-      .end(function () {
+      .end(() => {
         request(server)
           .delete('/api/sources/' + cannedSource._id + '/data')
           .expect(200, {'success': true}, done)
       })
   })
 
-  it('POST /api/sources/:source/query', function testSourceQueryData (done) {
+  it('POST /api/sources/:source/query', done => {
     request(server)
       .post('/api/sources/' + cannedSource._id + '/data')
       .send({'document': testData})
-      .end(function () {
+      .end(() => {
         request(server)
           .post('/api/sources/' + cannedSource._id + '/query')
-          .expect(function (res) {
+          .expect(res => {
             res.body[0]._id = 1
             res.body[1]._id = 1
             res.body[2]._id = 1
@@ -162,22 +162,3 @@ describe('Test data', function () {
       })
   })
 })
-function createObject (model, json) {
-  return new Promise(function (resolve, reject) {
-    model.create(json, function (err, result) {
-      if (err) { reject(err) }
-
-      resolve(result)
-    })
-  })
-}
-
-function removeObject (model) {
-  return new Promise(function (resolve, reject) {
-    model.remove({}, function (err, result) {
-      if (err) { reject(err) }
-
-      resolve(result)
-    })
-  })
-}

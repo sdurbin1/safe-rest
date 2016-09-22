@@ -1,14 +1,5 @@
 const Promise = require('bluebird')
 
-exports.queryMongo = queryMongo
-exports.labeledQueryMongo = labeledQueryMongo
-exports.insertDocument = insertDocument
-exports.buildQueryJson = buildQueryJson
-exports.buildFilterJson = buildFilterJson
-exports.deleteDocument = deleteDocument
-exports.documentExists = documentExists
-exports.populateRouterParam = populateRouterParam
-
 const operatorMap = {
   '=': '$eq',
   '<': '$lt',
@@ -18,7 +9,7 @@ const operatorMap = {
   '!=': '$ne'
 }
 
-function queryMongo (db, collection, query, limit) {
+exports.queryMongo = (db, collection, query, limit) => {
   return new Promise(function (resolve, reject) {
     const cursor = db.collection(collection).find(query).limit(limit)
     const results = []
@@ -35,7 +26,7 @@ function queryMongo (db, collection, query, limit) {
   })
 }
 
-function labeledQueryMongo (db, collection, query, type, name, limit) {
+exports.labeledQueryMongo = (db, collection, query, type, name, limit) => {
   return new Promise(function (resolve, reject) {
     const cursor = db.collection(collection).find(query).limit(limit)
     const results = []
@@ -56,7 +47,7 @@ function labeledQueryMongo (db, collection, query, type, name, limit) {
   })
 }
 
-function buildQueryJson (filters) {
+exports.buildQueryJson = (filters) => {
   if (!filters) { return {} }
   const queryJson = {}
   
@@ -74,7 +65,7 @@ function buildQueryJson (filters) {
   return queryJson
 }
 
-function buildFilterJson (value) {
+exports.buildFilterJson = (value) => {
   if (!value) { return {} }
   const queryJson = {}
   
@@ -90,7 +81,7 @@ function buildFilterJson (value) {
   return queryJson
 }
 
-function insertDocument (db, name, doc) {
+exports.insertDocument = (db, name, doc) => {
   return new Promise(function (resolve, reject) {
     db.collection(name).insert(doc, function (err, result) {
       if (err != null) { reject(err) }
@@ -100,7 +91,7 @@ function insertDocument (db, name, doc) {
   })
 }
 
-function deleteDocument (db, name) {
+exports.deleteDocument = (db, name) => {
   return new Promise(function (resolve, reject) {
     db.collection(name).drop(function (err, numberRemoved) {
       if (err != null) { reject(err) }
@@ -110,7 +101,7 @@ function deleteDocument (db, name) {
   })
 }
 
-function documentExists (db, collectionName) {
+exports.documentExists = (db, collectionName) => {
   return new Promise(function (resolve, reject) {
     db.listCollections({name: collectionName})
     .next(function (err, collinfo) {
@@ -125,7 +116,7 @@ function documentExists (db, collectionName) {
   })
 }
 
-function populateRouterParam (collection, id, req, next, paramName) {
+exports.populateRouterParam = (collection, id, req, next, paramName) => {
   collection
     .findById(id)
     .then(paramValue => {
@@ -137,3 +128,57 @@ function populateRouterParam (collection, id, req, next, paramName) {
     })
     .catch(err => next(err))
 }
+
+const returnResults = exports.returnResults = (result, res, next) => {
+  return result
+    .then(results => { res.json(results) })
+    .catch(err => {
+      console.log(err)
+      
+      return next(err)
+    })
+}
+
+exports.getAllModelObject = (model, res, next) => {
+  return returnResults(model.find(), res, next)
+}
+
+exports.saveModelObject = (Model, res, req, next) => {
+  const modelInstance = new Model(req.body)
+
+  return returnResults(modelInstance.save(), res, next)
+}
+
+exports.removeModelObject = (model, id, res, next) => {
+  return model
+    .find({'_id': id})
+    .remove()
+    .then(results => { res.json({}) })
+    .catch(err => next(err))
+}
+
+exports.populateQueryResults = (query, res, next, path) => {
+  returnResults(
+    query.then !== undefined
+    ? query.then(results => results.populate(path).execPopulate())
+    : query.populate(path).execPopulate(),
+    res,
+    next
+  )
+}
+
+exports.populateAndReturnResults = (object, params, res, next) => (
+  returnResults(populate(object, params), res, next)
+)
+
+const populate = exports.populate = (object, params) => {
+  const populated = object.populate
+    ? object.populate(params)
+    : object.then(populated => execPopulate(populated.populate(params)))
+  
+  return execPopulate(populated)
+}
+
+const execPopulate = exports.execPopulate = populated => (
+    populated.execPopulate ? populated.execPopulate() : populated
+)

@@ -8,33 +8,36 @@ let cannedVisualizationType
 
 process.env.NODE_ENV = 'test'
 
-describe('CRUD for visualizationTypes', function () {
-  beforeEach(function (done) {
-    VisualizationType.create({'name': 'chart', 'queryLimit': 5}, function (err, visualizationType) {
-      if (err) { throw err }
-      cannedVisualizationType = visualizationType
+describe('CRUD for visualizationTypes', () => {
+  beforeEach(done => {
+    VisualizationType
+      .create({'name': 'chart', 'queryLimit': 5})
+      .then(visualizationType => {
+        cannedVisualizationType = visualizationType
       
-      server.start
-      
-      done()
-    })
+        server.start
+        
+        done()
+      })
+      .catch(err => { throw err })
   })
   
-  afterEach(function (done) {
-    VisualizationType.remove({}, function (err) {
-      if (err) { throw err }
-
-      server.stop
+  afterEach(done => {
+    VisualizationType
+      .remove()
+      .then(() => {
+        server.stop
       
-      done()
-    })
+        done()
+      })
+      .catch(err => { throw err })
   })
   
-  it('POST /api/visualization-types', function testPostVisualizationTypes (done) {
+  it('POST /api/visualization-types', done => {
     request(server)
       .post('/api/visualization-types')
       .send({'name': 'chart1', 'queryLimit': 3})
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
         res.body._id = 1
       })
@@ -46,10 +49,10 @@ describe('CRUD for visualizationTypes', function () {
       }, done)
   })
   
-  it('GET /api/visualization-types', function testGetVisualizationTypes (done) {
+  it('GET /api/visualization-types', done => {
     request(server)
       .get('/api/visualization-types')
-      .expect(function (res) {
+      .expect(res => {
         res.body[0].__v = 0
       })
       .expect(200, [{
@@ -60,10 +63,10 @@ describe('CRUD for visualizationTypes', function () {
       }], done)
   })
   
-  it('GET /api/visualizaiton-types/:visualization-type', function testGetVisualizationType (done) {
+  it('GET /api/visualizaiton-types/:visualization-type', done => {
     request(server)
       .get('/api/visualization-types/' + cannedVisualizationType._id)
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
       })
       .expect(200, {
@@ -74,11 +77,11 @@ describe('CRUD for visualizationTypes', function () {
       }, done)
   })
   
-  it('PUT /api/visualization-types/:visualization-type', function testPutVisualizationType (done) {
+  it('PUT /api/visualization-types/:visualization-type', done => {
     request(server)
       .put('/api/visualization-types/' + cannedVisualizationType._id)
       .send({'name': 'chart1'})
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
       })
       .expect(200, {
@@ -89,7 +92,7 @@ describe('CRUD for visualizationTypes', function () {
       }, done)
   })
   
-  it('DELETE /api/visualization-types/:visualization-type', function testDeleteVisualizationType (done) {
+  it('DELETE /api/visualization-types/:visualization-type', done => {
     request(server)
       .delete('/api/visualization-types/' + cannedVisualizationType._id)
       .expect(200, {}, done)

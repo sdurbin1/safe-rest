@@ -3,6 +3,6 @@ const router = express.Router()
 
 module.exports = router
 
-router.get('/', function (req, res, next) {
+router.get('/', (req, res, next) => {
   res.json({})
 })

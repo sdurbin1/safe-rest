@@ -11,43 +11,42 @@ let cannedAnalytic
 
 process.env.NODE_ENV = 'test'
 
-describe('CRUD for sources', function () {
-  beforeEach(function (done) {
-    const sourceJson = {'name': 'source', 'type': 'mongo'}
-
-    Source.create(sourceJson, function (err, source) {
-      if (err) { throw err }
-      cannedSource = source
+describe('CRUD for sources', () => {
+  beforeEach(done => {
+    Source
+      .create({'name': 'source', 'type': 'mongo'})
+      .then(source => {
+        cannedSource = source
       
-      Analytic.create({'name': 'analytic'}, function (err, analytic) {
-        if (err) { throw err }
+        return Analytic.create({'name': 'analytic'})
+      })
+      .then(analytic => {
         cannedAnalytic = analytic
         
         server.start
       
         done()
       })
-    })
+      .catch(err => { throw err })
   })
   
-  afterEach(function (done) {
-    Source.remove({}, function (err) {
-      if (err) { throw err }
-      
-      Analytic.remove({}, function (err) {
-        if (err) { throw err }
+  afterEach(done => {
+    Source
+      .remove({})
+      .then(() => Analytic.remove({}))
+      .then(() => {
         server.stop
       
         done()
       })
-    })
+      .catch(err => { throw err })
   })
   
-  it('POST /api/sources', function testPostSources (done) {
+  it('POST /api/sources', done => {
     request(server)
       .post('/api/sources')
       .send({'name': 'source1', 'type': 'mongo', 'metadata': {'test': 'test'}})
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
         res.body._id = 1
       })
@@ -61,10 +60,10 @@ describe('CRUD for sources', function () {
       }, done)
   })
   
-  it('GET /api/sources', function testGetSources (done) {
+  it('GET /api/sources', done => {
     request(server)
       .get('/api/sources')
-      .expect(function (res) {
+      .expect(res => {
         res.body[0].__v = 0
       })
       .expect(200, [{
@@ -74,10 +73,10 @@ describe('CRUD for sources', function () {
       }], done)
   })
   
-  it('GET /api/sources/:source', function testGetSource (done) {
+  it('GET /api/sources/:source', done => {
     request(server)
       .get('/api/sources/' + cannedSource._id)
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
       })
       .expect(200, {
@@ -89,11 +88,11 @@ describe('CRUD for sources', function () {
       }, done)
   })
   
-  it('PUT /api/sources/:source', function testPutSource (done) {
+  it('PUT /api/sources/:source', done => {
     request(server)
       .put('/api/sources/' + cannedSource._id)
       .send({'name': 'source1'})
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
       })
       .expect(200, {
@@ -105,17 +104,17 @@ describe('CRUD for sources', function () {
       }, done)
   })
   
-  it('DELETE /api/sources/:source', function testDeleteSource (done) {
+  it('DELETE /api/sources/:source', done => {
     request(server)
       .delete('/api/sources/' + cannedSource._id)
       .expect(200, {}, done)
   })
  
-  it('PUT /api/sources/:source/analytics', function testPutAnalytics (done) {
+  it('PUT /api/sources/:source/analytics', done => {
     request(server)
       .put('/api/sources/' + cannedSource._id + '/analytics')
       .send({'analytics': [cannedAnalytic._id]})
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
         res.body.analytics[0].__v = 0
       })
@@ -133,14 +132,15 @@ describe('CRUD for sources', function () {
       }, done)
   })
   
-  it('GET /api/sources/:source/analytics', function testGetAnalytics (done) {
+  it('GET /api/sources/:source/analytics', done => {
     request(server)
       .put('/api/sources/' + cannedSource._id + '/analytics')
       .send({'analytics': [cannedAnalytic._id]})
-      .end(function () {
+      .end(() => {
         request(server)
           .get('/api/sources/' + cannedSource._id + '/analytics')
-          .expect(function (res) {
+          .expect(res => {
+            console.log(res.body)
             res.body[0].__v = 0
           })
           .expect(200, [{
@@ -152,16 +152,16 @@ describe('CRUD for sources', function () {
       })
   })
   
-  it('DELETE /api/sources/:source/analytics/:analytic', function testDeleteAnalytic (done) {
+  it('DELETE /api/sources/:source/analytics/:analytic', done => {
     // First add analytic to source so we can test deleting it
     request(server)
       .put('/api/sources/' + cannedSource._id + '/analytics')
       .send({'analytics': [cannedAnalytic._id]})
-      .end(function () {
+      .end(() => {
         // Test delete
         request(server)
           .delete('/api/sources/' + cannedSource._id + '/analytics/' + cannedAnalytic._id)
-          .expect(function (res) {
+          .expect(res => {
             res.body.__v = 0
           })
           .expect(200, {
@@ -174,12 +174,12 @@ describe('CRUD for sources', function () {
       })
   })
   
-  it('GET /api/sources/:source/fields', function testGetFields (done) {
+  it('GET /api/sources/:source/fields', done => {
     // First add fields to source so we can test getting it
     request(server)
       .put('/api/sources/' + cannedSource._id)
       .send({'fields': [{'test': 'test'}]})
-      .end(function () {
+      .end(() => {
         // Test delete
         request(server)
           .get('/api/sources/' + cannedSource._id + '/fields')

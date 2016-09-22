@@ -1,15 +1,22 @@
 const Promise = require('bluebird')
-const findOnePromise = require('./find-one-promise')
-const insertPromise = require('./insert-promise')
-const updatePromise = require('./update-promise')
 const config = require('../config')
 
-exports.authenticate = authenticate
+exports.roleAdmin = (req, res, next) => {
+  if (req.session.admin || process.env.NODE_ENV === 'test') {
+    return next()
+  } else {
+    return next(new Error('Error: must be admin to perform this action'))
+  }
+}
 
-function authenticate (req, res) {
+exports.authenticate = (req, res) => {
   return new Promise(function (resolve, reject) {
     if (config.sslmode === false) {
-      const result = {username: 'user', authenticated: true}
+      const result = {
+        admin: true,
+        authenticated: true,
+        username: 'user'
+      }
         
       req.session.admin = true
         
@@ -51,16 +58,14 @@ function createUser (req) {
   const db = req.app.get('db')
   const collection = db.collection('users')
   
-  const query = {
+  return collection.insert(collection, {
     authenticated: true,
     authorized: 1,
     lastlogin: new Date(),
     issuer: req.session.issuer,
     username: req.session.username,
     admin: false
-  }
-  
-  return insertPromise(collection, query)
+  })
 }
 
 function saveUser (req, res, user) {
@@ -95,21 +100,18 @@ function saveUser (req, res, user) {
 function verifyUser (req) {
   const db = req.app.get('db')
   const collection = db.collection('users')
-  const query = {username: req.session.username}
   
-  return findOnePromise(collection, query)
+  return collection.findOne({username: req.session.username})
 }
 
 function updateLoginDate (req) {
   const username = req.session.username
   const db = req.app.get('db')
   const collection = db.collection('users')
-  const query = {username}
-  const modifierQuery = {
+  
+  return collection.update({username}, {
     $set: {
       lastlogindate: new Date()
     }
-  }
-  
-  return updatePromise(collection, query, modifierQuery)
+  })
 }

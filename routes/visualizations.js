@@ -1,95 +1,63 @@
 const express = require('express')
-const router = express.Router()
-
-module.exports = router
-
 const mongoose = require('mongoose')
+const mongoUtils = require('../utils/mongoUtil')
+
+const router = express.Router()
 const Visualization = mongoose.model('Visualization')
 const VisualizationType = mongoose.model('VisualizationType')
+
+module.exports = router
 
 /* PRELOAD OBJECTS */
 
 /* :visualization param */
-router.param('visualization', function (req, res, next, id) {
-  const query = Visualization.findById(id)
-
-  query.exec(function (err, visualization) {
-    if (err) { return next(err) }
-    if (!visualization) { return next(new Error('can\'t find visualization')) }
-
-    req.visualization = visualization
-    
-    return next()
-  })
+router.param('visualization', (req, res, next, id) => {
+  mongoUtils.populateRouterParam(Visualization, id, req, next, 'visualization')
 })
 
 /* :visualization-type param */
-router.param('visualizationType', function (req, res, next, id) {
-  const query = VisualizationType.findById(id)
-
-  query.exec(function (err, visualizationType) {
-    if (err) { return next(err) }
-    if (!visualizationType) { return next(new Error('can\'t find visualization-type')) }
-
-    req.visualizationType = visualizationType
-    
-    return next()
-  })
+router.param('visualizationType', (req, res, next, id) => {
+  mongoUtils.populateRouterParam(VisualizationType, id, req, next, 'visualizationType')
 })
 
 /* END PRELOADING OBJECTS */
 
 /* GET /visualizations */
-router.get('/', function (req, res, next) {
-  Visualization.find().populate(['visualizationType', 'analytic', 'source']).exec(function (err, visualizations) {
-    if (err) { return next(err) }
-
-    res.json(visualizations)
-  })
+router.get('/', (req, res, next) => {
+  populateVisualization(Visualization.find(), res, next)
 })
 
 /* POST /visualizations */
-router.post('/', function (req, res, next) {
+router.post('/', (req, res, next) => {
   const visualization = new Visualization(req.body)
 
-  visualization.save(function (err, visualization) {
-    if (err) { return next(err) }
-
-    visualization.populate(['visualizationType', 'analytic', 'source'], function (err, visualization) {
-      if (err) { return next(err) }
-      
-      res.json(visualization)
-    })
-  })
+  populateVisualization(visualization.save(), res, next)
 })
 
 /* GET /visualizations/:visualization */
-router.get('/:visualization', function (req, res, next) {
-  req.visualization.populate(['visualizationType', 'analytic', 'source'], function (err, visualization) {
-    if (err) { return next(err) }
-
-    res.json(visualization)
-  })
+router.get('/:visualization', (req, res, next) => {
+  populateVisualization(req.visualization, res, next)
 })
 
 /* PUT /visualizations/:visualization */
-router.put('/:visualization', function (req, res, next) {
-  Visualization.findOneAndUpdate({'_id': req.visualization._id}, req.body, {new: true}, function (err, visualization) {
-    if (err) { return next(err) }
-
-    visualization.populate(['visualizationType', 'analytic', 'source'], function (err, visualization) {
-      if (err) { return next(err) }
-      
-      res.json(visualization)
-    })
-  })
+router.put('/:visualization', (req, res, next) => {
+  populateVisualization(
+    Visualization.findOneAndUpdate({'_id': req.visualization._id}, req.body, {new: true}),
+    res,
+    next
+  )
 })
 
 /* DELETE /visualizations/:visualization */
-router.delete('/:visualization', function (req, res, next) {
-  Visualization.find({'_id': req.visualization._id}).remove(function (err) {
-    if (err) { return next(err) }
-  
-    res.json({})
-  })
+router.delete('/:visualization', (req, res, next) => {
+  mongoUtils.removeModelObject(Visualization, req.visualization._id, res, next)
 })
+
+const populateVisualization = (visualization, res, next) => (
+  mongoUtils.populateAndReturnResults(
+    visualization,
+    ['visualizationType', 'analytic', 'source'],
+    res,
+    next
+  )
+)

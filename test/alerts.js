@@ -8,41 +8,42 @@ let cannedAlert
 
 process.env.NODE_ENV = 'test'
 
-describe('CRUD for alerts', function () {
-  beforeEach(function (done) {
-    Alert.create({'text': 'alert!'}, function (err, alert) {
-      if (err) { throw err }
+describe('CRUD for alerts', () => {
+  beforeEach((done) => {
+    Alert
+      .create({'text': 'alert!'})
+      .then(alert => {
+        cannedAlert = alert
       
-      cannedAlert = alert
-      
-      done()
-    })
+        done()
+      })
+      .catch(err => { throw err })
   })
   
-  afterEach(function (done) {
-    Alert.remove({}, function (err) {
-      if (err) { throw err }
+  afterEach((done) => {
+    Alert.remove({})
+      .then(() => {
+        cannedAlert = undefined
       
-      cannedAlert = undefined
-      
-      done()
-    })
+        done()
+      })
+      .catch(err => { throw err })
   })
   
-  it('GET /api/alerts', function testGetAlerts (done) {
+  it('GET /api/alerts', done => {
     request(server)
       .get('/api/alerts')
-      .expect(function (res) {
-        res.body.__v = 0
+      .expect(res => {
+        res.body[0].__v = 0
       })
-      .expect(200, {
+      .expect(200, [{
         '_id': cannedAlert._id.toString(),
         'text': 'alert!',
         '__v': 0
-      }, done)
+      }], done)
   })
   
-  it('POST /api/alerts', function testPostAlerts (done) {
+  it('POST /api/alerts', done => {
     request(server)
       .post('/api/alerts')
       .send({
@@ -50,7 +51,7 @@ describe('CRUD for alerts', function () {
         'text': 'alert2!',
         '__v': 0
       })
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
         res.body._id = 1
       })
