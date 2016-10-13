@@ -14,6 +14,7 @@ function authenticate (req, res) {
       req.session.admin = true
         
       resolve(result)
+      
       return
     }
 

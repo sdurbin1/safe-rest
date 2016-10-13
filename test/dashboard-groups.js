@@ -60,7 +60,7 @@ describe('CRUD for dashboardGroups', function () {
       }, done)
   })
   
- it('GET /api/dashboard-groups', function testGetDashboardGroups (done) {
+  it('GET /api/dashboard-groups', function testGetDashboardGroups (done) {
     request(server)
       .get('/api/dashboard-groups')
       .expect(function (res) {
