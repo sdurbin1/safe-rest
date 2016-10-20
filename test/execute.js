@@ -1,7 +1,6 @@
 const request = require('supertest')
 const mongoose = require('mongoose')
 const mongoUtil = require('../utils/mongoUtil')
-const Promise = require('bluebird')
 
 require('../models/Visualizations')
 require('../models/Analytics')
@@ -25,35 +24,36 @@ const testData = [
 
 process.env.NODE_ENV = 'test'
 
-describe('Test execute', function () {
-  beforeEach(function (done) {
-    createObject(Source, {'name': 'source'})
+describe('Test execute', () => {
+  beforeEach(done => {
+    Source
+      .create({'name': 'source'})
       .then((source) => {
         cannedSource = source
 
-        createObject(Analytic, {'name': 'analytic'})
-          .then((analytic) => {
-            cannedAnalytic = analytic
+        return Analytic.create({'name': 'analytic'})
+      })
+      .then((analytic) => {
+        cannedAnalytic = analytic
 
-            createObject(VisualizationType, {'name': 'chart'})
-              .then((visualizationType) => {
-                cannedVisualizationType = visualizationType
-
-                createObject(Visualization, {
-                  'name': 'visualization',
-                  'source': cannedSource._id.toString(),
-                  'analytic': cannedAnalytic._id.toString(),
-                  'visualizationType': cannedVisualizationType._id.toString()
-                })
-                .then((visualization) => {
-                  cannedVisualization = visualization
-                  request(server)
-                    .post('/api/sources/' + cannedSource._id + '/data')
-                    .send({'document': testData})
-                    .end(done)
-                })
-              })
-          })
+        return VisualizationType.create({'name': 'chart'})
+      })
+      .then((visualizationType) => {
+        cannedVisualizationType = visualizationType
+  
+        return Visualization.create({
+          'name': 'visualization',
+          'source': cannedSource._id.toString(),
+          'analytic': cannedAnalytic._id.toString(),
+          'visualizationType': cannedVisualizationType._id.toString()
+        })
+      })
+      .then((visualization) => {
+        cannedVisualization = visualization
+        request(server)
+          .post('/api/sources/' + cannedSource._id + '/data')
+          .send({'document': testData})
+          .end(done)
       })
       .catch(error => {
         console.log('Error: ' + error)
@@ -61,27 +61,27 @@ describe('Test execute', function () {
       })
   })
 
-  afterEach(function (done) {
+  afterEach(done => {
     mongoUtil.deleteDocument(server.get('db'), cannedSource._id.toString())
-    .then(removeObject(Source))
-    .then(removeObject(Analytic))
-    .then(removeObject(VisualizationType))
-    .then(removeObject(Visualization))
+    .then(Source.remove())
+    .then(Analytic.remove())
+    .then(VisualizationType.remove())
+    .then(Visualization.remove())
     .then(done())
     .catch(error => {
       console.log('Error: ' + error)
     })
   })
 
-  it('POST /api/execute/:visualization for count', function testPostExecuteCount (done) {
+  it('POST /api/execute/:visualization for count', done => {
     request(server)
       .put('/api/analytics/' + cannedAnalytic._id)
       .send({'name': 'Count'})
-      .end(function () {
+      .end(() => {
         request(server)
           .put('/api/visualizations/' + cannedVisualization._id)
           .send({'analyticParams': {'county': '$County'}})
-          .end(function () {
+          .end(() => {
             request(server)
               .post('/api/execute/' + cannedVisualization._id)
               .expect(200, [
@@ -92,15 +92,15 @@ describe('Test execute', function () {
       })
   })
 
-  it('POST /api/execute/:visualization for average', function testPostExecuteAverage (done) {
+  it('POST /api/execute/:visualization for average', done => {
     request(server)
       .put('/api/analytics/' + cannedAnalytic._id)
         .send({'name': 'Average'})
-        .end(function () {
+        .end(() => {
           request(server)
             .put('/api/visualizations/' + cannedVisualization._id)
             .send({'analyticParams': {'groupBy': {'county': '$County'}, 'averageOn': '$Age'}})
-            .end(function () {
+            .end(() => {
               request(server)
                 .post('/api/execute/' + cannedVisualization._id)
                 .expect(200, [
@@ -111,11 +111,11 @@ describe('Test execute', function () {
         })
   })
 
-  it('POST /api/execute/:visualization for detailed count', function testPostExecuteDetailedCount (done) {
+  it('POST /api/execute/:visualization for detailed count', done => {
     request(server)
       .put('/api/analytics/' + cannedAnalytic._id)
         .send({'name': 'Detailed Count'})
-        .end(function () {
+        .end(() => {
           request(server)
             .put('/api/visualizations/' + cannedVisualization._id)
             .send({'analyticParams': {
@@ -124,7 +124,7 @@ describe('Test execute', function () {
               'lowerLevel': '$_id.groupBy.Gender',
               'series': 'gender'
             }})
-            .end(function () {
+            .end(() => {
               request(server)
                 .post('/api/execute/' + cannedVisualization._id)
                 .expect(200, [{
@@ -139,19 +139,19 @@ describe('Test execute', function () {
         })
   })
 
-  it('POST /api/execute/:visualization for simple map', function testPostExecuteMap (done) {
+  it('POST /api/execute/:visualization for simple map', done => {
     request(server)
       .put('/api/analytics/' + cannedAnalytic._id)
         .send({'name': 'Search'})
-        .end(function () {
+        .end(() => {
           request(server)
             .put('/api/visualization-types/' + cannedVisualizationType._id)
             .send({'name': 'Map'})
-            .end(function () {
+            .end(() => {
               request(server)
                 .put('/api/visualizations/' + cannedVisualization._id)
                 .send({'visualizationParams': {'latField': 'Latitude', 'longField': 'Longitude', 'label': ['County']}, 'analyticParams': {'label': 'County'}})
-                .end(function () {
+                .end(() => {
                   request(server)
                     .post('/api/execute/' + cannedVisualization._id)
                     .expect(200, [
@@ -165,18 +165,18 @@ describe('Test execute', function () {
         })
   })
 
-  it('POST /api/execute/:visualization for simple map table view', function testPostExecuteMapTableView (done) {
+  it('POST /api/execute/:visualization for simple map table view', done => {
     request(server)
       .put('/api/analytics/' + cannedAnalytic._id)
         .send({'name': 'Search'})
-        .end(function () {
+        .end(() => {
           request(server)
             .put('/api/visualization-types/' + cannedVisualizationType._id)
             .send({'name': 'Table'})
-            .end(function () {
+            .end(() => {
               request(server)
                 .post('/api/execute/' + cannedVisualization._id)
-                .expect(function (res) {
+                .expect((res) => {
                   res.body[0]._id = 1
                   res.body[1]._id = 1
                   res.body[2]._id = 1
@@ -192,15 +192,15 @@ describe('Test execute', function () {
         })
   })
 
-  it('POST /api/execute/:visualization for layered map', function testPostExecuteLayeredMap (done) {
+  it('POST /api/execute/:visualization for layered map', done => {
     request(server)
       .put('/api/analytics/' + cannedAnalytic._id)
         .send({'name': 'Search'})
-        .end(function () {
+        .end(() => {
           request(server)
             .put('/api/visualization-types/' + cannedVisualizationType._id)
             .send({'name': 'Map'})
-            .end(function () {
+            .end(() => {
               request(server)
                 .put('/api/visualizations/' + cannedVisualization._id)
                 .send({
@@ -212,7 +212,7 @@ describe('Test execute', function () {
                       {'dataType': 'LAYER', 'name': 'Howard County', 'filter': {'field': 'County', 'operator': '=', 'value': 'Howard'}}
                     ]}
                 })
-                .end(function () {
+                .end(() => {
                   request(server)
                     .post('/api/execute/' + cannedVisualization._id)
                     .expect(200, {
@@ -232,15 +232,15 @@ describe('Test execute', function () {
         })
   })
 
-  it('POST /api/execute/:visualization for p2p map', function testPostExecuteP2PMap (done) {
+  it('POST /api/execute/:visualization for p2p map', done => {
     request(server)
       .put('/api/analytics/' + cannedAnalytic._id)
         .send({'name': 'Search'})
-        .end(function () {
+        .end(() => {
           request(server)
             .put('/api/visualization-types/' + cannedVisualizationType._id)
             .send({'name': 'Map'})
-            .end(function () {
+            .end(() => {
               request(server)
                 .put('/api/visualizations/' + cannedVisualization._id)
                 .send({
@@ -254,7 +254,7 @@ describe('Test execute', function () {
                     'toLabelField': 'County'
                   }
                 })
-                .end(function () {
+                .end(() => {
                   request(server)
                     .post('/api/execute/' + cannedVisualization._id)
                     .expect(200, [{
@@ -288,22 +288,3 @@ describe('Test execute', function () {
         })
   })
 })
-function createObject (model, json) {
-  return new Promise(function (resolve, reject) {
-    model.create(json, function (err, result) {
-      if (err) { reject(err) }
-
-      resolve(result)
-    })
-  })
-}
-
-function removeObject (model) {
-  return new Promise(function (resolve, reject) {
-    model.remove({}, function (err, result) {
-      if (err) { reject(err) }
-
-      resolve(result)
-    })
-  })
-}

@@ -4,34 +4,37 @@ const Promise = require('bluebird')
 const transformUtil = require('../utils/transformUtil')
 const config = require('../config')
 
-exports.mongoExecute = mongoExecute
-exports.mongoQuery = mongoQuery
-
-function mongoExecute (requestBody, db, visualization) {
-  return new Promise(function (resolve, reject) {
-    const queryJson = mongoUtil.buildQueryJson(requestBody.filters)
-
-    visualization.populate(['visualizationType', 'analytic', 'source'], function (err, visualization) {
-      if (err) { throw err }
-      
-      const limit = getExecuteQueryLimit(visualization)
-      
-      if (visualization.analytic.name === 'Count') {
-        resolve(count(queryJson, db, visualization, limit))
-      } else if (visualization.analytic.name === 'Average') {
-        resolve(average(queryJson, db, visualization, limit))
-      } else if (visualization.analytic.name === 'Detailed Count') {
-        resolve(detailedCount(queryJson, db, visualization, limit))
-      } else if (visualization.visualizationType.name === 'Summary') {
-        resolve(summaryCount(queryJson, db, visualization, limit))
-      } else {
-        resolve(search(queryJson, db, visualization, limit))
-      }
-    })
-  })
+const analyticMethods = {
+  Average: average,
+  Count: count,
+  'Detailed Count': detailedCount
 }
 
-function mongoQuery (requestBody, db, source) {
+const visualizationMethods = {
+  Summary: summaryCount
+}
+
+exports.mongoExecute = (requestBody, db, modelObject) => {
+  const queryJson = mongoUtil.buildQueryJson(requestBody.filters)
+
+  return mongoUtil
+    .populate(modelObject, ['visualizationType', 'analytic', 'source'])
+    .then(modelObject => {
+      const {analytic = {}, visualizationType} = modelObject
+      const {name: analyticName} = analytic
+      const {name: typeName} = visualizationType
+      const analyticMethod =
+        analyticMethods[analyticName] ||
+        visualizationMethods[typeName] ||
+        search
+      const limit = getExecuteQueryLimit(modelObject)
+      
+      return analyticMethod(queryJson, db, modelObject, limit)
+    })
+    .catch(err => { console.log(err); throw err })
+}
+
+exports.mongoQuery = (requestBody, db, source) => {
   const queryJson = mongoUtil.buildQueryJson(requestBody.filters)
   const sourceId = source._id.toString()
   const limit = getSearchQueryLimit()
@@ -41,79 +44,74 @@ function mongoQuery (requestBody, db, source) {
 
 function count (queryJson, db, visualization, limit) {
   return new Promise(function (resolve, reject) {
-    const src = visualization.source._id
-    const params = visualization.analyticParams
+    const {_id: src} = visualization.source
+    const {analyticParams: params} = visualization
     const collection = db.collection('' + src)
-      
-    collection.aggregate([{$match: queryJson}, {$limit: limit}, {$group: {_id: params, count: {$sum: 1}}}], function (err, result) {
-      if (err) {
-        console.log(err)
-        reject(err)
-      } else if (result.length) {
-        const out = transformUtil.transformBasicCount(result)
-         
-        resolve(out)
-      } else {
-        console.log('No document(s) found with defined "find" criteria!')
-        reject('No document(s) found with defined "find" criteria!')
-      }
-    })
+    
+    collection.aggregate([{$match: queryJson}, {$limit: limit}, {$group: {_id: params, count: {$sum: 1}}}],
+      function (err, result) {
+        if (err) {
+          console.log(err)
+          reject(err)
+        } else if (result.length) {
+          resolve(transformUtil.transformBasicCount(result))
+        } else {
+          console.log('No document(s) found with defined "find" criteria!')
+          reject('No document(s) found with defined "find" criteria!')
+        }
+      })
   })
 }
 
 function search (queryJson, db, visualization, limit) {
   const src = visualization.source._id.toString()
+  const {analyticParams = {}, visualizationType} = visualization
+  const {name} = visualizationType
+  const {toLatField, type} = analyticParams
   
-  if (visualization.visualizationType.name === 'Map') {
-    if (visualization.analyticParams.type === 'multiQuery') {
-      return runMultipleQueries(db, visualization, limit).then(function (results) {
-        const output = transformUtil.transformLayeredMap(visualization, results)
-      
-        return output
-      })
-    } else if (visualization.analyticParams.toLatField != null) {
+  if (name === 'Map') {
+    if (type === 'multiQuery') {
+      return runMultipleQueries(db, visualization, limit)
+        .then(function (results) {
+          return transformUtil.transformLayeredMap(visualization, results)
+        })
+    } else if (toLatField != null) {
       return mongoUtil.queryMongo(db, src, queryJson, limit)
       .then(function (out) {
-        const output = transformUtil.transformP2PMap(visualization, out)
-      
-        return output
+        return transformUtil.transformP2PMap(visualization, out)
       })
     } else {
       return mongoUtil.queryMongo(db, src, queryJson, limit)
       .then(function (out) {
-        const output = transformUtil.transformMap(visualization, out)
-      
-        return output
+        return transformUtil.transformMap(visualization, out)
       })
     }
   } else {
-    return mongoUtil.queryMongo(db, src, queryJson, limit).then(function (output) {
-      return output
-    })
+    return mongoUtil.queryMongo(db, src, queryJson, limit)
+      .then(function (output) {
+        return output
+      })
   }
 }
 
 function detailedCount (queryJson, db, visualization, limit) {
   return new Promise(function (resolve, reject) {
-    const src = visualization.source._id
-    const groupBy = visualization.analyticParams.groupBy
-    const topLevel = visualization.analyticParams.topLevel
-    const lowerLevel = visualization.analyticParams.lowerLevel
+    const {_id: src} = visualization.source
+    const {groupBy, lowerLevel, topLevel} = visualization.analyticParams
     const collection = db.collection('' + src)
   
-    collection.aggregate([{$match: queryJson}, {$limit: limit}, {$group: {_id: {groupBy}, 'subTotals': {$sum: 1}}}, {$group: {_id: topLevel, 'Count': {$sum: '$subTotals'}, 'Details': {'$push': {'Value': lowerLevel, 'Count': '$subTotals'}}}}], function (err, result) {
-      if (err) {
-        console.log(err)
-        reject(err)
-      } else if (result.length) {
-        const out = transformUtil.transformDetailed(result)
-       
-        resolve(out)
-      } else {
-        console.log('No document(s) found with defined "find" criteria!')
-        reject('No document(s) found with defined "find" criteria!')
-      }
-    })
+    collection.aggregate([{$match: queryJson}, {$limit: limit}, {$group: {_id: {groupBy}, 'subTotals': {$sum: 1}}}, {$group: {_id: topLevel, 'Count': {$sum: '$subTotals'}, 'Details': {'$push': {'Value': lowerLevel, 'Count': '$subTotals'}}}}],
+      function (err, result) {
+        if (err) {
+          console.log(err)
+          reject(err)
+        } else if (result.length) {
+          resolve(transformUtil.transformDetailed(result))
+        } else {
+          console.log('No document(s) found with defined "find" criteria!')
+          reject('No document(s) found with defined "find" criteria!')
+        }
+      })
   })
 }
 
@@ -123,15 +121,13 @@ function average (queryJson, db, visualization, limit) {
     const params = visualization.analyticParams.groupBy
     const averageOn = visualization.analyticParams.averageOn
     const collection = db.collection('' + src)
-  
+    
     collection.aggregate([{$match: queryJson}, {$limit: limit}, {$group: {_id: params, average: {$avg: averageOn}}}], function (err, result) {
       if (err) {
         console.log(err)
         reject(err)
       } else if (result.length) {
-        const out = transformBasicAverage(result)
-       
-        resolve(out)
+        resolve(transformUtil.transformBasicAverage(result))
       } else {
         console.log('No document(s) found with defined "find" criteria!')
         reject('No document(s) found with defined "find" criteria!')
@@ -146,28 +142,9 @@ function summaryCount (queryJson, db, visualization, limit) {
     
     return mongoUtil.queryMongo(db, src.toString(), queryJson, limit)
       .then(function (out) {
-        const output = transformUtil.transformSummaryCount(visualization, out)
-      
-        resolve(output)
+        resolve(transformUtil.transformSummaryCount(visualization, out))
       })
   })
-}
-
-function transformBasicAverage (raw) {
-  const output = []
-  
-  for (let i = 0; i < raw.length; i = i + 1) {
-    const record = {}
-    
-    for (const k in raw[i]['_id']) {
-      record['Value'] = raw[i]['_id'][k]
-    }
-        
-    record['Average'] = raw[i].average
-    output.push(record)
-  }
-  
-  return output
 }
 
 function runMultipleQueries (db, visualization, limit) {

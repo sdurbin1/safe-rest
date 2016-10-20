@@ -11,44 +11,44 @@ let cannedDashboard
 
 process.env.NODE_ENV = 'test'
 
-describe('CRUD for dashboardGroups', function () {
-  beforeEach(function (done) {
-    DashboardGroup.create({'title': 'group'}, function (err, dashboardGroup) {
-      if (err) { throw err }
-      
-      const dashboardJson = {'title': 'dashboard', 'subtitle': 'subtitle', 'dashboardParams': {'size': 2, 'visualizationSizes': {1: 2, 2: 2}}}
-      
-      cannedDashboardGroup = dashboardGroup
-      
-      Dashboard.create(dashboardJson, function (err, dashboard) {
-        if (err) { throw err }
-      
+describe('CRUD for dashboardGroups', () => {
+  beforeEach((done) => {
+    DashboardGroup
+      .create({'title': 'group'})
+      .then(dashboardGroup => {
+        cannedDashboardGroup = dashboardGroup
+        
+        return Dashboard.create({
+          'title': 'dashboard',
+          'subtitle': 'subtitle',
+          'dashboardParams': {'size': 2, 'visualizationSizes': {1: 2, 2: 2}}
+        })
+      })
+      .then(dashboard => {
         server.start
         cannedDashboard = dashboard
       
         done()
       })
-    })
+      .catch(err => { throw err })
   })
   
-  afterEach(function (done) {
-    DashboardGroup.remove({}, function (err) {
-      if (err) { throw err }
-
-      Dashboard.remove({}, function (err) {
-        if (err) { throw err }
-        server.stop
+  afterEach(done => {
+    DashboardGroup.remove({})
+    .then(() => Dashboard.remove({}))
+    .then(() => {
+      server.stop
       
-        done()
-      })
+      done()
     })
+    .catch(err => { throw err })
   })
   
-  it('POST /api/dashboard-groups', function testPostDashboardGroups (done) {
+  it('POST /api/dashboard-groups', done => {
     request(server)
       .post('/api/dashboard-groups')
       .send({'title': 'group1'})
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
         res.body._id = 1
       })
@@ -60,10 +60,10 @@ describe('CRUD for dashboardGroups', function () {
       }, done)
   })
   
-  it('GET /api/dashboard-groups', function testGetDashboardGroups (done) {
+  it('GET /api/dashboard-groups', done => {
     request(server)
       .get('/api/dashboard-groups')
-      .expect(function (res) {
+      .expect(res => {
         res.body[0].__v = 0
       })
       .expect(200, [{
@@ -74,10 +74,10 @@ describe('CRUD for dashboardGroups', function () {
       }], done)
   })
   
-  it('GET /api/dashboard-groups/:dashboard-group', function testGetDashboardGroup (done) {
+  it('GET /api/dashboard-groups/:dashboard-group', done => {
     request(server)
       .get('/api/dashboard-groups/' + cannedDashboardGroup._id)
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
       })
       .expect(200, {
@@ -88,11 +88,11 @@ describe('CRUD for dashboardGroups', function () {
       }, done)
   })
   
-  it('PUT /api/dashboard-groups/:dashboard-group', function testPutDashboardGroup (done) {
+  it('PUT /api/dashboard-groups/:dashboard-group', done => {
     request(server)
       .put('/api/dashboard-groups/' + cannedDashboardGroup._id)
       .send({'title': 'group1'})
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
       })
       .expect(200, {
@@ -103,20 +103,20 @@ describe('CRUD for dashboardGroups', function () {
       }, done)
   })
   
-  it('DELETE /api/dashboard-groups/:dashboard-group', function testDeleteDashboardGroup (done) {
+  it('DELETE /api/dashboard-groups/:dashboard-group', done => {
     request(server)
       .delete('/api/dashboard-groups/' + cannedDashboardGroup._id)
       .expect(200, {}, done)
   })
   
-  it('GET /api/dashboard-groups/:dashboard-group/visualizations', function testGetDashboardGroupVisualizations (done) {
+  it('GET /api/dashboard-groups/:dashboard-group/visualizations', done => {
     request(server)
       .put('/api/dashboard-groups/' + cannedDashboardGroup._id)
       .send({'dashboards': [cannedDashboard._id]})
-      .end(function () {
+      .end(() => {
         request(server)
           .get('/api/dashboard-groups/' + cannedDashboardGroup._id + '/dashboards')
-          .expect(function (res) {
+          .expect(res => {
             res.body[0].__v = 0
           })
           .expect(200, [cannedDashboard._id.toString()], done)

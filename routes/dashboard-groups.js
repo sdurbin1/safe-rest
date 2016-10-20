@@ -1,33 +1,30 @@
+const express = require('express')
+const mongoose = require('mongoose')
 const mongoUtils = require('../utils/mongoUtil')
 const utils = require('../utils/dashboard')
-const express = require('express')
+
 const router = express.Router()
-
-module.exports = router
-
-const mongoose = require('mongoose')
-
-mongoose.Promise = require('bluebird')
-
 const Dashboard = mongoose.model('Dashboard')
 const DashboardGroup = mongoose.model('DashboardGroup')
+
+module.exports = router
 
 /* PRELOAD OBJECTS */
 
 /* :dashboard param */
-router.param('dashboard', function (req, res, next, id) {
+router.param('dashboard', (req, res, next, id) => {
   mongoUtils.populateRouterParam(Dashboard, id, req, next, 'dashboard')
 })
 
 /* :dashboard-group param */
-router.param('dashboardGroup', function (req, res, next, id) {
+router.param('dashboardGroup', (req, res, next, id) => {
   mongoUtils.populateRouterParam(DashboardGroup, id, req, next, 'dashboardGroup')
 })
 
 /* END PRELOADING OBJECTS */
 
 /* GET /dashboard-groups */
-router.get('/', function (req, res, next) {
+router.get('/', (req, res, next) => {
   DashboardGroup
     .find()
     .populate({
@@ -60,57 +57,50 @@ router.get('/', function (req, res, next) {
 })
 
 /* POST /dashboard-groups */
-router.post('/', function (req, res, next) {
+router.post('/', (req, res, next) => {
   const dashboardGroup = new DashboardGroup(req.body)
 
-  dashboardGroup
-    .save()
-    .then(dashboardGroup => { res.json(dashboardGroup) })
-    .catch(err => next(err))
+  mongoUtils.returnResults(dashboardGroup.save(), res, next)
 })
 
 /* GET /dashboard-groups/:dashboardGroup */
-router.get('/:dashboardGroup', function (req, res, next) {
+router.get('/:dashboardGroup', (req, res, next) => {
   res.json(req.dashboardGroup)
 })
 
 /* PUT /dashboard-groups/:dashboardGroup */
-router.put('/:dashboardGroup', function (req, res, next) {
-  DashboardGroup.findOneAndUpdate({'_id': req.dashboardGroup._id}, req.body, {new: true}, function (err, dashboardGroup) {
-    if (err) { return next(err) }
-
-    res.json(dashboardGroup)
-  })
+router.put('/:dashboardGroup', (req, res, next) => {
+  mongoUtils.returnResults(
+    DashboardGroup.findOneAndUpdate({'_id': req.dashboardGroup._id}, req.body, {new: true}),
+    res,
+    next
+  )
 })
 
 /* DELETE /dashboard-groups/:dashboardGroup */
-router.delete('/:dashboardGroup', function (req, res, next) {
-  DashboardGroup
-    .find({'_id': req.dashboardGroup._id})
-    .remove()
-    .then(dashboardGroups => { res.json({}) })
-    .catch(err => next(err))
+router.delete('/:dashboardGroup', (req, res, next) => {
+  mongoUtils.removeModelObject(DashboardGroup, req.dashboardGroup._id, res, next)
 })
 
 /* GET /dashboard-groups/:dashboardGroup/dashboards */
-router.get('/:dashboardGroup/dashboards', function (req, res, next) {
+router.get('/:dashboardGroup/dashboards', (req, res, next) => {
   res.json(req.dashboardGroup.dashboards)
 })
 
 /* PUT /dashboard-groups/:dashboardGroup/dashboard/:dashboard */
 /* Add an existing dashboard to a dashboard group */
-router.put('/:dashboardGroup/dashboards/:dashboard', function (req, res, next) {
-  utils
-    .addDashboardToGroup(req.params.dashboardGroup, req.dashboard)
-    .then(dashboardGroup => { res.json(dashboardGroup) })
-    .catch(err => next(err))
+router.put('/:dashboardGroup/dashboards/:dashboard', (req, res, next) => {
+  mongoUtils.returnResults(
+    utils.addDashboardToGroup(req.params.dashboardGroup, req.dashboard), res, next
+  )
 })
 
 /* DELETE /dashboard-groups/:dashboardGroup/dashboard/:dashboard */
 /* Add an existing dashboard to a dashboard group */
-router.delete('/:dashboardGroup/dashboards/:dashboard', function (req, res, next) {
-  utils
-    .removeDashboardFromGroup(req.params.dashboardGroup, req.param.dashboard)
-    .then(dashboardGroup => { res.json(dashboardGroup) })
-    .catch(err => next(err))
+router.delete('/:dashboardGroup/dashboards/:dashboard', (req, res, next) => {
+  mongoUtils.returnResults(
+    utils.removeDashboardFromGroup(req.params.dashboardGroup, req.param.dashboard),
+    res,
+    next
+  )
 })

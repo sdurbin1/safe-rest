@@ -4,8 +4,10 @@
   "repository": "https://github.com/sdurbin1/safe-rest",
   "license": "MIT",
   "scripts": {
+    "lint": "eslint --ext .js routes/ models/ utils/ test/ ./*.js",
+    "prepublish": "npm run lint && npm test",
     "start": "node ./bin/www",
-    "lint": "eslint --ext .js routes/ models/ utils/ test/ ./*.js"
+    "test": "mocha --recursive test"
   },
   "devDependencies": {
     "babel-eslint": "6.0.2",

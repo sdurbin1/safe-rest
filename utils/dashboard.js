@@ -1,12 +1,7 @@
 const mongoose = require('mongoose')
 const DashboardGroup = mongoose.model('DashboardGroup')
 
-exports.addDashboardToGroup = addDashboardToGroup
-exports.populateFullDashboard = populateFullDashboard
-exports.execPopulateFullDashboard = execPopulateFullDashboard
-exports.removeDashboardFromGroup = removeDashboardFromGroup
-
-function addDashboardToGroup (dashboardGroup, dashboard, returnFn) {
+exports.addDashboardToGroup = (dashboardGroup, dashboard, returnFn) => {
   return DashboardGroup
     .findByIdAndUpdate(
       dashboardGroup,
@@ -15,7 +10,7 @@ function addDashboardToGroup (dashboardGroup, dashboard, returnFn) {
     )
 }
 
-function removeDashboardFromGroup (dashboardGroup, dashboard, returnFn) {
+exports.removeDashboardFromGroup = (dashboardGroup, dashboard, returnFn) => {
   return DashboardGroup
     .findByIdAndUpdate(
       dashboardGroup,
@@ -25,18 +20,17 @@ function removeDashboardFromGroup (dashboardGroup, dashboard, returnFn) {
     )
 }
 
-function populateFullDashboard (dashboard) {
-  return dashboard
-    .populate({
-      path: 'visualizations',
-      populate: [
-        {path: 'analytic'},
-        {path: 'source'},
-        {path: 'visualizationType'}
-      ]
-    })
+const populateFullDashboard = exports.addDashboardToGroup = dashboard => {
+  return dashboard.populate({
+    path: 'visualizations',
+    populate: [
+      {path: 'analytic'},
+      {path: 'source'},
+      {path: 'visualizationType'}
+    ]
+  })
 }
 
-function execPopulateFullDashboard (dashboard) {
+exports.execPopulateFullDashboard = dashboard => {
   return populateFullDashboard(dashboard).execPopulate()
 }

@@ -11,43 +11,47 @@ let cannedVisualization
 
 process.env.NODE_ENV = 'test'
 
-describe('CRUD for dashboards', function () {
-  beforeEach(function (done) {
-    const dashboardJson = {'title': 'dashboard', 'subtitle': 'subtitle', 'dashboardParams': {'size': 2, 'visualizationSizes': {1: 2, 2: 2}}}
-
-    Dashboard.create(dashboardJson, function (err, dashboard) {
-      if (err) { throw err }
-      cannedDashboard = dashboard
+describe('CRUD for dashboards', () => {
+  beforeEach(done => {
+    Dashboard
+      .create({
+        'title': 'dashboard',
+        'subtitle': 'subtitle',
+        'dashboardParams': {
+          'size': 2,
+          'visualizationSizes': {1: 2, 2: 2}
+        }
+      })
+      .then(dashboard => {
+        cannedDashboard = dashboard
       
-      Visualization.create({'name': 'visualization'}, function (err, visualization) {
-        if (err) { throw err }
-        
+        return Visualization.create({'name': 'visualization'})
+      })
+      .then(visualization => {
         server.start
         cannedVisualization = visualization
       
         done()
       })
-    })
+      .catch(err => { throw err })
   })
   
-  afterEach(function (done) {
-    Dashboard.remove({}, function (err) {
-      if (err) { throw err }
+  afterEach(done => {
+    Dashboard.remove({})
+    .then(() => Visualization.remove({}))
+    .then(() => {
+      server.stop
       
-      Visualization.remove({}, function (err) {
-        if (err) { throw err }
-        server.stop
-      
-        done()
-      })
+      done()
     })
+    .catch(err => { throw err })
   })
   
-  it('POST /api/dashboards', function testPostDashboards (done) {
+  it('POST /api/dashboards', done => {
     request(server)
       .post('/api/dashboards')
       .send({'title': 'dashboard1', 'subtitle': 'subtitle', 'dashboardParams': {'size': 2, 'visualizationSizes': {1: 2, 2: 2}}})
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
         res.body._id = 1
       })
@@ -64,10 +68,10 @@ describe('CRUD for dashboards', function () {
       }, done)
   })
   
-  it('GET /api/dashboards', function testGetDashboards (done) {
+  it('GET /api/dashboards', done => {
     request(server)
       .get('/api/dashboards')
-      .expect(function (res) {
+      .expect(res => {
         res.body[0].__v = 0
       })
       .expect(200, [{
@@ -83,10 +87,10 @@ describe('CRUD for dashboards', function () {
       }], done)
   })
   
-  it('GET /api/dashboards/:dashboard', function testGetDashboard (done) {
+  it('GET /api/dashboards/:dashboard', done => {
     request(server)
       .get('/api/dashboards/' + cannedDashboard._id)
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
       })
       .expect(200, {
@@ -102,11 +106,11 @@ describe('CRUD for dashboards', function () {
       }, done)
   })
   
-  it('PUT /api/dashboards/:dashboard', function testPutDashboard (done) {
+  it('PUT /api/dashboards/:dashboard', done => {
     request(server)
       .put('/api/dashboards/' + cannedDashboard._id)
       .send({'title': 'dashboard1'})
-      .expect(function (res) {
+      .expect(res => {
         res.body.__v = 0
       })
       .expect(200, {
@@ -122,17 +126,17 @@ describe('CRUD for dashboards', function () {
       }, done)
   })
   
-  it('DELETE /api/dashboards/:dashboard', function testDeleteDashboard (done) {
+  it('DELETE /api/dashboards/:dashboard', done => {
     request(server)
       .delete('/api/dashboards/' + cannedDashboard._id)
       .expect(200, {}, done)
   })
  
-  it('PUT /api/dashboards/:dashboard/visualizations', function testPutVisualization (done) {
+  it('PUT /api/dashboards/:dashboard/visualizations', done => {
     request(server)
       .put('/api/dashboards/' + cannedDashboard._id + '/visualizations')
       .send({'visualizations': [cannedVisualization._id]})
-      .expect(function (res) {
+      .expect(res => {
         res.body[0].__v = 0
       })
       .expect(200, [{
@@ -142,14 +146,14 @@ describe('CRUD for dashboards', function () {
       }], done)
   })
   
-  it('GET /api/dashboards/:dashboard/visualizations', function testGetVisualization (done) {
+  it('GET /api/dashboards/:dashboard/visualizations', done => {
     request(server)
       .put('/api/dashboards/' + cannedDashboard._id + '/visualizations')
       .send({'visualizations': [cannedVisualization._id]})
-      .end(function () {
+      .end(() => {
         request(server)
           .get('/api/dashboards/' + cannedDashboard._id + '/visualizations')
-          .expect(function (res) {
+          .expect(res => {
             res.body[0].__v = 0
           })
           .expect(200, [{
@@ -160,12 +164,12 @@ describe('CRUD for dashboards', function () {
       })
   })
   
-  it('DELETE /api/dashboards/:dashboard/visualizations/:visualization', function testDeleteVisualization (done) {
+  it('DELETE /api/dashboards/:dashboard/visualizations/:visualization', done => {
     // First add visualization-type to analytic so we can test deleting it
     request(server)
       .put('/api/dashboards/' + cannedDashboard._id + '/visualizations')
       .send({'visualizations': [cannedVisualization._id]})
-      .end(function () {
+      .end(() => {
         // Test delete
         request(server)
           .delete('/api/dashboards/' + cannedDashboard._id + '/visualizations/' + cannedVisualization._id)
